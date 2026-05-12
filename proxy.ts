@@ -31,7 +31,9 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Gate /admin/** on a valid session.
-  if (!user && request.nextUrl.pathname.startsWith("/admin")) {
+  const path = request.nextUrl.pathname;
+  const isAdminPath = path === "/admin" || path.startsWith("/admin/");
+  if (!user && isAdminPath) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", request.nextUrl.pathname);

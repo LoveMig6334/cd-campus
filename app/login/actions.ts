@@ -25,5 +25,6 @@ export async function signIn(formData: FormData) {
   }
 
   const safePath = new URL(next, "http://localhost").pathname;
-  redirect(safePath.startsWith("/admin") ? safePath : "/admin");
+  const isAdminPath = safePath === "/admin" || safePath.startsWith("/admin/");
+  redirect(isAdminPath ? safePath : "/admin");
 }

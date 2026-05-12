@@ -19,7 +19,7 @@ export async function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Server Component — cookie writes flushed by middleware on next request.
+            // Server Component — cookie writes flushed by the proxy on the next request.
           }
         },
       },
