@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { PsharePost } from "@/lib/types";
+import type { Database } from "@/lib/supabase/database.types";
 
 const THAI_MONTHS = [
   "ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.",
@@ -69,4 +70,21 @@ export async function getAllPsharePosts(): Promise<PshareAdminRow[]> {
     publishedAt: p.published_at,
     updatedAt: p.updated_at,
   }));
+}
+
+export type PsharePostFull =
+  Database["public"]["Tables"]["pshare_posts"]["Row"];
+
+export async function getPsharePostBySlug(
+  slug: string,
+): Promise<PsharePostFull | null> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("pshare_posts")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+  if (error) throw new Error(`getPsharePostBySlug: ${error.message}`);
+  return data;
 }
