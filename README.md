@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CD Smart Campus
 
-## Getting Started
+A Next.js prototype for the **Chitralada 2026** smart-campus app — a single workspace tying together the school's calendar, room bookings, sport-day live ops, alumni portfolios, peer-led knowledge sharing (**P'share N'sure**), and the **CD Carelin** care line.
 
-First, run the development server:
+The static HTML mockup at `prototype/cd-smart-campus.html` is being progressively migrated into this Next.js 16 + React 19 app. See [`docs/migration-plan.md`](./docs/migration-plan.md) for the phased plan, and [`docs/design-system.md`](./docs/design-system.md) for the visual language.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+- **Next.js** 16.2.6 — App Router, React Server Components
+- **React** 19.2.4
+- **TypeScript** 5
+- **Tailwind CSS** 4 — CSS-first via `@theme` (no `tailwind.config.js`)
+- **ESLint** 9 + `eslint-config-next`
+
+To be added during the migration:
+
+- `react-markdown` ^10 + `remark-gfm` ^4 — P'share post bodies
+- `clsx` ^2 + `tailwind-merge` ^3 — class composition
+
+## Two role views
+
+| View | URL | Shape |
+| ---- | --- | ----- |
+| **Student** | `/student` | Mobile phone mockup with sticky header, 4-tab bottom nav (Home / Calendar / Booking / Sport) |
+| **Admin** | `/admin` | Desktop with sticky sidebar (Overview / Calendar / Sport / Bookings / Portfolios / P'share Studio / Carelin Desk) |
+
+Landing at `/` offers a toggle to either view.
+
+## Project layout
+
+```
+app/                     # Next.js App Router
+  student/               # Student mobile shell + pages
+  admin/                 # Admin desktop shell + pages
+  layout.tsx             # Root html, fonts, theme
+  page.tsx               # Landing / view toggle
+  globals.css            # Tailwind import + @theme tokens + halftone utilities
+components/              # Layout shells, role widgets, ui primitives
+data/                    # Typed mock data (no DB yet)
+lib/                     # Helpers (cn, date, fonts)
+docs/
+  design-system.md       # Color, typography, components, motifs
+  migration-plan.md      # Phased plan from prototype HTML → Next.js
+  access_design/         # Reference image assets
+prototype/
+  cd-smart-campus.html   # Source-of-truth visual prototype
+public/                  # Static assets (brand mark, og)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Quick start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visit <http://localhost:3000> — landing routes to `/student` or `/admin`.
 
-## Learn More
+```bash
+npm run build      # production build
+npm run start      # serve production build
+npm run lint       # eslint
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Design language
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Editorial zine + bilingual Thai/English. Cream paper, blue / yellow / pink accents, hard 1.5px borders, offset shadows with no blur, halftone dot patterns, Instrument Serif italic display + IBM Plex Sans Thai + IBM Plex Mono. Full guide: [`docs/design-system.md`](./docs/design-system.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Conventions
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- AI agents: read [`AGENTS.md`](./AGENTS.md) first.
+- Default to React Server Components. `'use client'` only at interactive leaves.
+- All visible UI strings are bilingual EN/TH wherever possible.
+- Mock data lives in `data/`, typed in `data/types.ts`.
+- Don't hand-edit `package-lock.json`; use `npm install`.

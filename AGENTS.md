@@ -3,3 +3,60 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+Quick reminders for Next 16 / React 19 (don't trust your training data):
+
+- Default to **Server Components**. Add `'use client'` only at interactive leaves.
+- App Router lives in `app/`. There is no `pages/`.
+- `getServerSideProps`, `getStaticProps`, `getStaticPaths`, `_app.tsx`, `_document.tsx` are **gone**. Don't suggest them.
+- Dynamic route params arrive as `Promise<{...}>` — `await` them.
+- `fetch()` is **not cached by default** in 16. Wrap with `'use cache'` + `cacheLife()` when you want caching.
+- Fonts: `next/font/google` (e.g. `Instrument_Serif`, `IBM_Plex_Sans_Thai`, `IBM_Plex_Mono`). Self-hosted automatically — no `<link>` tags.
+- Tailwind 4 is **CSS-first**. Tokens live in `@theme` inside `app/globals.css`; there is no `tailwind.config.js`.
+
+## Read first
+
+- [`docs/design-system.md`](./docs/design-system.md) — color tokens, typography, components, halftone usage, bilingual rules.
+- [`docs/migration-plan.md`](./docs/migration-plan.md) — phased plan, route map, library choices, server/client boundary guidance.
+- `prototype/cd-smart-campus.html` — single-file source-of-truth visual prototype. When in doubt, match the prototype.
+
+## Routes
+
+- Student: `app/student/...` → mobile phone mockup shell.
+- Admin: `app/admin/...` → desktop sidebar shell.
+- Each role group has its own `layout.tsx`. Don't mix them.
+
+## Components
+
+Default to React Server Components. Mark `'use client'` only at interactive leaves (forms, toggles, controlled inputs). Active nav state is derived from `usePathname()` in tiny client wrappers — don't drag whole layouts client-side.
+
+When a server-rendered subtree has to live inside a client component, pass it as `props.children` so it isn't re-bundled.
+
+## Styling
+
+- **Tailwind 4 utilities first.** The zine palette is already defined in `@theme` — use `bg-blue`, `text-yellow`, `font-display italic`, etc.
+- **Halftone backgrounds** stay as global utility classes (`.halftone-bk`, `.halftone-bl`, `.halftone-soft`) in `app/globals.css` because they use `radial-gradient()`.
+- **Class composition** — use `lib/cn.ts` (clsx + tailwind-merge), not inline string concatenation.
+
+## Bilingual content
+
+Thai and English live side-by-side in the UI. Don't strip one. The pattern is mono-caps English eyebrow + italic display Thai headline (or vice versa). Body copy stays in IBM Plex Sans Thai, which covers both scripts.
+
+## Mock data
+
+All data is in `data/*.ts`, typed via `data/types.ts`. No DB or API yet. When adding a new entity, define its type first, then export an array of typed records.
+
+## Don't
+
+- Don't use `getServerSideProps` / `getStaticProps` / `_app` / `_document` — gone in App Router.
+- Don't reach for state libraries (Redux, Zustand, Jotai) at this scale.
+- Don't bundle `markdown-it` / `showdown` / `marked` — `react-markdown` + `remark-gfm` is the choice.
+- Don't add `tailwind.config.js` — Tailwind 4 is CSS-first via `@theme`.
+- Don't use `<img>` for project assets — use `next/image` with files in `public/`.
+- Don't write multi-paragraph JSDoc on components. Names + types do the explaining.
+
+## Commits
+
+- Conventional-ish, lowercase ("add", "fix", "update", "refactor").
+- One logical change per commit.
+- Skip the `Co-Authored-By` trailer unless explicitly asked.
