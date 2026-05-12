@@ -40,21 +40,26 @@ const TABS: Tab[] = [
     ),
   },
   {
-    href: "/student/sport",
-    label: "Sport",
+    href: "/student/pshare",
+    label: "P'share",
     icon: (
       <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 4 L12 20 M4 12 L20 12" />
+        <rect x="5" y="3" width="14" height="18" rx="1" />
+        <path d="M8 8h8M8 12h8M8 16h5" />
       </>
     ),
+  },
+  {
+    href: "/student/carelin",
+    label: "Carelin",
+    icon: <path d="M4 5h16v11h-7l-4 3v-3H4z" />,
   },
 ];
 
 export function StudentBottomNav() {
   const pathname = usePathname();
   return (
-    <nav className="border-line bg-cream grid shrink-0 grid-cols-4 border-t-[1.5px] pt-2 pb-3.5">
+    <nav className="border-line bg-cream grid shrink-0 grid-cols-5 border-t-[1.5px] pt-2 pb-3.5">
       {TABS.map((tab) => {
         const active =
           tab.href === "/student"
