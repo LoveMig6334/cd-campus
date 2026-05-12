@@ -3,6 +3,10 @@ import { seedHouses } from "./houses";
 import { seedRooms } from "./rooms";
 import { seedEvents } from "./events";
 import { seedSportResults } from "./sportResults";
+import { seedBookings } from "./bookings";
+import { seedProjects } from "./projects";
+import { seedPshare } from "./pshare";
+import { seedCarelin } from "./carelin";
 
 async function main(): Promise<void> {
   assertEnvAllows();
@@ -16,6 +20,10 @@ async function main(): Promise<void> {
   await seedRooms(db);
   await seedEvents(db, adminId);
   await seedSportResults(db, adminId);
+  await seedBookings(db, adminId);
+  await seedProjects(db, adminId);
+  await seedPshare(db, adminId);
+  await seedCarelin(db, adminId);
 
   console.log("Done.");
 }
