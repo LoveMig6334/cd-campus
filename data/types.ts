@@ -178,3 +178,63 @@ export type CarelinRequest = {
   status: "open" | "answered";
   reply?: CarelinReply;
 };
+
+/* ------------------------------------------------------------------ */
+/* Admin */
+/* ------------------------------------------------------------------ */
+
+export type AdminKpi = {
+  label: string;
+  th: string;
+  num: string;
+  delta: { kind: "up" | "down" | "flat"; text: string };
+};
+
+export type AdminEvent = {
+  time: string;
+  title: string;
+  tag: string;
+  /** Left-border color (CSS value or one of CATEGORY_COLOR keys) */
+  barColor: string;
+};
+
+export type AdminBookingRow = {
+  roomEn: string;
+  roomTh: string;
+  user: string;
+  klass: string;
+  start: string;
+  end: string;
+  status: "Confirmed" | "Pending" | "Review";
+};
+
+export type BigCalDay = {
+  num: number;
+  inMonth: boolean;
+  isToday?: boolean;
+  events?: BigCalEvent[];
+};
+
+export type BigCalEvent = {
+  title: string;
+  /** Color variant — "highlight" = yellow/ink (used for the briefing chip) */
+  variant: CalendarCategory | "highlight";
+};
+
+export type ScoreboardEntry = {
+  house: House;
+  nameEn: string;
+  nameTh: string;
+  rankSubtitle: string;
+  score: number;
+  stat: string;
+};
+
+export type SportResultRow = {
+  titleTh: string;
+  titleEn: string;
+  category: "Track" | "Team";
+  /** Houses ordered 1st → 4th */
+  placements: House[];
+  time: string;
+};
