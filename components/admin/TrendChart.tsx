@@ -1,11 +1,8 @@
-import {
-  ADMIN_TREND_MONTHS,
-  ADMIN_TREND_PATH,
-  ADMIN_TREND_POINTS,
-} from "@/supabase/seed/data/admin-overview";
+import type { TrendChartData } from "@/lib/queries/siteConfig";
 
-export function TrendChart() {
-  const lastIndex = ADMIN_TREND_POINTS.length - 1;
+export function TrendChart({ data }: { data: TrendChartData }) {
+  const { months, path, points } = data;
+  const lastIndex = points.length - 1;
   return (
     <>
       <div className="-mx-1.5 mt-1 h-[120px]">
@@ -25,15 +22,10 @@ export function TrendChart() {
             <line x1="0" y1="60" x2="600" y2="60" />
             <line x1="0" y1="90" x2="600" y2="90" />
           </g>
-          <path d={`${ADMIN_TREND_PATH} L600,120 L0,120 Z`} fill="url(#trendGrad)" />
-          <path
-            d={ADMIN_TREND_PATH}
-            stroke="#1E2EE4"
-            strokeWidth="2.5"
-            fill="none"
-          />
+          <path d={`${path} L600,120 L0,120 Z`} fill="url(#trendGrad)" />
+          <path d={path} stroke="#1E2EE4" strokeWidth="2.5" fill="none" />
           <g fill="#0A0A0A">
-            {ADMIN_TREND_POINTS.map((p, i) =>
+            {points.map((p, i) =>
               i === lastIndex ? (
                 <circle
                   key={i}
@@ -52,13 +44,11 @@ export function TrendChart() {
         </svg>
       </div>
       <div className="mt-1.5 flex justify-between font-mono text-[9px] text-mute-500">
-        {ADMIN_TREND_MONTHS.map((m, i) => (
+        {months.map((m, i) => (
           <span
             key={m}
             className={
-              i === ADMIN_TREND_MONTHS.length - 1
-                ? "font-semibold text-blue"
-                : ""
+              i === months.length - 1 ? "font-semibold text-blue" : ""
             }
           >
             {m}
