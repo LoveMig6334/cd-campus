@@ -146,7 +146,7 @@ export default async function EditEventPage({
           </label>
 
           <div className="flex items-center gap-3 md:col-span-2">
-            <Btn variant="primary">Save changes →</Btn>
+            <Btn type="submit" variant="primary">Save changes →</Btn>
             <button
               type="submit"
               formAction={deleteEvent}

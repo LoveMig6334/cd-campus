@@ -249,10 +249,7 @@ export async function getAdminMonthEventList(
   month: number, // 1-indexed
 ): Promise<AdminCalendarRow[]> {
   const db = await createClient();
-  const start = `${year}-${String(month).padStart(2, "0")}-01T00:00:00+07:00`;
-  const next = month === 12
-    ? `${year + 1}-01-01T00:00:00+07:00`
-    : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
+  const { start, next } = monthRange(year, month);
   const { data, error } = await db
     .from("events")
     .select("id, starts_at, title_th, title_en, tag, category, location, highlight")
