@@ -1,6 +1,5 @@
 import type {
   AdminKpi,
-  AdminTabItem,
   PortfolioAdminRow,
 } from "@/lib/types";
 
@@ -30,16 +29,6 @@ export const PORTFOLIO_KPIS: AdminKpi[] = [
     delta: { kind: "up", text: "▲ 1 added" },
   },
 ];
-
-export const PORTFOLIO_TABS: AdminTabItem[] = [
-  { id: "all", label: "All" },
-  { id: "published", label: "Published" },
-  { id: "review", label: "Under review" },
-  { id: "draft", label: "Draft" },
-  { id: "featured", label: "Featured" },
-];
-
-export const PORTFOLIO_ACTIVE_TAB = "all";
 
 const TAG_BLUE = { background: "var(--color-blue)" };
 const TAG_YELLOW = {

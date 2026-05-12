@@ -1,4 +1,4 @@
-import { CATEGORY_COLOR, type ScoreboardEntry, type SportResultRow } from "@/lib/types";
+import type { ScoreboardEntry, SportResultRow } from "@/lib/types";
 import type { CalendarEvent } from "@/lib/types";
 
 export const ADMIN_SCOREBOARD: ScoreboardEntry[] = [
@@ -95,10 +95,3 @@ export const ADMIN_SPORT_UPCOMING: CalendarEvent[] = [
   },
 ];
 
-/** Color used for placement-rank pills (rank → CSS color) */
-export const PLACEMENT_COLOR: Record<1 | 2 | 3 | 4, string> = {
-  1: CATEGORY_COLOR.academic,
-  2: CATEGORY_COLOR.sport,
-  3: CATEGORY_COLOR.tradition,
-  4: CATEGORY_COLOR.music,
-};

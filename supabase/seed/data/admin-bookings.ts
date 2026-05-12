@@ -1,9 +1,5 @@
 import type { AdminTodayBookingRow, GanttRoom } from "@/lib/types";
 
-export const ADMIN_BOOKING_DATE = "13 May 2026";
-
-export const GANTT_HOURS = ["08", "09", "10", "11", "12", "13", "14", "15", "16", "17"] as const;
-
 export const GANTT_ROOMS: GanttRoom[] = [
   {
     nameEn: "Music Room 1",
