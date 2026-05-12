@@ -238,3 +238,84 @@ export type SportResultRow = {
   placements: House[];
   time: string;
 };
+
+/* ------------------------------------------------------------------ */
+/* Admin Bookings (Gantt) */
+/* ------------------------------------------------------------------ */
+
+export type GanttBarVariant = "default" | "y" | "p" | "g" | "o";
+
+export type GanttBar = {
+  /** Display name in italic */
+  who: string;
+  /** Trailing meta line */
+  meta: string;
+  /** Left % within the cell (0–100) */
+  leftPct: number;
+  /** Width % within the cell (0–100) */
+  widthPct: number;
+  variant?: GanttBarVariant;
+};
+
+export type GanttRoom = {
+  nameEn: string;
+  nameTh: string;
+  bars: GanttBar[];
+};
+
+export type AdminTodayBookingRow = {
+  room: string;
+  user: string;
+  start: string;
+  end: string;
+  purpose: string;
+  status: "Confirmed" | "Pending" | "Review";
+};
+
+/* ------------------------------------------------------------------ */
+/* Admin Portfolio */
+/* ------------------------------------------------------------------ */
+
+export type PortfolioThumbIcon =
+  | "trend"
+  | "sun"
+  | "wave"
+  | "cube"
+  | "calendar"
+  | "beakers";
+
+export type PortfolioTagPill = {
+  label: string;
+  background: string;
+  /** Default white */
+  textColor?: string;
+};
+
+export type PortfolioAdminRow = {
+  thumb: { iconKey: PortfolioThumbIcon; bg?: string };
+  titleEn: string;
+  titleTh: string;
+  author: string;
+  klass: string;
+  tags: PortfolioTagPill[];
+  submitted: string;
+  status: "Published" | "Under Review" | "Draft";
+};
+
+/* ------------------------------------------------------------------ */
+/* Admin Carelin Desk */
+/* ------------------------------------------------------------------ */
+
+export type CarelinDeskRow = {
+  when: string;
+  requester: { name: string; studentId: string; klass: string };
+  title: string;
+  snippet: string;
+  status: "Open" | "Answered";
+};
+
+export type AdminTabItem = {
+  id: string;
+  label: string;
+  count?: number;
+};
