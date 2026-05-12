@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { AdminSearch } from "@/components/admin/AdminSearch";
 import { Btn } from "@/components/admin/Btn";
@@ -23,8 +24,12 @@ export default async function AdminPortfolio() {
           <>
             <AdminSearch placeholder="🔍  Search projects, authors…" />
             <Btn>Export ↓</Btn>
-            {/* + Add Project: deferred to Phase 5 — needs student submission flow design. */}
-            <Btn variant="primary">+ Add Project</Btn>
+            <Link
+              href="/admin/portfolio/new"
+              className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"
+            >
+              + Add Project
+            </Link>
           </>
         }
       />
