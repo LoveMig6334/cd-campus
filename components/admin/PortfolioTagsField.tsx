@@ -4,7 +4,10 @@ import { useState } from "react";
 import type { PortfolioTagPill } from "@/lib/types";
 import { TAG_SWATCHES, type TagSwatchId } from "@/lib/ui/portfolio";
 
-function pillFromSwatch(label: string, swatchId: TagSwatchId): PortfolioTagPill {
+function pillFromSwatch(
+  label: string,
+  swatchId: TagSwatchId,
+): PortfolioTagPill {
   const swatch = TAG_SWATCHES.find((s) => s.id === swatchId)!;
   return swatch.id === "yellow"
     ? {
@@ -17,8 +20,8 @@ function pillFromSwatch(label: string, swatchId: TagSwatchId): PortfolioTagPill 
 
 function swatchIdFromBackground(background: string): TagSwatchId {
   return (
-    (TAG_SWATCHES.find((s) => s.background === background)?.id as TagSwatchId) ??
-    "blue"
+    (TAG_SWATCHES.find((s) => s.background === background)
+      ?.id as TagSwatchId) ?? "blue"
   );
 }
 

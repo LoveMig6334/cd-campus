@@ -11,11 +11,16 @@ export const PORTFOLIO_TABS: AdminTabItem[] = [
 export const PORTFOLIO_ACTIVE_TAB = "all";
 
 export const TAG_SWATCHES = [
-  { id: "blue",   label: "Blue",   background: "var(--color-blue)"          },
-  { id: "yellow", label: "Yellow", background: "var(--color-yellow)",       textColor: "var(--color-ink)" },
-  { id: "green",  label: "Green",  background: "var(--color-house-green)"   },
-  { id: "purple", label: "Purple", background: "var(--color-house-purple)"  },
-  { id: "orange", label: "Orange", background: "var(--color-house-orange)"  },
+  { id: "blue", label: "Blue", background: "var(--color-blue)" },
+  {
+    id: "yellow",
+    label: "Yellow",
+    background: "var(--color-yellow)",
+    textColor: "var(--color-ink)",
+  },
+  { id: "green", label: "Green", background: "var(--color-house-green)" },
+  { id: "purple", label: "Purple", background: "var(--color-house-purple)" },
+  { id: "orange", label: "Orange", background: "var(--color-house-orange)" },
 ] as const;
 
 export type TagSwatchId = (typeof TAG_SWATCHES)[number]["id"];

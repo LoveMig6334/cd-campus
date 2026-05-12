@@ -35,7 +35,8 @@ export default async function EditProjectPage({
   const row = await getProjectById(id);
   if (!row) notFound();
 
-  const tags = ((row.tags as PortfolioTagPill[] | null) ?? []) as PortfolioTagPill[];
+  const tags = ((row.tags as PortfolioTagPill[] | null) ??
+    []) as PortfolioTagPill[];
 
   return (
     <>

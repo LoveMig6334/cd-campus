@@ -10,12 +10,12 @@ Phase 4 closed every remaining inert prototype button. Phase 5 splits into two c
 
 ## In scope
 
-| # (handoff) | Item | Surface |
-| --- | --- | --- |
-| 1 | Supabase Realtime | `/student/sport`, `/admin/carelin`, `/admin/bookings` |
-| 2 | Supabase Storage | P'share post header art + portfolio project thumbs |
-| 5 | Portfolio create-new flow | `/admin/portfolio/new` (admin-typed proxy) |
-| 7 | Portfolio tag editor | `/admin/portfolio/new` + `/admin/portfolio/[id]/edit` |
+| # (handoff) | Item                      | Surface                                               |
+| ----------- | ------------------------- | ----------------------------------------------------- |
+| 1           | Supabase Realtime         | `/student/sport`, `/admin/carelin`, `/admin/bookings` |
+| 2           | Supabase Storage          | P'share post header art + portfolio project thumbs    |
+| 5           | Portfolio create-new flow | `/admin/portfolio/new` (admin-typed proxy)            |
+| 7           | Portfolio tag editor      | `/admin/portfolio/new` + `/admin/portfolio/[id]/edit` |
 
 ## Out of scope (deferred to Phase 5b)
 
@@ -109,11 +109,11 @@ Behavior:
 
 ### Mount points
 
-| Page | tables | channelKey |
-| --- | --- | --- |
-| `app/student/sport/page.tsx` | `["sport_results"]` | `rt-sport` |
-| `app/admin/carelin/page.tsx` | `["carelin_requests"]` | `rt-carelin` |
-| `app/admin/bookings/page.tsx` | `["bookings"]` | `rt-bookings` |
+| Page                          | tables                 | channelKey    |
+| ----------------------------- | ---------------------- | ------------- |
+| `app/student/sport/page.tsx`  | `["sport_results"]`    | `rt-sport`    |
+| `app/admin/carelin/page.tsx`  | `["carelin_requests"]` | `rt-carelin`  |
+| `app/admin/bookings/page.tsx` | `["bookings"]`         | `rt-bookings` |
 
 Each page adds one line near its existing children: `<RealtimeRefresh tables={[...]} channelKey="..." />`.
 
@@ -227,11 +227,15 @@ Forms with file inputs need `encType="multipart/form-data"`. Next/React handles 
 
 ```ts
 export const TAG_SWATCHES = [
-  { id: "blue",   background: "var(--color-blue)"          },
-  { id: "yellow", background: "var(--color-yellow)",       textColor: "var(--color-ink)" },
-  { id: "green",  background: "var(--color-house-green)"   },
-  { id: "purple", background: "var(--color-house-purple)"  },
-  { id: "orange", background: "var(--color-house-orange)"  },
+  { id: "blue", background: "var(--color-blue)" },
+  {
+    id: "yellow",
+    background: "var(--color-yellow)",
+    textColor: "var(--color-ink)",
+  },
+  { id: "green", background: "var(--color-house-green)" },
+  { id: "purple", background: "var(--color-house-purple)" },
+  { id: "orange", background: "var(--color-house-orange)" },
 ] as const;
 export type TagSwatchId = (typeof TAG_SWATCHES)[number]["id"];
 ```
@@ -270,14 +274,14 @@ Carried verbatim from Phase 4 — no new signature types in 5a:
 
 ## Error handling
 
-| Failure | Behavior |
-| --- | --- |
+| Failure                                | Behavior                                                                                                                         |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Storage upload after row INSERT/UPDATE | Action throws → Next error boundary. Row stays in table without an image; admin can edit + re-upload. No transactional rollback. |
-| Storage delete during row delete | Fire-and-forget. Row is gone; orphan file in bucket is acceptable for prototype. |
-| Realtime channel subscription fails | Silent. Page keeps rendering with stale data; manual refresh works. |
-| Realtime publication missing a table | Channel subscribes but receives zero events. Caught at manual-test time (exit checklist). |
-| Tag JSON malformed | Server-side `JSON.parse` throws → Next error boundary. Client always emits valid JSON. |
-| Image MIME / size invalid | Action early-returns silently. Client-side `accept` shadows the common case. |
+| Storage delete during row delete       | Fire-and-forget. Row is gone; orphan file in bucket is acceptable for prototype.                                                 |
+| Realtime channel subscription fails    | Silent. Page keeps rendering with stale data; manual refresh works.                                                              |
+| Realtime publication missing a table   | Channel subscribes but receives zero events. Caught at manual-test time (exit checklist).                                        |
+| Tag JSON malformed                     | Server-side `JSON.parse` throws → Next error boundary. Client always emits valid JSON.                                           |
+| Image MIME / size invalid              | Action early-returns silently. Client-side `accept` shadows the common case.                                                     |
 
 ## Testing approach
 

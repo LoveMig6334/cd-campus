@@ -17,6 +17,7 @@
 ## File structure summary
 
 **New files (5):**
+
 - `supabase/migrations/0004_phase5a_storage_realtime.sql` — columns, bucket, RLS, Realtime publication.
 - `components/RealtimeRefresh.tsx` — shared `'use client'` leaf, mounted in 3 places.
 - `lib/storage.ts` — `getAssetUrl(path)` helper (sync, no client).
@@ -24,6 +25,7 @@
 - `app/admin/portfolio/new/page.tsx` — admin-typed create form.
 
 **Modified files (~14):**
+
 - `next.config.ts` — `images.remotePatterns` for Supabase storage URLs.
 - `lib/supabase/database.types.ts` — regenerated.
 - `lib/ui/portfolio.ts` — add `TAG_SWATCHES` + `TagSwatchId`.
@@ -44,6 +46,7 @@
 ## Task 1 — Migration + database types
 
 **Files:**
+
 - Create: `supabase/migrations/0004_phase5a_storage_realtime.sql`
 - Modify (regenerated): `lib/supabase/database.types.ts`
 
@@ -122,6 +125,7 @@ git commit -m "migration: phase 5a — image columns, assets bucket, realtime pu
 ## Task 2 — RealtimeRefresh shared client leaf
 
 **Files:**
+
 - Create: `components/RealtimeRefresh.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -199,6 +203,7 @@ git commit -m "add: RealtimeRefresh shared client leaf"
 ## Task 3 — Mount RealtimeRefresh on `/student/sport`
 
 **Files:**
+
 - Modify: `app/student/sport/page.tsx`
 
 - [ ] **Step 1: Add import + mount**
@@ -219,7 +224,7 @@ export default async function StudentSport() {
     <>
       <RealtimeRefresh tables={["sport_results"]} channelKey="rt-sport" />
       <PageHead
-        /* ... unchanged */
+      /* ... unchanged */
       />
       {/* ... rest unchanged */}
     </>
@@ -232,6 +237,7 @@ export default async function StudentSport() {
 Run: `npm run dev`
 
 Steps:
+
 1. Open `/student/sport` in browser tab A.
 2. As an admin in tab B (or via Supabase dashboard SQL editor), `update sport_results set <some field> = <new value> where id = <some id>`.
 3. Within ~1 second tab A reflects the change without manual refresh.
@@ -250,6 +256,7 @@ git commit -m "add: realtime refresh on /student/sport"
 ## Task 4 — Mount RealtimeRefresh on `/admin/carelin`
 
 **Files:**
+
 - Modify: `app/admin/carelin/page.tsx`
 
 - [ ] **Step 1: Add import + mount**
@@ -266,7 +273,7 @@ export default async function AdminCarelin() {
     <>
       <RealtimeRefresh tables={["carelin_requests"]} channelKey="rt-carelin" />
       <AdminTopbar
-        /* ... unchanged */
+      /* ... unchanged */
       />
       {/* ... rest unchanged */}
     </>
@@ -277,6 +284,7 @@ export default async function AdminCarelin() {
 - [ ] **Step 2: Manual smoke**
 
 Steps:
+
 1. Open `/admin/carelin` in tab A (signed in as admin).
 2. In tab B (incognito, anon), submit a Carelin request via `/student/carelin/new`.
 3. Within ~1 second tab A's desk table updates without manual refresh.
@@ -295,6 +303,7 @@ git commit -m "add: realtime refresh on /admin/carelin"
 ## Task 5 — Mount RealtimeRefresh on `/admin/bookings`
 
 **Files:**
+
 - Modify: `app/admin/bookings/page.tsx`
 
 - [ ] **Step 1: Add import + mount**
@@ -305,13 +314,17 @@ Modify `app/admin/bookings/page.tsx`:
 import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 // ... existing imports
 
-export default async function AdminBookings({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
+export default async function AdminBookings({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string }>;
+}) {
   // ... existing logic ...
   return (
     <>
       <RealtimeRefresh tables={["bookings"]} channelKey="rt-bookings" />
       <AdminTopbar
-        /* ... unchanged */
+      /* ... unchanged */
       />
       {/* ... rest unchanged */}
     </>
@@ -322,6 +335,7 @@ export default async function AdminBookings({ searchParams }: { searchParams: Pr
 - [ ] **Step 2: Manual smoke**
 
 Steps:
+
 1. Open `/admin/bookings` in tab A.
 2. In tab B (incognito), book a room anonymously via `/student/booking` (any room, today's date, midday).
 3. Within ~1 second tab A's Gantt + today's-bookings table reflect the new row.
@@ -338,6 +352,7 @@ git commit -m "add: realtime refresh on /admin/bookings"
 ## Task 6 — Storage helper + next.config images
 
 **Files:**
+
 - Create: `lib/storage.ts`
 - Modify: `next.config.ts`
 
@@ -404,6 +419,7 @@ git commit -m "add: getAssetUrl helper + next images remotePatterns for supabase
 ## Task 7 — P'share image upload (editor field, save/publish, delete cleanup)
 
 **Files:**
+
 - Modify: `components/admin/PshareEditor.tsx`
 - Modify: `app/admin/pshare/actions.ts`
 - Modify: `app/admin/pshare/[id]/edit/page.tsx`
@@ -699,6 +715,7 @@ git commit -m "add: pshare image upload + storage cleanup on delete"
 ## Task 8 — P'share image rendering in the reader
 
 **Files:**
+
 - Modify: `app/student/pshare/[slug]/page.tsx`
 
 - [ ] **Step 1: Conditionally render image hero**
@@ -822,6 +839,7 @@ git commit -m "add: pshare reader renders header image when present"
 ## Task 9 — TAG_SWATCHES + PortfolioTagsField client leaf
 
 **Files:**
+
 - Modify: `lib/ui/portfolio.ts`
 - Create: `components/admin/PortfolioTagsField.tsx`
 
@@ -843,11 +861,16 @@ export const PORTFOLIO_TABS: AdminTabItem[] = [
 export const PORTFOLIO_ACTIVE_TAB = "all";
 
 export const TAG_SWATCHES = [
-  { id: "blue",   label: "Blue",   background: "var(--color-blue)"          },
-  { id: "yellow", label: "Yellow", background: "var(--color-yellow)",       textColor: "var(--color-ink)" },
-  { id: "green",  label: "Green",  background: "var(--color-house-green)"   },
-  { id: "purple", label: "Purple", background: "var(--color-house-purple)"  },
-  { id: "orange", label: "Orange", background: "var(--color-house-orange)"  },
+  { id: "blue", label: "Blue", background: "var(--color-blue)" },
+  {
+    id: "yellow",
+    label: "Yellow",
+    background: "var(--color-yellow)",
+    textColor: "var(--color-ink)",
+  },
+  { id: "green", label: "Green", background: "var(--color-house-green)" },
+  { id: "purple", label: "Purple", background: "var(--color-house-purple)" },
+  { id: "orange", label: "Orange", background: "var(--color-house-orange)" },
 ] as const;
 
 export type TagSwatchId = (typeof TAG_SWATCHES)[number]["id"];
@@ -887,7 +910,10 @@ import { useState } from "react";
 import type { PortfolioTagPill } from "@/lib/types";
 import { TAG_SWATCHES, type TagSwatchId } from "@/lib/ui/portfolio";
 
-function pillFromSwatch(label: string, swatchId: TagSwatchId): PortfolioTagPill {
+function pillFromSwatch(
+  label: string,
+  swatchId: TagSwatchId,
+): PortfolioTagPill {
   const swatch = TAG_SWATCHES.find((s) => s.id === swatchId)!;
   return swatch.id === "yellow"
     ? {
@@ -900,8 +926,8 @@ function pillFromSwatch(label: string, swatchId: TagSwatchId): PortfolioTagPill 
 
 function swatchIdFromBackground(background: string): TagSwatchId {
   return (
-    (TAG_SWATCHES.find((s) => s.background === background)?.id as TagSwatchId) ??
-    "blue"
+    (TAG_SWATCHES.find((s) => s.background === background)
+      ?.id as TagSwatchId) ?? "blue"
   );
 }
 
@@ -1010,6 +1036,7 @@ git commit -m "add: TAG_SWATCHES + PortfolioTagsField tag editor"
 ## Task 10 — Portfolio edit: file input + tag editor + action updates
 
 **Files:**
+
 - Modify: `app/admin/portfolio/[id]/edit/page.tsx`
 - Modify: `app/admin/portfolio/actions.ts`
 
@@ -1258,7 +1285,8 @@ export default async function EditProjectPage({
   const row = await getProjectById(id);
   if (!row) notFound();
 
-  const tags = ((row.tags as PortfolioTagPill[] | null) ?? []) as PortfolioTagPill[];
+  const tags = ((row.tags as PortfolioTagPill[] | null) ??
+    []) as PortfolioTagPill[];
 
   return (
     <>
@@ -1482,6 +1510,7 @@ git commit -m "add: portfolio edit — tag editor + image upload + storage clean
 ## Task 11 — Portfolio admin table thumbnails
 
 **Files:**
+
 - Modify: `lib/queries/projects.ts`
 - Modify: `lib/types.ts`
 - Modify: `components/admin/PortfolioAdminTable.tsx`
@@ -1591,6 +1620,7 @@ git commit -m "add: portfolio admin table renders uploaded thumbnails"
 ## Task 12 — Portfolio create page + createProject wiring
 
 **Files:**
+
 - Create: `app/admin/portfolio/new/page.tsx`
 - Modify: `app/admin/portfolio/page.tsx`
 
