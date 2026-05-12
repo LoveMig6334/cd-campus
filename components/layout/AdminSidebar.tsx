@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { signOut } from "@/app/auth/signout/actions";
 
 type NavItem = {
   href: string;
@@ -170,6 +171,14 @@ export function AdminSidebar() {
           );
         })}
       </nav>
+      <form action={signOut} className="mt-3 border-t-[1.5px] border-line pt-3">
+        <button
+          type="submit"
+          className="w-full px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-500 transition-colors hover:text-house-pink"
+        >
+          Sign out · ออกจากระบบ →
+        </button>
+      </form>
     </aside>
   );
 }
