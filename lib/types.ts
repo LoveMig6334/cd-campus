@@ -231,6 +231,7 @@ export type ScoreboardEntry = {
 };
 
 export type SportResultRow = {
+  id?: string;
   titleTh: string;
   titleEn: string;
   category: "Track" | "Team";

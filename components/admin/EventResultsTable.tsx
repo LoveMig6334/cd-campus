@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PLACEMENT_COLOR } from "@/lib/ui/admin";
 import type { House, SportResultRow } from "@/lib/types";
 
@@ -21,6 +22,7 @@ export function EventResultsTable({ rows }: { rows: SportResultRow[] }) {
             "3rd",
             "4th",
             "Time",
+            "",
           ].map((h) => (
             <th
               key={h}
@@ -65,6 +67,16 @@ export function EventResultsTable({ rows }: { rows: SportResultRow[] }) {
                 );
               })}
               <td className={td}>{row.time}</td>
+              <td className={td}>
+                {row.id && (
+                  <Link
+                    href={`/admin/sport/result/${row.id}/edit`}
+                    className="font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 hover:text-ink"
+                  >
+                    Edit
+                  </Link>
+                )}
+              </td>
             </tr>
           );
         })}

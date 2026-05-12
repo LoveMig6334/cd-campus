@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
@@ -24,7 +25,12 @@ export default async function AdminSport() {
           <>
             <LiveIndicator label="Broadcasting live" />
             <Btn>Export</Btn>
-            <Btn variant="primary">+ Add event</Btn>
+            <Link
+              href="/admin/sport/result/new"
+              className="inline-block border-[1.5px] border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-all bg-blue text-white [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep"
+            >
+              + Record result
+            </Link>
           </>
         }
       />
