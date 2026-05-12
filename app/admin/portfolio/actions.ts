@@ -4,12 +4,42 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
+import { normalizeTags } from "@/lib/ui/portfolio";
 
 const PROJECT_STATUSES = ["Published", "Under Review", "Draft"] as const;
 type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
 function isProjectStatus(v: string): v is ProjectStatus {
   return (PROJECT_STATUSES as readonly string[]).includes(v);
+}
+
+const IMAGE_MIMES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+
+function extFromMime(mime: string): string {
+  if (mime === "image/jpeg") return "jpg";
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  return "";
+}
+
+async function uploadProjectImage(
+  formData: FormData,
+  projectId: string,
+): Promise<string | null> {
+  const file = formData.get("image");
+  if (!(file instanceof File) || file.size === 0) return null;
+  if (!IMAGE_MIMES.has(file.type)) return null;
+  if (file.size > IMAGE_MAX_BYTES) return null;
+
+  const ext = extFromMime(file.type);
+  const path = `portfolio/${projectId}.${ext}`;
+  const db = await createClient();
+  const { error } = await db.storage
+    .from("assets")
+    .upload(path, file, { upsert: true, contentType: file.type });
+  if (error) throw new Error(`project upload: ${error.message}`);
+  return path;
 }
 
 export async function setProjectStatus(formData: FormData): Promise<void> {
@@ -37,6 +67,7 @@ type ProjectFields = {
   thumb_bg: string | null;
   status: ProjectStatus;
   submitted_at: string | null;
+  tags: ReturnType<typeof normalizeTags>;
 };
 
 function parseProject(
@@ -57,6 +88,17 @@ function parseProject(
   const submitted_at_raw = String(formData.get("submitted_at") ?? "").trim();
   const submitted_at = submitted_at_raw || null;
 
+  const tagsRaw = String(formData.get("tags") ?? "");
+  let tagsParsed: unknown = [];
+  if (tagsRaw) {
+    try {
+      tagsParsed = JSON.parse(tagsRaw);
+    } catch {
+      tagsParsed = [];
+    }
+  }
+  const tags = normalizeTags(tagsParsed);
+
   return {
     ok: true,
     data: {
@@ -69,8 +111,36 @@ function parseProject(
       thumb_bg,
       status,
       submitted_at,
+      tags,
     },
   };
+}
+
+export async function createProject(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const parsed = parseProject(formData);
+  if (!parsed.ok) return;
+
+  const db = await createClient();
+  const { data, error } = await db
+    .from("projects")
+    .insert(parsed.data)
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+
+  const path = await uploadProjectImage(formData, data.id);
+  if (path) {
+    const { error: updErr } = await db
+      .from("projects")
+      .update({ image_path: path })
+      .eq("id", data.id);
+    if (updErr) throw new Error(updErr.message);
+  }
+
+  revalidatePath("/admin/portfolio");
+  revalidatePath("/student/portfolio");
+  redirect("/admin/portfolio");
 }
 
 export async function updateProject(formData: FormData): Promise<void> {
@@ -84,6 +154,15 @@ export async function updateProject(formData: FormData): Promise<void> {
   const { error } = await db.from("projects").update(parsed.data).eq("id", id);
   if (error) throw new Error(error.message);
 
+  const path = await uploadProjectImage(formData, id);
+  if (path) {
+    const { error: updErr } = await db
+      .from("projects")
+      .update({ image_path: path })
+      .eq("id", id);
+    if (updErr) throw new Error(updErr.message);
+  }
+
   revalidatePath("/admin/portfolio");
   revalidatePath("/student/portfolio");
   redirect("/admin/portfolio");
@@ -95,8 +174,19 @@ export async function deleteProject(formData: FormData): Promise<void> {
   if (!id) return;
 
   const db = await createClient();
+
+  const { data: row } = await db
+    .from("projects")
+    .select("image_path")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await db.from("projects").delete().eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (row?.image_path) {
+    await db.storage.from("assets").remove([row.image_path]);
+  }
 
   revalidatePath("/admin/portfolio");
   revalidatePath("/student/portfolio");

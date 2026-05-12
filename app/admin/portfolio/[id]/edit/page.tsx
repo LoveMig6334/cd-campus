@@ -1,9 +1,13 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
+import { PortfolioTagsField } from "@/components/admin/PortfolioTagsField";
 import { getProjectById } from "@/lib/queries/projects";
+import { getAssetUrl } from "@/lib/storage";
+import type { PortfolioTagPill } from "@/lib/types";
 import { deleteProject, updateProject } from "../../actions";
 
 const STATUS_OPTIONS = [
@@ -31,6 +35,8 @@ export default async function EditProjectPage({
   const row = await getProjectById(id);
   if (!row) notFound();
 
+  const tags = ((row.tags as PortfolioTagPill[] | null) ?? []) as PortfolioTagPill[];
+
   return (
     <>
       <AdminTopbar
@@ -49,6 +55,7 @@ export default async function EditProjectPage({
         <CardTitle th="รายละเอียดโปรเจกต์" en="Project details" />
         <form
           action={updateProject}
+          encType="multipart/form-data"
           className="grid grid-cols-1 gap-3 md:grid-cols-2"
         >
           <input type="hidden" name="id" value={row.id} />
@@ -179,6 +186,36 @@ export default async function EditProjectPage({
             />
           </label>
 
+          <div className="md:col-span-2">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
+              Project thumbnail (optional, jpg/png/webp, ≤5 MB)
+            </span>
+            {row.image_path && (
+              <div className="border-line bg-paper mt-1 grid h-20 w-20 place-items-center overflow-hidden border-[1.5px]">
+                <Image
+                  src={getAssetUrl(row.image_path)}
+                  alt=""
+                  width={80}
+                  height={80}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            )}
+            <input
+              name="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[13px]"
+            />
+            {row.image_path && (
+              <p className="text-mute-500 mt-1 font-mono text-[10px]">
+                Leave empty to keep current image.
+              </p>
+            )}
+          </div>
+
+          <PortfolioTagsField initialTags={tags} />
+
           <div className="flex items-center gap-3 md:col-span-2">
             <Btn type="submit" variant="primary">
               Save project →
@@ -191,10 +228,6 @@ export default async function EditProjectPage({
               Delete project
             </button>
           </div>
-          <p className="text-mute-500 font-mono text-[10px] md:col-span-2">
-            Tags are managed in Phase 5 — existing tags are preserved by this
-            form.
-          </p>
         </form>
       </Card>
     </>
