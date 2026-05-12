@@ -2078,6 +2078,755 @@
         border: 1.5px solid var(--ink);
       }
 
+      /* ============== P'SHARE N'SURE ============== */
+      .pshare-blurb,
+      .carelin-blurb {
+        background: var(--white);
+        border: 1.5px solid var(--line);
+        padding: 12px 14px;
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: var(--gray-700);
+        margin-bottom: 14px;
+        position: relative;
+        box-shadow: 3px 3px 0 var(--yellow);
+      }
+      .carelin-blurb {
+        box-shadow: 3px 3px 0 var(--house-pink);
+      }
+
+      .tag-chip-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .tag-chip {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+        padding: 5px 10px;
+        border: 1.2px solid var(--line);
+        border-radius: 30px;
+        background: var(--white);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .tag-chip.is-active {
+        background: var(--ink);
+        color: var(--yellow);
+      }
+
+      .pshare-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .pshare-card {
+        position: relative;
+        display: grid;
+        grid-template-columns: 84px 1fr;
+        background: var(--white);
+        border: 1.5px solid var(--line);
+        overflow: hidden;
+        cursor: pointer;
+        transition:
+          transform 0.18s,
+          box-shadow 0.18s;
+      }
+      .pshare-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0 var(--blue);
+      }
+      .pshare-card__art {
+        position: relative;
+        background: var(--cream);
+        display: grid;
+        place-items: center;
+      }
+      .pshare-card__art::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+          circle,
+          rgba(10, 10, 10, 0.45) 1px,
+          transparent 1.4px
+        );
+        background-size: 6px 6px;
+        opacity: 0.4;
+      }
+      .pshare-card__num {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 36px;
+        line-height: 1;
+        color: var(--ink);
+        position: relative;
+        z-index: 1;
+      }
+      .pshare-card__body {
+        padding: 12px 14px 12px;
+        min-width: 0;
+      }
+      .pshare-card__title {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1.15;
+      }
+      .pshare-card__snip {
+        font-size: 12px;
+        color: var(--gray-700);
+        line-height: 1.45;
+        margin-top: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .pshare-card__foot {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--gray-500);
+        letter-spacing: 0.06em;
+      }
+      .pshare-card__author {
+        color: var(--blue);
+        font-weight: 500;
+      }
+      .pshare-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 6px;
+      }
+      .pshare-tag {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.04em;
+        padding: 2px 6px;
+        background: var(--cream);
+        border: 1px solid var(--ink);
+        color: var(--ink);
+      }
+
+      /* P'share reader */
+      .reader-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 6px 10px;
+        border: 1.2px solid var(--ink);
+        background: var(--white);
+        margin-bottom: 14px;
+      }
+      .reader-meta {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .reader-date {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--gray-500);
+        letter-spacing: 0.08em;
+        margin-left: auto;
+      }
+      .reader-title {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 30px;
+        line-height: 1.05;
+        margin-bottom: 12px;
+      }
+      .reader-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: var(--white);
+        border: 1.2px solid var(--ink);
+        margin-bottom: 16px;
+      }
+      .reader-author__avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--blue);
+        color: var(--yellow);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 17px;
+        border: 1.5px solid var(--ink);
+        flex-shrink: 0;
+      }
+      .reader-author__name {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 15px;
+      }
+      .reader-author__role {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--gray-500);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
+      .reader-prose {
+        font-size: 13.5px;
+        line-height: 1.65;
+        color: var(--ink);
+      }
+      .reader-prose h2 {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 21px;
+        font-weight: 400;
+        margin: 18px 0 6px;
+        color: var(--blue);
+      }
+      .reader-prose p {
+        margin-bottom: 10px;
+      }
+      .reader-prose ul,
+      .reader-prose ol {
+        margin: 0 0 12px 22px;
+      }
+      .reader-prose li {
+        margin-bottom: 4px;
+      }
+      .reader-prose blockquote {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 18px;
+        line-height: 1.35;
+        padding: 10px 14px;
+        border-left: 3px solid var(--blue);
+        background: var(--white);
+        margin: 14px 0;
+        color: var(--gray-700);
+      }
+      .reader-prose strong {
+        color: var(--blue);
+      }
+      .reader-foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        padding: 12px 14px;
+        background: var(--white);
+        border: 1.5px solid var(--ink);
+        box-shadow: 3px 3px 0 var(--yellow);
+      }
+      .reader-claps {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--gray-700);
+      }
+      .reader-clap-btn {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        background: var(--blue);
+        color: var(--white);
+        padding: 7px 12px;
+        border: 1.2px solid var(--ink);
+      }
+
+      /* ============== CD CARELIN — STUDENT ============== */
+      .carelin-cta {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--house-pink);
+        color: var(--white);
+        border: 1.5px solid var(--line);
+        padding: 14px 16px;
+        text-align: left;
+        margin-bottom: 14px;
+        box-shadow: 4px 4px 0 var(--ink);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .carelin-cta:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--ink);
+      }
+      .carelin-cta__plus {
+        width: 32px;
+        height: 32px;
+        background: var(--white);
+        color: var(--house-pink);
+        border: 1.5px solid var(--ink);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 26px;
+        line-height: 1;
+      }
+      .carelin-cta__label {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 19px;
+        line-height: 1.05;
+      }
+      .carelin-cta__label small {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-style: normal;
+        color: var(--yellow);
+        margin-top: 2px;
+      }
+
+      .carelin-form {
+        background: var(--white);
+        border: 1.5px solid var(--ink);
+        padding: 14px;
+        margin-bottom: 16px;
+        position: relative;
+      }
+      .carelin-form::before {
+        content: "REQUEST";
+        position: absolute;
+        top: -10px;
+        left: 12px;
+        background: var(--ink);
+        color: var(--yellow);
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        padding: 3px 8px;
+      }
+      .carelin-form__row {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 8px;
+      }
+      .carelin-form__field {
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+      }
+      .carelin-form__field label {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gray-500);
+        margin-bottom: 4px;
+      }
+      .carelin-form__field input,
+      .carelin-form__field textarea {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        background: var(--cream);
+        border: 1.2px solid var(--ink);
+        padding: 8px 10px;
+        color: var(--ink);
+        width: 100%;
+      }
+      .carelin-form__field--id input {
+        font-family: var(--font-mono);
+        letter-spacing: 0.18em;
+        text-align: center;
+      }
+      .carelin-form__field input:focus,
+      .carelin-form__field textarea:focus {
+        outline: 2px solid var(--blue);
+        outline-offset: -1px;
+        background: var(--white);
+      }
+      .carelin-form__hint {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--gray-500);
+        letter-spacing: 0.08em;
+        margin: 4px 0 10px;
+      }
+      .carelin-form__actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .carelin-cancel {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 9px 14px;
+        border: 1.2px solid var(--ink);
+        background: var(--white);
+      }
+      .carelin-post {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 15px;
+        padding: 9px 18px;
+        background: var(--blue);
+        color: var(--white);
+        border: 1.2px solid var(--ink);
+        box-shadow: 3px 3px 0 var(--ink);
+      }
+      .carelin-post:disabled {
+        background: var(--gray-200);
+        color: var(--gray-500);
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
+      .carelin-card {
+        background: var(--white);
+        border: 1.5px solid var(--line);
+        padding: 12px 14px 14px;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .carelin-card__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .carelin-card__title {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1.2;
+        flex: 1;
+      }
+      .carelin-card__body {
+        font-size: 12.5px;
+        color: var(--gray-700);
+        line-height: 1.5;
+        margin-bottom: 8px;
+      }
+      .carelin-card__meta {
+        display: flex;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--gray-500);
+        letter-spacing: 0.06em;
+      }
+      .carelin-card__who {
+        color: var(--blue);
+        font-weight: 500;
+      }
+      .carelin-status {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 7px;
+        border: 1px solid var(--ink);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .carelin-status--open {
+        background: var(--yellow);
+        color: var(--ink);
+      }
+      .carelin-status--answered {
+        background: var(--house-green);
+        color: var(--white);
+        border-color: var(--house-green);
+      }
+      .carelin-reply-toggle {
+        margin-top: 10px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--blue);
+        padding: 4px 0;
+        border-top: 1px dashed var(--gray-200);
+        width: 100%;
+        text-align: left;
+      }
+      .carelin-reply {
+        margin-top: 10px;
+        background: var(--cream);
+        border: 1px dashed var(--ink);
+        padding: 10px 12px;
+      }
+      .carelin-reply__head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .carelin-reply__avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--blue);
+        color: var(--yellow);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 14px;
+        border: 1.2px solid var(--ink);
+      }
+      .carelin-reply__name {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 13px;
+      }
+      .carelin-reply__when {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        color: var(--gray-500);
+        letter-spacing: 0.08em;
+      }
+      .carelin-reply__body {
+        font-size: 12.5px;
+        color: var(--ink);
+        line-height: 1.5;
+      }
+
+      /* ============== P'SHARE STUDIO — ADMIN ============== */
+      .studio-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+      .studio-saved {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--gray-500);
+        letter-spacing: 0.08em;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .studio-saved__dot {
+        width: 6px;
+        height: 6px;
+        background: var(--house-green);
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .studio-field {
+        margin-bottom: 14px;
+      }
+      .studio-field label {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--gray-500);
+        margin-bottom: 5px;
+      }
+      .studio-input {
+        width: 100%;
+        border: 1.5px solid var(--line);
+        background: var(--cream);
+        padding: 10px 12px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .studio-input:focus {
+        outline: 2px solid var(--blue);
+        outline-offset: -1px;
+        background: var(--white);
+      }
+      .studio-tag-preview {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+      }
+      .studio-editor {
+        border: 1.5px solid var(--ink);
+        background: var(--white);
+        display: flex;
+        flex-direction: column;
+      }
+      .studio-editor__bar {
+        display: flex;
+        gap: 2px;
+        background: var(--cream);
+        border-bottom: 1.5px solid var(--ink);
+        padding: 6px 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .studio-editor__bar button {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        padding: 5px 9px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--ink);
+        cursor: pointer;
+        min-width: 28px;
+      }
+      .studio-editor__bar button:hover {
+        background: var(--white);
+        border-color: var(--ink);
+      }
+      .studio-editor__sep {
+        width: 1px;
+        height: 18px;
+        background: var(--gray-300);
+        margin: 0 4px;
+      }
+      .studio-textarea {
+        width: 100%;
+        min-height: 320px;
+        border: none;
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        line-height: 1.6;
+        padding: 14px 16px;
+        background: var(--white);
+        color: var(--ink);
+        resize: vertical;
+      }
+      .studio-textarea:focus {
+        outline: none;
+        background: var(--cream);
+      }
+      .studio-editor__foot {
+        display: flex;
+        justify-content: space-between;
+        background: var(--cream);
+        border-top: 1.5px solid var(--ink);
+        padding: 6px 12px;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--gray-500);
+        letter-spacing: 0.08em;
+      }
+      .studio-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 16px;
+      }
+
+      .studio-search input {
+        width: 100%;
+        border: 1.5px solid var(--line);
+        background: var(--cream);
+        padding: 9px 12px;
+        font-family: var(--font-sans);
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+      .studio-search input:focus {
+        outline: 2px solid var(--blue);
+        outline-offset: -1px;
+        background: var(--white);
+      }
+      .studio-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 560px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .studio-row {
+        padding: 10px 12px;
+        border: 1.2px solid var(--line);
+        background: var(--white);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .studio-row:hover {
+        background: var(--cream);
+      }
+      .studio-row.is-active {
+        border-color: var(--blue);
+        border-width: 1.5px;
+        background: var(--cream);
+        box-shadow: 3px 3px 0 var(--blue);
+      }
+      .studio-row__title {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 16px;
+        line-height: 1.15;
+      }
+      .studio-row__tags {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-top: 5px;
+      }
+      .studio-row__foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--gray-500);
+        letter-spacing: 0.06em;
+      }
+
+      /* ============== CARELIN DESK — ADMIN ============== */
+      .carelin-tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 14px;
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .carelin-tab {
+        padding: 9px 14px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gray-500);
+        border: 1.5px solid transparent;
+        border-bottom: none;
+        margin-bottom: -1.5px;
+        cursor: pointer;
+        background: transparent;
+      }
+      .carelin-tab small {
+        margin-left: 4px;
+        font-size: 10px;
+        letter-spacing: 0.04em;
+      }
+      .carelin-tab.is-active {
+        background: var(--white);
+        color: var(--ink);
+        border-color: var(--ink);
+      }
+
       @media (max-width: 1100px) {
         .admin-layout {
           grid-template-columns: 220px 1fr;
@@ -2090,6 +2839,9 @@
         }
         .scoreboard-row {
           grid-template-columns: repeat(2, 1fr);
+        }
+        .studio-grid {
+          grid-template-columns: 1fr;
         }
       }
       @media (max-width: 720px) {
@@ -2150,8 +2902,8 @@
             <h1 class="page-intro__title">Hello, Chitralada.</h1>
             <p class="page-intro__sub">
               A pocket-sized companion for the school day — bookings, the
-              sport-day scoreboard, and your seniors' work, all under one blue
-              banner.
+              sport-day scoreboard, P'share guides from your seniors, and the
+              CD Carelin care line, all under one blue banner.
             </p>
           </div>
           <div class="page-intro__chitralada">
@@ -2404,6 +3156,82 @@
                     </div>
                     <div class="menu-tile__banner">
                       Portfolio<small>รุ่นพี่ · Alumni</small>
+                    </div>
+                  </div>
+
+                  <div class="menu-tile" data-nav="pshare">
+                    <span class="menu-tile__star menu-tile__star--tr"
+                      ><svg
+                        viewBox="0 0 24 24"
+                        fill="#1E2EE4"
+                        stroke="#0A0A0A"
+                        stroke-width="1"
+                      >
+                        <path
+                          d="M12 0 L13.5 9 L24 12 L13.5 15 L12 24 L10.5 15 L0 12 L10.5 9 Z"
+                        /></svg
+                    ></span>
+                    <div class="menu-tile__art halftone-bl">
+                      <div class="menu-tile__icon">
+                        <svg
+                          viewBox="0 0 64 64"
+                          fill="none"
+                          stroke="#0A0A0A"
+                          stroke-width="2.5"
+                        >
+                          <path d="M8 16 L32 12 L32 54 L8 50 Z" fill="#FFF" />
+                          <path
+                            d="M56 16 L32 12 L32 54 L56 50 Z"
+                            fill="#F7E33A"
+                          />
+                          <line x1="32" y1="12" x2="32" y2="54" />
+                          <circle cx="50" cy="22" r="3.5" fill="#1E2EE4" />
+                          <path
+                            d="M50 22 L46 16 M50 22 L56 18"
+                            stroke="#1E2EE4"
+                            stroke-width="2.5"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="menu-tile__banner">
+                      P'share<small>พี่แชร์ น้องชัวร์</small>
+                    </div>
+                  </div>
+
+                  <div class="menu-tile" data-nav="carelin">
+                    <span class="menu-tile__star menu-tile__star--tl"
+                      ><svg
+                        viewBox="0 0 24 24"
+                        fill="#E94D8F"
+                        stroke="#0A0A0A"
+                        stroke-width="1"
+                      >
+                        <path
+                          d="M12 0 L13.5 9 L24 12 L13.5 15 L12 24 L10.5 15 L0 12 L10.5 9 Z"
+                        /></svg
+                    ></span>
+                    <div class="menu-tile__art halftone-bk">
+                      <div class="menu-tile__icon">
+                        <svg
+                          viewBox="0 0 64 64"
+                          fill="none"
+                          stroke="#0A0A0A"
+                          stroke-width="2.5"
+                        >
+                          <path
+                            d="M8 14 L56 14 L56 44 L36 44 L26 54 L26 44 L8 44 Z"
+                            fill="#FFF"
+                          />
+                          <path
+                            d="M32 22 c-4 -4 -12 -2 -12 5 c0 7 12 13 12 13 s12 -6 12 -13 c0 -7 -8 -9 -12 -5 Z"
+                            fill="#E94D8F"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="menu-tile__banner">
+                      CD Carelin<small>เรื่องที่อยากเล่า</small>
                     </div>
                   </div>
 
@@ -3356,6 +4184,501 @@
               </div>
             </div>
 
+            <!-- PSHARE -->
+            <div class="page" data-page="pshare">
+              <div class="m-page-head">
+                <button class="m-page-head__back" data-nav="home">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M15 6l-6 6 6 6" />
+                  </svg>
+                </button>
+                <div class="m-page-head__title">
+                  <div class="m-page-head__title-th">พี่แชร์ น้องชัวร์</div>
+                  <div class="m-page-head__title-en">P'share N'sure</div>
+                </div>
+                <button class="icon-btn">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M21 21l-4-4" />
+                  </svg>
+                </button>
+              </div>
+              <div class="m-body">
+                <div class="pshare-list" data-pshare-view="list">
+                  <div class="pshare-blurb">
+                    ★ พี่ ม.ปลาย เขียนแชร์ความรู้ให้น้อง — โอลิมปิก, โครงงาน,
+                    การบ้าน, life tips
+                  </div>
+
+                  <div class="tag-chip-row">
+                    <button class="tag-chip is-active">All</button>
+                    <button class="tag-chip">#math-olympiad</button>
+                    <button class="tag-chip">#physics</button>
+                    <button class="tag-chip">#sci-project</button>
+                    <button class="tag-chip">#thai-essay</button>
+                    <button class="tag-chip">#tcas</button>
+                    <button class="tag-chip">#life</button>
+                  </div>
+
+                  <div class="pshare-grid">
+                    <div class="pshare-card" data-pshare-open>
+                      <div class="pshare-card__art halftone-bl">
+                        <div class="pshare-card__num">01</div>
+                      </div>
+                      <div class="pshare-card__body">
+                        <div class="pshare-card__title">
+                          เตรียมตัวสอบ TMO ฉบับเข้าใจง่าย
+                        </div>
+                        <div class="pshare-card__snip">
+                          สรุปเทคนิคทำข้อสอบเลขโอลิมปิกระดับมัธยมต้น
+                          ที่พี่ใช้สอบจริง พร้อม pattern ข้อที่เจอบ่อย
+                        </div>
+                        <div class="pshare-card__foot">
+                          <span class="pshare-card__author"
+                            >พี่ฟ้า · ม.6/3</span
+                          >
+                          <span class="pshare-card__date">3 พ.ค.</span>
+                        </div>
+                        <div class="pshare-card__tags">
+                          <span class="pshare-tag">#math-olympiad</span>
+                          <span class="pshare-tag">#tmo</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pshare-card" data-pshare-open>
+                      <div
+                        class="pshare-card__art halftone-bk"
+                        style="background: var(--cream-2)"
+                      >
+                        <div class="pshare-card__num" style="color: var(--blue)">
+                          02
+                        </div>
+                      </div>
+                      <div class="pshare-card__body">
+                        <div class="pshare-card__title">
+                          วิธีเลือกหัวข้อโครงงานวิทย์ที่ไม่จำเจ
+                        </div>
+                        <div class="pshare-card__snip">
+                          3 เทคนิคหา research question ที่ไม่ซ้ำใคร
+                          จากประสบการณ์ทำโครงงาน 2 ปี ได้รางวัลระดับประเทศ
+                        </div>
+                        <div class="pshare-card__foot">
+                          <span class="pshare-card__author"
+                            >พี่จุง · ม.6/1</span
+                          >
+                          <span class="pshare-card__date">10 พ.ค.</span>
+                        </div>
+                        <div class="pshare-card__tags">
+                          <span class="pshare-tag">#sci-project</span>
+                          <span class="pshare-tag">#research</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pshare-card" data-pshare-open>
+                      <div class="pshare-card__art halftone-bl">
+                        <div class="pshare-card__num">03</div>
+                      </div>
+                      <div class="pshare-card__body">
+                        <div class="pshare-card__title">
+                          TCAS 67 — แชร์ portfolio พี่ปีก่อน
+                        </div>
+                        <div class="pshare-card__snip">
+                          พี่ติดวิศวะจุฬาด้วย portfolio แบบไหน
+                          เปิดให้น้องดูทั้งเล่ม + tip การเขียน statement
+                        </div>
+                        <div class="pshare-card__foot">
+                          <span class="pshare-card__author"
+                            >พี่ลีโอ · ม.6/2</span
+                          >
+                          <span class="pshare-card__date">8 พ.ค.</span>
+                        </div>
+                        <div class="pshare-card__tags">
+                          <span class="pshare-tag">#tcas</span>
+                          <span class="pshare-tag">#portfolio</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pshare-card" data-pshare-open>
+                      <div
+                        class="pshare-card__art halftone-soft"
+                        style="background: var(--yellow)"
+                      >
+                        <div class="pshare-card__num">04</div>
+                      </div>
+                      <div class="pshare-card__body">
+                        <div class="pshare-card__title">
+                          เขียน essay ภาษาไทยให้สวย ใน 3 ย่อหน้า
+                        </div>
+                        <div class="pshare-card__snip">
+                          โครงสร้างย่อหน้าแบบ pyramid + คำเชื่อมที่ครูชอบเห็น
+                          ใช้ได้ทั้งสอบและการบ้าน
+                        </div>
+                        <div class="pshare-card__foot">
+                          <span class="pshare-card__author"
+                            >พี่นัท · ม.5/4</span
+                          >
+                          <span class="pshare-card__date">5 พ.ค.</span>
+                        </div>
+                        <div class="pshare-card__tags">
+                          <span class="pshare-tag">#thai-essay</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pshare-card" data-pshare-open>
+                      <div class="pshare-card__art halftone-bk">
+                        <div class="pshare-card__num">05</div>
+                      </div>
+                      <div class="pshare-card__body">
+                        <div class="pshare-card__title">
+                          เริ่มต้น life routine ม.4 ยังไงดี
+                        </div>
+                        <div class="pshare-card__snip">
+                          ตารางชีวิตของพี่ตอนขึ้น ม.ปลาย — เวลานอน, อ่านหนังสือ,
+                          ทำกิจกรรม ยังไงให้ไม่หมดไฟ
+                        </div>
+                        <div class="pshare-card__foot">
+                          <span class="pshare-card__author"
+                            >พี่บัว · ม.5/2</span
+                          >
+                          <span class="pshare-card__date">3 พ.ค.</span>
+                        </div>
+                        <div class="pshare-card__tags">
+                          <span class="pshare-tag">#life</span>
+                          <span class="pshare-tag">#freshman</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="pshare-reader"
+                  data-pshare-view="reader"
+                  hidden
+                >
+                  <button class="reader-back" data-pshare-back>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <path d="M15 6l-6 6 6 6" />
+                    </svg>
+                    All posts
+                  </button>
+                  <div class="reader-meta">
+                    <span class="pshare-tag">#math-olympiad</span>
+                    <span class="pshare-tag">#tmo</span>
+                    <span class="reader-date">3 พ.ค. 2026 · 6 min read</span>
+                  </div>
+                  <h1 class="reader-title">
+                    เตรียมตัวสอบ TMO ฉบับเข้าใจง่าย
+                  </h1>
+                  <div class="reader-author">
+                    <div class="reader-author__avatar">ฟ</div>
+                    <div>
+                      <div class="reader-author__name">
+                        พี่ฟ้า · ฟ้าใส อรรถพล
+                      </div>
+                      <div class="reader-author__role">
+                        ม.6/3 · กลุ่มเลขโอลิมปิก
+                      </div>
+                    </div>
+                  </div>
+                  <article class="reader-prose">
+                    <h2>ทำไมพี่อยากเล่าเรื่องนี้</h2>
+                    <p>
+                      ตอน ม.3 พี่กลัวข้อสอบ TMO มาก
+                      เลยอยากแชร์ให้น้องไม่ต้องเริ่มจากศูนย์เหมือนพี่ ✦
+                    </p>
+                    <h2>3 หัวข้อที่ออกบ่อย</h2>
+                    <ul>
+                      <li>
+                        <strong>Number Theory</strong> — โดยเฉพาะ modular
+                        arithmetic, ฝึกง่ายผ่าน Project Euler
+                      </li>
+                      <li>
+                        <strong>Combinatorics</strong> — Pigeonhole + Counting
+                        in two ways
+                      </li>
+                      <li>
+                        <strong>Geometry</strong> — มุม, similar triangles,
+                        power of a point
+                      </li>
+                    </ul>
+                    <h2>เทคนิคในห้องสอบ</h2>
+                    <ol>
+                      <li>
+                        อ่านโจทย์ทุกข้อก่อน 10 นาทีแรก
+                        แล้วเลือกข้อที่ทำได้
+                      </li>
+                      <li>
+                        เขียน case ตัวอย่างเล็กก่อนเสมอ —
+                        ตัวเลขเล็กช่วยให้เห็น pattern
+                      </li>
+                      <li>
+                        ถ้าติดเกิน 15 นาทีให้ข้าม กลับมาทำตอนหลัง
+                      </li>
+                    </ol>
+                    <blockquote>
+                      "ไม่จำเป็นต้องทำได้ทุกข้อ — ตอบถูก 4 ข้อจาก 6
+                      ก็ผ่านรอบ 1 แล้ว"
+                    </blockquote>
+                    <p>
+                      โชคดีนะน้อง ถ้าสงสัยตรงไหน DM ใน CD Carelin ได้เลย
+                      พี่จะตอบให้
+                    </p>
+                  </article>
+                  <div class="reader-foot">
+                    <span class="reader-claps">★ 248 น้องอ่านแล้ว</span>
+                    <button class="reader-clap-btn">+ ขอบคุณพี่</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARELIN -->
+            <div class="page" data-page="carelin">
+              <div class="m-page-head">
+                <button class="m-page-head__back" data-nav="home">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M15 6l-6 6 6 6" />
+                  </svg>
+                </button>
+                <div class="m-page-head__title">
+                  <div class="m-page-head__title-th">ซีดีแคร์ลิน</div>
+                  <div class="m-page-head__title-en">CD Carelin</div>
+                </div>
+                <button class="icon-btn">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M3 6h18M6 12h12M10 18h4" />
+                  </svg>
+                </button>
+              </div>
+              <div class="m-body">
+                <div class="carelin-blurb">
+                  อยากขอความช่วยเหลือเรื่องอะไรก็ได้ ★ ครู / รุ่นพี่ จะมาตอบ
+                </div>
+
+                <button class="carelin-cta" data-carelin-toggle>
+                  <span class="carelin-cta__plus">+</span>
+                  <span class="carelin-cta__label"
+                    >โพสต์ขอความช่วยเหลือ<small>Post a request</small></span
+                  >
+                </button>
+
+                <div class="carelin-form" hidden>
+                  <div class="carelin-form__row">
+                    <div class="carelin-form__field">
+                      <label>Name · ชื่อ</label>
+                      <input
+                        type="text"
+                        placeholder="ธรรศ์"
+                        data-carelin-name
+                      />
+                    </div>
+                    <div class="carelin-form__field carelin-form__field--id">
+                      <label>4-digit ID</label>
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        maxlength="4"
+                        pattern="[0-9]{4}"
+                        placeholder="0428"
+                        data-carelin-id
+                      />
+                    </div>
+                  </div>
+                  <div class="carelin-form__field">
+                    <label>Title · หัวข้อ</label>
+                    <input
+                      type="text"
+                      placeholder="ขอความช่วยเหลือเรื่อง..."
+                    />
+                  </div>
+                  <div class="carelin-form__field">
+                    <label>Body · รายละเอียด</label>
+                    <textarea
+                      rows="3"
+                      placeholder="เล่าให้ฟังหน่อยว่าเกิดอะไรขึ้น..."
+                    ></textarea>
+                  </div>
+                  <div class="carelin-form__hint">
+                    ★ ต้องกรอกชื่อและรหัสนักเรียน 4 หลักก่อนถึงจะโพสต์ได้
+                  </div>
+                  <div class="carelin-form__actions">
+                    <button class="carelin-cancel" data-carelin-toggle>
+                      Cancel
+                    </button>
+                    <button
+                      class="carelin-post"
+                      disabled
+                      data-carelin-post
+                    >
+                      Post →
+                    </button>
+                  </div>
+                </div>
+
+                <div class="menu-section-title">
+                  <span class="menu-section-title__line"></span
+                  ><span class="menu-section-title__text"
+                    >⚡ Public Board</span
+                  ><span class="menu-section-title__line"></span>
+                </div>
+
+                <div class="carelin-card">
+                  <div class="carelin-card__head">
+                    <div class="carelin-card__title">
+                      หาเพื่อนติวฟิสิกส์ บทคลื่นแม่เหล็กไฟฟ้า
+                    </div>
+                    <span class="carelin-status carelin-status--answered"
+                      >✓ Answered</span
+                    >
+                  </div>
+                  <div class="carelin-card__body">
+                    คือเรียนแล้วงงมาก ใครว่างหลังเลิกเรียนพรุ่งนี้
+                    มาช่วยติวให้หน่อย ขอ 30 นาทีพอ
+                  </div>
+                  <div class="carelin-card__meta">
+                    <span class="carelin-card__who">วงกต · #0612</span>
+                    <span class="carelin-card__when">2 ชม.ที่แล้ว</span>
+                  </div>
+                  <button
+                    class="carelin-reply-toggle"
+                    data-carelin-reply-toggle
+                  >
+                    ↓ ดูคำตอบจากครู
+                  </button>
+                  <div class="carelin-reply" hidden>
+                    <div class="carelin-reply__head">
+                      <div class="carelin-reply__avatar">อ</div>
+                      <div>
+                        <div class="carelin-reply__name">
+                          อ.อาทรง · Physics
+                        </div>
+                        <div class="carelin-reply__when">1 ชม.ที่แล้ว</div>
+                      </div>
+                    </div>
+                    <div class="carelin-reply__body">
+                      ครูจะรอที่ห้อง 5-203 ตอนเลิกเรียน 16:00 พรุ่งนี้นะ
+                      มาด้วยกันได้เลย ติวจากบทที่ 8 หน้า 142
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carelin-card">
+                  <div class="carelin-card__head">
+                    <div class="carelin-card__title">
+                      ลืมกระเป๋าไว้ที่ห้องดนตรี
+                    </div>
+                    <span class="carelin-status carelin-status--answered"
+                      >✓ Answered</span
+                    >
+                  </div>
+                  <div class="carelin-card__body">
+                    มีใครเห็นกระเป๋าสีดำมีพวงกุญแจรูปแมวมั้ย ลืมไว้ตอนซ้อม
+                    เมื่อคืน T_T
+                  </div>
+                  <div class="carelin-card__meta">
+                    <span class="carelin-card__who">นัด · #0521</span>
+                    <span class="carelin-card__when">เช้านี้</span>
+                  </div>
+                  <button
+                    class="carelin-reply-toggle"
+                    data-carelin-reply-toggle
+                  >
+                    ↓ ดูคำตอบจากครู
+                  </button>
+                  <div class="carelin-reply" hidden>
+                    <div class="carelin-reply__head">
+                      <div class="carelin-reply__avatar">อ</div>
+                      <div>
+                        <div class="carelin-reply__name">อ.พิม · ดนตรี</div>
+                        <div class="carelin-reply__when">30 นาทีที่แล้ว</div>
+                      </div>
+                    </div>
+                    <div class="carelin-reply__body">
+                      ครูเก็บไว้ที่ห้องพักครูอาคาร 2 นะคะ มารับได้ตอนพักเที่ยง
+                    </div>
+                  </div>
+                </div>
+
+                <div class="carelin-card">
+                  <div class="carelin-card__head">
+                    <div class="carelin-card__title">
+                      เครื่องน้ำดื่มอาคาร 5 ชั้น 2 พัง
+                    </div>
+                    <span class="carelin-status carelin-status--open"
+                      >● Open</span
+                    >
+                  </div>
+                  <div class="carelin-card__body">
+                    น้ำไม่ออกตั้งแต่เช้า เด็กชั้นบนต้องลงมาที่ชั้น 1
+                    รบกวนแจ้งช่างหน่อยค่ะ
+                  </div>
+                  <div class="carelin-card__meta">
+                    <span class="carelin-card__who">พลอย · #0307</span>
+                    <span class="carelin-card__when">15 นาทีที่แล้ว</span>
+                  </div>
+                </div>
+
+                <div class="carelin-card">
+                  <div class="carelin-card__head">
+                    <div class="carelin-card__title">
+                      อยากปรึกษาเรื่องเลือกสายชั้น ม.4
+                    </div>
+                    <span class="carelin-status carelin-status--open"
+                      >● Open</span
+                    >
+                  </div>
+                  <div class="carelin-card__body">
+                    ตัดสินใจระหว่างสายวิทย์-คณิต กับ ศิลป์-คำนวณไม่ได้เลย
+                    มีพี่หรืออาจารย์คนไหนแนะนำได้บ้าง
+                  </div>
+                  <div class="carelin-card__meta">
+                    <span class="carelin-card__who">เกรซ · #0855</span>
+                    <span class="carelin-card__when">เมื่อวาน</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- PROFILE -->
             <div class="page" data-page="profile">
               <div class="m-page-head">
@@ -3586,7 +4909,8 @@
             <h1 class="page-intro__title">Manage Everything Bluely.</h1>
             <p class="page-intro__sub">
               A single workspace for academic admins — calendar, bookings,
-              sport-day live ops, and alumni portfolios.
+              sport-day live ops, alumni portfolios, the P'share Studio for
+              senior-led posts, and the CD Carelin care desk.
             </p>
           </div>
           <div class="page-intro__chitralada">
@@ -3668,6 +4992,31 @@
                   <path d="M4 7h16v13H4z" />
                   <path d="M9 7V4h6v3" /></svg
                 >Portfolios <span class="sidebar-nav__th">รุ่นพี่</span>
+              </button>
+              <button class="sidebar-nav__btn" data-admin-nav="pshare">
+                <svg
+                  class="sidebar-nav__icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path d="M3 5l9 -2 9 2v14l-9 -2 -9 2z" />
+                  <path d="M12 3v18" /></svg
+                >P'share Studio <span class="sidebar-nav__th">พี่แชร์</span>
+              </button>
+              <button class="sidebar-nav__btn" data-admin-nav="carelin">
+                <svg
+                  class="sidebar-nav__icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path
+                    d="M21 11c0 4 -4 7 -9 7l-3 3v-3c-3 -1 -6 -3 -6 -7s4 -7 9 -7s9 3 9 7z"
+                  /></svg
+                >Carelin Desk <span class="sidebar-nav__th">แคร์ลิน</span>
               </button>
             </nav>
             <div class="sidebar-section-title">Account</div>
@@ -5211,6 +6560,423 @@
               </div>
             </div>
 
+            <!-- ADMIN PSHARE STUDIO -->
+            <div class="page" data-admin-page="pshare">
+              <div class="admin-topbar">
+                <div>
+                  <div class="admin-topbar__title-th">
+                    พี่แชร์ น้องชัวร์<span
+                      style="font-size: 32px; color: var(--blue)"
+                      >.</span
+                    >
+                  </div>
+                  <div class="admin-topbar__title-en">
+                    ★ P'share Studio · 47 posts published this term ★
+                  </div>
+                </div>
+                <div class="admin-topbar__actions">
+                  <button class="btn">Drafts (3)</button>
+                  <button class="btn btn--primary">+ New post</button>
+                </div>
+              </div>
+
+              <div class="studio-grid">
+                <div class="card card--accent">
+                  <div class="card__title">
+                    <span class="card__title-th">แก้ไขโพสต์</span
+                    ><span class="card__title-en">Markdown editor</span
+                    ><span class="studio-saved"
+                      ><span class="studio-saved__dot"></span>Autosaved · 12 พ.ค.
+                      09:14</span
+                    >
+                  </div>
+
+                  <div class="studio-field">
+                    <label>Title · หัวข้อ</label>
+                    <input
+                      class="studio-input"
+                      value="เตรียมตัวสอบ TMO ฉบับเข้าใจง่าย"
+                    />
+                  </div>
+
+                  <div class="studio-field">
+                    <label>Tags · แท็ก (comma-separated)</label>
+                    <input
+                      class="studio-input"
+                      value="math-olympiad, tmo, mathematics"
+                    />
+                    <div class="studio-tag-preview">
+                      <span class="pshare-tag">#math-olympiad</span>
+                      <span class="pshare-tag">#tmo</span>
+                      <span class="pshare-tag">#mathematics</span>
+                    </div>
+                  </div>
+
+                  <div class="studio-field">
+                    <label>Body · เนื้อหา (Markdown)</label>
+                    <div class="studio-editor">
+                      <div class="studio-editor__bar">
+                        <button title="Heading 1">H1</button>
+                        <button title="Heading 2">H2</button>
+                        <button title="Bold"><strong>B</strong></button>
+                        <button title="Italic"><em>I</em></button>
+                        <button title="Link">🔗</button>
+                        <button title="Quote">"</button>
+                        <button title="Bullet">•</button>
+                        <button title="Numbered">1.</button>
+                        <button title="Code">{ }</button>
+                        <span class="studio-editor__sep"></span>
+                        <button title="Preview">👁 Preview</button>
+                      </div>
+                      <textarea class="studio-textarea">
+# เตรียมตัวสอบ TMO ฉบับเข้าใจง่าย
+
+## ทำไมพี่อยากเล่าเรื่องนี้
+ตอน ม.3 พี่กลัวข้อสอบ TMO มาก เลยอยากแชร์ให้น้องไม่ต้องเริ่มจากศูนย์เหมือนพี่ ✦
+
+## 3 หัวข้อที่ออกบ่อย
+- **Number Theory** — โดยเฉพาะ modular arithmetic, ฝึกง่ายผ่าน Project Euler
+- **Combinatorics** — Pigeonhole + Counting in two ways
+- **Geometry** — มุม, similar triangles, power of a point
+
+## เทคนิคในห้องสอบ
+1. อ่านโจทย์ทุกข้อก่อน 10 นาทีแรก แล้วเลือกข้อที่ทำได้
+2. เขียน case ตัวอย่างเล็กก่อนเสมอ — ตัวเลขเล็กช่วยให้เห็น pattern
+3. ถ้าติดเกิน 15 นาทีให้ข้าม กลับมาทำตอนหลัง
+
+> "ไม่จำเป็นต้องทำได้ทุกข้อ — ตอบถูก 4 ข้อจาก 6 ก็ผ่านรอบ 1 แล้ว"
+
+โชคดีนะน้อง ถ้าสงสัย DM ใน CD Carelin ได้</textarea
+                      >
+                      <div class="studio-editor__foot">
+                        <span>2,184 characters · ~6 min read</span>
+                        <span>Markdown supported</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="studio-actions">
+                    <button class="btn">🗑 Delete</button>
+                    <button class="btn">Save draft</button>
+                    <button class="btn btn--primary">Publish →</button>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card__title">
+                    <span class="card__title-th">โพสต์ทั้งหมด</span
+                    ><span class="card__title-en">All posts</span
+                    ><span class="card__menu">Sort: latest ↓</span>
+                  </div>
+                  <div class="studio-search">
+                    <input placeholder="🔍  ค้นหาโพสต์..." />
+                  </div>
+                  <div class="studio-list">
+                    <div class="studio-row is-active" data-studio-row>
+                      <div class="studio-row__title">
+                        เตรียมตัวสอบ TMO ฉบับเข้าใจง่าย
+                      </div>
+                      <div class="studio-row__tags">
+                        <span class="pshare-tag">#math-olympiad</span>
+                        <span class="pshare-tag">#tmo</span>
+                      </div>
+                      <div class="studio-row__foot">
+                        <span class="pill pill--draft">Draft</span>
+                        <span>edited 09:14 · พี่ฟ้า</span>
+                      </div>
+                    </div>
+                    <div class="studio-row" data-studio-row>
+                      <div class="studio-row__title">
+                        วิธีเลือกหัวข้อโครงงานวิทย์ที่ไม่จำเจ
+                      </div>
+                      <div class="studio-row__tags">
+                        <span class="pshare-tag">#sci-project</span>
+                        <span class="pshare-tag">#research</span>
+                      </div>
+                      <div class="studio-row__foot">
+                        <span class="pill pill--ok">Published</span>
+                        <span>10 พ.ค. · พี่จุง · 412 reads</span>
+                      </div>
+                    </div>
+                    <div class="studio-row" data-studio-row>
+                      <div class="studio-row__title">
+                        TCAS 67 — แชร์ portfolio พี่ปีก่อน
+                      </div>
+                      <div class="studio-row__tags">
+                        <span class="pshare-tag">#tcas</span>
+                        <span class="pshare-tag">#portfolio</span>
+                      </div>
+                      <div class="studio-row__foot">
+                        <span class="pill pill--ok">Published</span>
+                        <span>8 พ.ค. · พี่ลีโอ · 1,124 reads</span>
+                      </div>
+                    </div>
+                    <div class="studio-row" data-studio-row>
+                      <div class="studio-row__title">
+                        เขียน essay ภาษาไทยให้สวย ใน 3 ย่อหน้า
+                      </div>
+                      <div class="studio-row__tags">
+                        <span class="pshare-tag">#thai-essay</span>
+                      </div>
+                      <div class="studio-row__foot">
+                        <span class="pill pill--ok">Published</span>
+                        <span>5 พ.ค. · พี่นัท · 287 reads</span>
+                      </div>
+                    </div>
+                    <div class="studio-row" data-studio-row>
+                      <div class="studio-row__title">
+                        เริ่มต้น life routine ม.4 ยังไงดี
+                      </div>
+                      <div class="studio-row__tags">
+                        <span class="pshare-tag">#life</span>
+                        <span class="pshare-tag">#freshman</span>
+                      </div>
+                      <div class="studio-row__foot">
+                        <span class="pill pill--rev">Review</span>
+                        <span>3 พ.ค. · พี่บัว · มีคนตรวจ</span>
+                      </div>
+                    </div>
+                    <div class="studio-row" data-studio-row>
+                      <div class="studio-row__title">
+                        Hack การจดเลกเชอร์ — Cornell × Sketchnote
+                      </div>
+                      <div class="studio-row__tags">
+                        <span class="pshare-tag">#study-skills</span>
+                      </div>
+                      <div class="studio-row__foot">
+                        <span class="pill pill--ok">Published</span>
+                        <span>1 พ.ค. · พี่เจมส์ · 894 reads</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ADMIN CARELIN DESK -->
+            <div class="page" data-admin-page="carelin">
+              <div class="admin-topbar">
+                <div>
+                  <div class="admin-topbar__title-th">
+                    ซีดีแคร์ลิน<span
+                      style="font-size: 32px; color: var(--blue)"
+                      >.</span
+                    >
+                  </div>
+                  <div class="admin-topbar__title-en">
+                    ★ Carelin Desk · the campus care line ★
+                  </div>
+                </div>
+                <div class="admin-topbar__actions">
+                  <input
+                    class="admin-search"
+                    placeholder="🔍  ค้นหา · search…"
+                  />
+                  <button class="btn">Export ↓</button>
+                </div>
+              </div>
+
+              <div class="kpi-row">
+                <div class="kpi-card">
+                  <div class="kpi-card__label">Open today</div>
+                  <div class="kpi-card__th">รออยู่</div>
+                  <div class="kpi-card__num">7</div>
+                  <span class="kpi-card__delta kpi-card__delta--up"
+                    >▲ 3 since yesterday</span
+                  >
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-card__label">Answered today</div>
+                  <div class="kpi-card__th">ตอบแล้ว</div>
+                  <div class="kpi-card__num">12</div>
+                  <span class="kpi-card__delta kpi-card__delta--up"
+                    >▲ 4 vs yesterday</span
+                  >
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-card__label">Avg response</div>
+                  <div class="kpi-card__th">เวลาตอบเฉลี่ย</div>
+                  <div class="kpi-card__num">
+                    42<span style="font-size: 18px"> min</span>
+                  </div>
+                  <span class="kpi-card__delta kpi-card__delta--down"
+                    >▼ 12 min faster</span
+                  >
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-card__label">Total · this week</div>
+                  <div class="kpi-card__th">สัปดาห์นี้</div>
+                  <div class="kpi-card__num">68</div>
+                  <span class="kpi-card__delta kpi-card__delta--flat"
+                    >— stable</span
+                  >
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card__title">
+                  <span class="card__title-th">คำขอความช่วยเหลือ</span
+                  ><span class="card__title-en">All requests</span>
+                </div>
+                <div class="carelin-tabs">
+                  <button class="carelin-tab is-active">
+                    All <small>(19)</small>
+                  </button>
+                  <button class="carelin-tab">Open <small>(7)</small></button>
+                  <button class="carelin-tab">
+                    Answered <small>(12)</small>
+                  </button>
+                </div>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Requester</th>
+                      <th>Title · ปัญหา</th>
+                      <th>Status</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <span style="font-family: var(--font-mono)"
+                          >09:48</span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >วงกต<small>#0612 · ม.5/2</small></span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >หาเพื่อนติวฟิสิกส์ บทคลื่นแม่เหล็กไฟฟ้า<small
+                            >คือเรียนแล้วงงมาก ใครว่างหลังเลิกเรียน
+                            พรุ่งนี้...</small
+                          ></span
+                        >
+                      </td>
+                      <td><span class="pill pill--pend">Open</span></td>
+                      <td>
+                        <button class="btn btn--primary">Reply</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span style="font-family: var(--font-mono)"
+                          >09:33</span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >พลอย<small>#0307 · ม.4/1</small></span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >เครื่องน้ำดื่มอาคาร 5 ชั้น 2 พัง<small
+                            >น้ำไม่ออกตั้งแต่เช้า รบกวนแจ้งช่าง...</small
+                          ></span
+                        >
+                      </td>
+                      <td><span class="pill pill--pend">Open</span></td>
+                      <td>
+                        <button class="btn btn--primary">Reply</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span style="font-family: var(--font-mono)"
+                          >09:12</span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >นัด<small>#0521 · ม.5/4</small></span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >ลืมกระเป๋าไว้ที่ห้องดนตรี<small
+                            >มีใครเห็นกระเป๋าสีดำมีพวงกุญแจรูปแมว...</small
+                          ></span
+                        >
+                      </td>
+                      <td><span class="pill pill--ok">Answered</span></td>
+                      <td><button class="btn">View</button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span style="font-family: var(--font-mono)"
+                          >เมื่อวาน</span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >เกรซ<small>#0855 · ม.3/2</small></span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >อยากปรึกษาเรื่องเลือกสายชั้น ม.4<small
+                            >ตัดสินใจระหว่างสายวิทย์-คณิต กับ
+                            ศิลป์-คำนวณไม่ได้เลย...</small
+                          ></span
+                        >
+                      </td>
+                      <td><span class="pill pill--pend">Open</span></td>
+                      <td>
+                        <button class="btn btn--primary">Reply</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span style="font-family: var(--font-mono)"
+                          >เมื่อวาน</span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >ภีม<small>#0418 · ม.6/3</small></span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >Wi-Fi อาคาร 4 หลุดบ่อย<small
+                            >ทำงานกลุ่มในห้องสมุดยากมาก ขอให้ตรวจหน่อย</small
+                          ></span
+                        >
+                      </td>
+                      <td><span class="pill pill--ok">Answered</span></td>
+                      <td><button class="btn">View</button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span style="font-family: var(--font-mono)"
+                          >เมื่อวาน</span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >มินทร์<small>#0739 · ม.4/3</small></span
+                        >
+                      </td>
+                      <td>
+                        <span class="table__title"
+                          >อยากชวนเพื่อนเข้าชมรมหุ่นยนต์<small
+                            >ใครสนใจเข้าชมรม Robotics รวมตัว ม.ต้น+ปลาย...</small
+                          ></span
+                        >
+                      </td>
+                      <td><span class="pill pill--ok">Answered</span></td>
+                      <td><button class="btn">View</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
           </main>
         </div>
       </div>
@@ -5320,6 +7086,106 @@
               .querySelectorAll(".cal-chip")
               .forEach((c) => c.classList.remove("is-active"));
             chip.classList.add("is-active");
+          });
+        });
+      });
+
+      /* P'share tag-chip filter (visual only) */
+      document.querySelectorAll(".tag-chip-row").forEach((group) => {
+        group.querySelectorAll(".tag-chip").forEach((chip) => {
+          chip.addEventListener("click", () => {
+            group
+              .querySelectorAll(".tag-chip")
+              .forEach((c) => c.classList.remove("is-active"));
+            chip.classList.add("is-active");
+          });
+        });
+      });
+
+      /* P'share open/back: toggle list <-> reader within the page */
+      document.querySelectorAll("[data-pshare-open]").forEach((card) => {
+        card.addEventListener("click", () => {
+          const page = card.closest('.page[data-page="pshare"]');
+          if (!page) return;
+          page.querySelector('[data-pshare-view="list"]').hidden = true;
+          page.querySelector('[data-pshare-view="reader"]').hidden = false;
+          const screen = document.querySelector(".phone__screen");
+          if (screen) screen.scrollTop = 0;
+        });
+      });
+      document.querySelectorAll("[data-pshare-back]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const page = btn.closest('.page[data-page="pshare"]');
+          if (!page) return;
+          page.querySelector('[data-pshare-view="reader"]').hidden = true;
+          page.querySelector('[data-pshare-view="list"]').hidden = false;
+          const screen = document.querySelector(".phone__screen");
+          if (screen) screen.scrollTop = 0;
+        });
+      });
+
+      /* Carelin: toggle the inline request form */
+      document.querySelectorAll("[data-carelin-toggle]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const page = btn.closest('.page[data-page="carelin"]');
+          if (!page) return;
+          const form = page.querySelector(".carelin-form");
+          const cta = page.querySelector(".carelin-cta");
+          const open = form.hasAttribute("hidden");
+          form.hidden = !open;
+          if (cta) cta.hidden = open;
+        });
+      });
+
+      /* Carelin: enable Post only when name + 4-digit ID are present */
+      document.querySelectorAll(".carelin-form").forEach((form) => {
+        const name = form.querySelector("[data-carelin-name]");
+        const id = form.querySelector("[data-carelin-id]");
+        const post = form.querySelector("[data-carelin-post]");
+        if (!name || !id || !post) return;
+        const validate = () => {
+          const idOk = /^\d{4}$/.test(id.value.trim());
+          const nameOk = name.value.trim().length > 0;
+          post.disabled = !(idOk && nameOk);
+        };
+        id.addEventListener("input", () => {
+          id.value = id.value.replace(/\D/g, "").slice(0, 4);
+          validate();
+        });
+        name.addEventListener("input", validate);
+      });
+
+      /* Carelin: expand/collapse admin reply on a card */
+      document.querySelectorAll("[data-carelin-reply-toggle]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const reply = btn.parentElement.querySelector(".carelin-reply");
+          if (!reply) return;
+          const open = reply.hasAttribute("hidden");
+          reply.hidden = !open;
+          btn.textContent = open ? "↑ ซ่อนคำตอบ" : "↓ ดูคำตอบจากครู";
+        });
+      });
+
+      /* Carelin admin filter tabs (visual only) */
+      document.querySelectorAll(".carelin-tabs").forEach((group) => {
+        group.querySelectorAll(".carelin-tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            group
+              .querySelectorAll(".carelin-tab")
+              .forEach((t) => t.classList.remove("is-active"));
+            tab.classList.add("is-active");
+          });
+        });
+      });
+
+      /* Studio post list: select a row */
+      document.querySelectorAll(".studio-list").forEach((list) => {
+        list.querySelectorAll("[data-studio-row]").forEach((row) => {
+          row.addEventListener("click", () => {
+            list
+              .querySelectorAll("[data-studio-row]")
+              .forEach((r) => r.classList.remove("is-active"));
+            row.classList.add("is-active");
           });
         });
       });
