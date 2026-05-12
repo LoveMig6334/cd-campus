@@ -12,6 +12,34 @@ export type BookingFull = Database["public"]["Tables"]["bookings"]["Row"];
 
 const TODAY = "2026-05-12";
 
+export type WeekChip = {
+  id: string;
+  startHHMM: string;
+  variant: GanttBarVariant;
+};
+
+export function addDays(dateISO: string, n: number): string {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + n);
+  const yy = dt.getUTCFullYear();
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getUTCDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
+export function mondayOf(dateISO: string): string {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  // Mon=0 … Sun=6 (Mon-first ordering)
+  const dayIdx = (dt.getUTCDay() + 6) % 7;
+  return addDays(dateISO, -dayIdx);
+}
+
+export function weekDaysOf(weekStart: string): string[] {
+  return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+}
+
 function timeFromTimestamp(ts: string): string {
   const match = ts.match(/T(\d{2}:\d{2})/);
   return match ? match[1] : "00:00";
@@ -145,6 +173,52 @@ export async function getGanttRooms(): Promise<GanttRoom[]> {
   return [...byRoom.values()].sort(
     (a, b) => (sortMap.get(a.nameEn) ?? 0) - (sortMap.get(b.nameEn) ?? 0),
   );
+}
+
+export async function getWeekBookings(
+  weekStart: string,
+  weekEnd: string,
+): Promise<{
+  rooms: { id: string; nameEn: string; nameTh: string }[];
+  bookingsByRoomDay: Record<string, Record<string, WeekChip[]>>;
+}> {
+  const db = await createClient();
+  const nextDay = addDays(weekEnd, 1);
+  const { data, error } = await db
+    .from("bookings")
+    .select("id, starts_at, bar_variant, room_id")
+    .gte("starts_at", `${weekStart}T00:00:00+07:00`)
+    .lt("starts_at", `${nextDay}T00:00:00+07:00`)
+    .order("starts_at", { ascending: true });
+  if (error) throw new Error(`getWeekBookings: ${error.message}`);
+
+  const { data: roomRows, error: roomsErr } = await db
+    .from("rooms")
+    .select("id, name_en, name_th, sort_order")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  if (roomsErr) throw new Error(`getWeekBookings rooms: ${roomsErr.message}`);
+
+  const bookingsByRoomDay: Record<string, Record<string, WeekChip[]>> = {};
+  for (const b of data ?? []) {
+    const dayISO = b.starts_at.slice(0, 10);
+    const startHHMM = timeFromTimestamp(b.starts_at);
+    const room = (bookingsByRoomDay[b.room_id] ??= {});
+    (room[dayISO] ??= []).push({
+      id: b.id,
+      startHHMM,
+      variant: b.bar_variant as GanttBarVariant,
+    });
+  }
+
+  return {
+    rooms: (roomRows ?? []).map((r) => ({
+      id: r.id,
+      nameEn: r.name_en,
+      nameTh: r.name_th,
+    })),
+    bookingsByRoomDay,
+  };
 }
 
 const ROOM_TH_BY_EN: Record<string, string> = {
