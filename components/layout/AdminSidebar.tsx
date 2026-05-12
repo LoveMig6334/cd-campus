@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { signOut } from "@/app/auth/signout/actions";
 
-type NavItem = {
+export type NavItem = {
   href: string;
   en: string;
   th: string;
@@ -92,8 +92,9 @@ const NAV: NavItem[] = [
   },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
   const pathname = usePathname();
+  const items = [...NAV, ...extraItems];
   return (
     <aside
       className="sticky top-6 w-[240px] shrink-0 self-start border-[1.5px] border-line bg-paper p-[20px_18px_18px]"
@@ -123,7 +124,7 @@ export function AdminSidebar() {
         Workspace
       </div>
       <nav className="flex flex-col gap-0.5">
-        {NAV.map((item) => {
+        {items.map((item) => {
           const active =
             item.href === "/admin"
               ? pathname === "/admin"
