@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/auth";
+import { getSupabaseServiceRole } from "@/lib/supabase/serviceRole";
+import { requireAdmin, requireRootAdmin } from "@/lib/auth";
 
 export async function replyToCarelin(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
@@ -27,6 +29,21 @@ export async function replyToCarelin(formData: FormData): Promise<void> {
   revalidatePath("/admin/carelin");
   revalidatePath(`/admin/carelin/${request_id}`);
   revalidatePath("/student/carelin");
+}
+
+export async function deleteCarelinRequest(formData: FormData): Promise<void> {
+  await requireRootAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const svc = getSupabaseServiceRole();
+  const { error } = await svc.from("carelin_requests").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/carelin");
+  revalidatePath(`/admin/carelin/${id}`);
+  revalidatePath("/student/carelin");
+  redirect("/admin/carelin");
 }
 
 export async function markAnswered(formData: FormData): Promise<void> {

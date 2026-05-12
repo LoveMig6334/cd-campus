@@ -1,8 +1,14 @@
 import Link from "next/link";
+import { deleteCarelinRequest } from "@/app/admin/carelin/actions";
 import type { CarelinDeskRow } from "@/lib/types";
 import { Pill } from "./Pill";
 
-export function CarelinDeskTable({ rows }: { rows: CarelinDeskRow[] }) {
+type Props = {
+  rows: CarelinDeskRow[];
+  isRoot: boolean;
+};
+
+export function CarelinDeskTable({ rows, isRoot }: Props) {
   return (
     <table className="w-full border-collapse text-[13px]">
       <thead>
@@ -55,16 +61,29 @@ export function CarelinDeskTable({ rows }: { rows: CarelinDeskRow[] }) {
                 )}
               </td>
               <td className={td}>
-                <Link
-                  href={`/admin/carelin/${row.id}`}
-                  className={
-                    row.status === "Open"
-                      ? "inline-block border-[1.5px] border-line bg-blue px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow"
-                      : "inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
-                  }
-                >
-                  {row.status === "Open" ? "Reply" : "View"}
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={`/admin/carelin/${row.id}`}
+                    className={
+                      row.status === "Open"
+                        ? "inline-block border-[1.5px] border-line bg-blue px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow"
+                        : "inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                    }
+                  >
+                    {row.status === "Open" ? "Reply" : "View"}
+                  </Link>
+                  {isRoot && (
+                    <form action={deleteCarelinRequest}>
+                      <input type="hidden" name="id" value={row.id} />
+                      <button
+                        type="submit"
+                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-red-600 hover:text-red-700"
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  )}
+                </div>
               </td>
             </tr>
           );
