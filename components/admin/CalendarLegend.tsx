@@ -12,7 +12,7 @@ const ITEMS = [
 export function CalendarLegend() {
   return (
     <div className="mb-3.5 flex flex-wrap items-center gap-2">
-      <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.18em] text-mute-500">
+      <span className="text-mute-500 mr-2 font-mono text-[10px] tracking-[0.18em] uppercase">
         Legend
       </span>
       {ITEMS.map((item) => (

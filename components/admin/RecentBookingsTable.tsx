@@ -1,14 +1,12 @@
 import type { AdminBookingRow } from "@/lib/types";
 import { Pill } from "./Pill";
 
-const STATUS_VARIANT: Record<
-  AdminBookingRow["status"],
-  "ok" | "pend" | "rev"
-> = {
-  Confirmed: "ok",
-  Pending: "pend",
-  Review: "rev",
-};
+const STATUS_VARIANT: Record<AdminBookingRow["status"], "ok" | "pend" | "rev"> =
+  {
+    Confirmed: "ok",
+    Pending: "pend",
+    Review: "rev",
+  };
 
 export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
   return (
@@ -18,7 +16,7 @@ export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
           {["Room", "User", "Class", "Start", "End", "Status"].map((h) => (
             <th
               key={h}
-              className="border-b-[1.5px] border-ink bg-cream px-2.5 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+              className="border-ink bg-cream text-mute-700 border-b-[1.5px] px-2.5 py-2 text-left font-mono text-[10px] tracking-[0.14em] uppercase"
             >
               {h}
             </th>
@@ -29,18 +27,18 @@ export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
         {rows.map((row, i) => (
           <tr
             key={i}
-            className="transition-colors hover:bg-cream [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
+            className="hover:bg-cream transition-colors [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
           >
             <td
               className={
                 i < rows.length - 1
-                  ? "border-b border-dashed border-mute-200"
+                  ? "border-mute-200 border-b border-dashed"
                   : ""
               }
             >
-              <span className="font-display italic text-[15px]">
+              <span className="font-display text-[15px] italic">
                 {row.roomEn}
-                <small className="mt-px block font-sans text-[12px] not-italic text-mute-500">
+                <small className="text-mute-500 mt-px block font-sans text-[12px] not-italic">
                   {row.roomTh}
                 </small>
               </span>
@@ -48,7 +46,7 @@ export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
             <td
               className={
                 i < rows.length - 1
-                  ? "border-b border-dashed border-mute-200"
+                  ? "border-mute-200 border-b border-dashed"
                   : ""
               }
             >
@@ -57,7 +55,7 @@ export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
             <td
               className={
                 i < rows.length - 1
-                  ? "border-b border-dashed border-mute-200"
+                  ? "border-mute-200 border-b border-dashed"
                   : ""
               }
             >
@@ -66,7 +64,7 @@ export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
             <td
               className={
                 i < rows.length - 1
-                  ? "border-b border-dashed border-mute-200"
+                  ? "border-mute-200 border-b border-dashed"
                   : ""
               }
             >
@@ -75,7 +73,7 @@ export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
             <td
               className={
                 i < rows.length - 1
-                  ? "border-b border-dashed border-mute-200"
+                  ? "border-mute-200 border-b border-dashed"
                   : ""
               }
             >
@@ -84,7 +82,7 @@ export function RecentBookingsTable({ rows }: { rows: AdminBookingRow[] }) {
             <td
               className={
                 i < rows.length - 1
-                  ? "border-b border-dashed border-mute-200"
+                  ? "border-mute-200 border-b border-dashed"
                   : ""
               }
             >

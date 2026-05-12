@@ -23,7 +23,7 @@ export default async function NewBookingPage() {
         actions={
           <Link
             href="/admin/bookings"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -31,15 +31,18 @@ export default async function NewBookingPage() {
       />
       <Card>
         <CardTitle th="รายละเอียดการจอง" en="Booking details" />
-        <form action={createBooking} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={createBooking}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Room
             </span>
             <select
               name="room_id"
               required
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
               {rooms.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -50,14 +53,14 @@ export default async function NewBookingPage() {
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Status
             </span>
             <select
               name="status"
               required
               defaultValue="Confirmed"
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
               {STATUSES.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -68,7 +71,7 @@ export default async function NewBookingPage() {
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Date (Asia/Bangkok)
             </span>
             <input
@@ -76,19 +79,19 @@ export default async function NewBookingPage() {
               type="date"
               required
               defaultValue="2026-05-13"
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Period
             </span>
             <select
               name="period"
               required
               defaultValue="midday"
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
               {BOOKING_PERIODS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -99,7 +102,7 @@ export default async function NewBookingPage() {
           </label>
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               User label · ผู้จอง (required)
             </span>
             <input
@@ -107,24 +110,26 @@ export default async function NewBookingPage() {
               type="text"
               required
               maxLength={120}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Purpose (optional)
             </span>
             <input
               name="purpose"
               type="text"
               maxLength={200}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <div className="md:col-span-2">
-            <Btn type="submit" variant="primary">Create booking →</Btn>
+            <Btn type="submit" variant="primary">
+              Create booking →
+            </Btn>
           </div>
         </form>
       </Card>

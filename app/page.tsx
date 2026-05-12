@@ -25,7 +25,7 @@ function ViewCard({
     <Link
       href={href}
       className={cn(
-        "group relative block bg-paper border-[1.5px] border-line p-6 sm:p-8",
+        "group bg-paper border-line relative block border-[1.5px] p-6 sm:p-8",
         "transition-transform duration-150 ease-out",
         "hover:-translate-x-[2px] hover:-translate-y-[2px]",
         "active:translate-x-0 active:translate-y-0",
@@ -36,24 +36,24 @@ function ViewCard({
     >
       <div
         className={cn(
-          "absolute right-0 top-0 h-16 w-24 border-l-[1.5px] border-b-[1.5px] border-line",
+          "border-line absolute top-0 right-0 h-16 w-24 border-b-[1.5px] border-l-[1.5px]",
           halftone,
         )}
         aria-hidden
       />
-      <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mute-500">
+      <p className="text-mute-500 font-mono text-[11px] tracking-[0.22em] uppercase">
         {eyebrow}
       </p>
-      <h2 className="font-display italic text-4xl sm:text-5xl leading-[1.05] mt-3 text-ink">
+      <h2 className="font-display text-ink mt-3 text-4xl leading-[1.05] italic sm:text-5xl">
         {titleEn}
       </h2>
-      <p className="font-display italic text-2xl sm:text-3xl leading-[1.1] mt-1 text-blue">
+      <p className="font-display text-blue mt-1 text-2xl leading-[1.1] italic sm:text-3xl">
         {titleTh}
       </p>
-      <p className="mt-5 text-[13.5px] leading-[1.65] text-mute-700 max-w-[36ch]">
+      <p className="text-mute-700 mt-5 max-w-[36ch] text-[13.5px] leading-[1.65]">
         {body}
       </p>
-      <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.2em] text-ink inline-flex items-center gap-2">
+      <p className="text-ink mt-6 inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.2em] uppercase">
         Enter view
         <span aria-hidden className="text-blue">
           →
@@ -69,23 +69,23 @@ export default function Home() {
       <div className="mx-auto max-w-5xl">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mute-500">
+            <p className="text-mute-500 font-mono text-[11px] tracking-[0.22em] uppercase">
               ★ Chitralada · 2026
             </p>
-            <h1 className="font-display italic text-5xl sm:text-7xl leading-[0.95] mt-2 text-ink">
+            <h1 className="font-display text-ink mt-2 text-5xl leading-[0.95] italic sm:text-7xl">
               CD Smart
               <br />
               <span className="text-blue">Campus</span>
             </h1>
-            <p className="font-display italic text-2xl sm:text-3xl mt-2 text-mute-700">
+            <p className="font-display text-mute-700 mt-2 text-2xl italic sm:text-3xl">
               สมาร์ตแคมปัส จิตรลดา
             </p>
           </div>
           <BrandMark size={56} className="shrink-0" />
         </header>
 
-        <div className="mt-10 border-t-[1.5px] border-line pt-6">
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-mute-500">
+        <div className="border-line mt-10 border-t-[1.5px] pt-6">
+          <p className="text-mute-500 font-mono text-[11px] tracking-[0.22em] uppercase">
             ⚡ Choose a view · เลือกมุมมอง
           </p>
         </div>
@@ -111,11 +111,11 @@ export default function Home() {
           />
         </section>
 
-        <footer className="mt-16 flex items-center justify-between border-t-[1.5px] border-line pt-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-mute-500">
+        <footer className="border-line mt-16 flex items-center justify-between border-t-[1.5px] pt-4">
+          <p className="text-mute-500 font-mono text-[10px] tracking-[0.22em] uppercase">
             Prototype · Phase 0
           </p>
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-mute-500">
+          <p className="text-mute-500 font-mono text-[10px] tracking-[0.22em] uppercase">
             Editorial Zine · Bilingual TH / EN
           </p>
         </footer>

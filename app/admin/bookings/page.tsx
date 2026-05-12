@@ -17,12 +17,32 @@ import { GANTT_HOURS } from "@/lib/ui/admin";
 
 const TODAY = "2026-05-12";
 const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 const MONTHS_TH = [
-  "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-  "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
+  "ม.ค.",
+  "ก.พ.",
+  "มี.ค.",
+  "เม.ย.",
+  "พ.ค.",
+  "มิ.ย.",
+  "ก.ค.",
+  "ส.ค.",
+  "ก.ย.",
+  "ต.ค.",
+  "พ.ย.",
+  "ธ.ค.",
 ];
 
 function isValidDate(s: string | undefined): s is string {
@@ -73,7 +93,9 @@ export default async function AdminBookings({
     getDayBookings(selectedDate),
   ]);
 
-  const activeCount = dayBookings.filter((b) => b.status === "Confirmed").length;
+  const activeCount = dayBookings.filter(
+    (b) => b.status === "Confirmed",
+  ).length;
   const pendingCount = dayBookings.filter((b) => b.status === "Pending").length;
 
   return (
@@ -92,7 +114,7 @@ export default async function AdminBookings({
             </Link>
             <Link
               href="/admin/bookings/new"
-              className="inline-block border-[1.5px] border-line bg-blue px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white transition-all [box-shadow:3px_3px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep hover:[box-shadow:4px_4px_0_var(--color-ink)]"
+              className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"
             >
               + New Booking
             </Link>

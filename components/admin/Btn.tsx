@@ -25,7 +25,7 @@ export function Btn({
     <button
       type="button"
       className={cn(
-        "border-[1.5px] border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-all",
+        "border-line border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] uppercase transition-all",
         VARIANT[variant],
         className,
       )}

@@ -16,7 +16,7 @@ export function TagChipRow({
             key={tag}
             type="button"
             className={cn(
-              "rounded-full border-[1.2px] border-line px-2.5 py-1 font-mono text-[10px] lowercase tracking-[0.04em] transition-colors",
+              "border-line rounded-full border-[1.2px] px-2.5 py-1 font-mono text-[10px] tracking-[0.04em] lowercase transition-colors",
               active ? "bg-ink text-yellow" : "bg-paper text-ink",
             )}
           >

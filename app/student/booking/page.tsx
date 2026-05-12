@@ -29,8 +29,9 @@ function isPeriodId(v: string): v is PeriodId {
 }
 
 const MAY_DATES = new Set(
-  Array.from({ length: 31 }, (_, i) =>
-    `2026-05-${String(i + 1).padStart(2, "0")}`,
+  Array.from(
+    { length: 31 },
+    (_, i) => `2026-05-${String(i + 1).padStart(2, "0")}`,
   ),
 );
 
@@ -55,7 +56,11 @@ function roomLabel(rooms: Room[], id: string): string {
   return rooms.find((r) => r.id === id)?.nameEn ?? "";
 }
 
-function buildEyebrow(date: string, periodText: string, roomName: string): string {
+function buildEyebrow(
+  date: string,
+  periodText: string,
+  roomName: string,
+): string {
   if (!date && !periodText && !roomName) return "";
   const day = date ? Number(date.slice(-2)) : "·";
   return `${day} MAY · ${periodText ? periodText.toUpperCase() : "·"} · ${roomName ? roomName.toUpperCase() : "·"}`;
@@ -76,7 +81,8 @@ export default async function StudentBooking({
   const room = String(sp.room ?? "");
   const ok = sp.ok === "1";
 
-  const rooms = tab === "music" ? await getMusicRooms() : await getMeetingRooms();
+  const rooms =
+    tab === "music" ? await getMusicRooms() : await getMeetingRooms();
 
   const currentParams: Record<string, string> = {};
   if (tab !== "music") currentParams.tab = tab;
@@ -145,7 +151,7 @@ export default async function StudentBooking({
       />
       <MobileBody className="space-y-3.5">
         {ok && (
-          <div className="border-[1.5px] border-ink bg-yellow px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-ink">
+          <div className="border-ink bg-yellow text-ink border-[1.5px] px-3 py-2 font-mono text-[11px] tracking-[0.14em] uppercase">
             ✓ Booking submitted · ส่งคำขอแล้ว — admin will confirm shortly.
           </div>
         )}

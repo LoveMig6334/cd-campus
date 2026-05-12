@@ -43,7 +43,11 @@ function timeFromTimestamp(ts: string): string {
   return match ? match[1] : "00:00";
 }
 
-function ganttPctFromTime(time: string, dir: "left" | "width", end?: string): number {
+function ganttPctFromTime(
+  time: string,
+  dir: "left" | "width",
+  end?: string,
+): number {
   // Gantt spans 08:00 → 18:00 → 10 hours of width.
   const span = 10 * 60; // minutes
   const [hh, mm] = time.split(":").map(Number);
@@ -99,7 +103,12 @@ export async function findConflictingBooking(
   startsAt: string,
   endsAt: string,
   excludeId?: string,
-): Promise<{ id: string; user_label: string; starts_at: string; ends_at: string } | null> {
+): Promise<{
+  id: string;
+  user_label: string;
+  starts_at: string;
+  ends_at: string;
+} | null> {
   const db = await createClient();
   let query = db
     .from("bookings")
@@ -133,7 +142,11 @@ export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
     ends_at: string;
     bar_variant: GanttBarVariant;
     purpose: string | null;
-    rooms: { name_en: string; name_th: string; sort_order: number | null } | null;
+    rooms: {
+      name_en: string;
+      name_th: string;
+      sort_order: number | null;
+    } | null;
   };
   const rows = (data ?? []) as unknown as Row[];
 
@@ -142,7 +155,11 @@ export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
     if (!r.rooms) continue;
     const key = r.rooms.name_en;
     if (!byRoom.has(key)) {
-      byRoom.set(key, { nameEn: r.rooms.name_en, nameTh: r.rooms.name_th, bars: [] });
+      byRoom.set(key, {
+        nameEn: r.rooms.name_en,
+        nameTh: r.rooms.name_th,
+        bars: [],
+      });
     }
     const room = byRoom.get(key)!;
     const start = timeFromTimestamp(r.starts_at);
@@ -246,9 +263,7 @@ export async function getRecentBookings(limit = 5): Promise<AdminBookingRow[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("bookings")
-    .select(
-      "user_label, starts_at, ends_at, status, rooms!inner(name_en)",
-    )
+    .select("user_label, starts_at, ends_at, status, rooms!inner(name_en)")
     .order("starts_at", { ascending: true })
     .limit(limit);
   if (error) throw new Error(`getRecentBookings: ${error.message}`);

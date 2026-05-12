@@ -94,4 +94,3 @@ export const ADMIN_SPORT_UPCOMING: CalendarEvent[] = [
     category: "sport",
   },
 ];
-

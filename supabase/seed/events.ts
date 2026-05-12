@@ -41,7 +41,10 @@ function categoryFromTag(tag: string): Category {
   }
 }
 
-function categoryFor(variant: string): { category: Category; highlight: boolean } {
+function categoryFor(variant: string): {
+  category: Category;
+  highlight: boolean;
+} {
   if (variant === "highlight") {
     return { category: HIGHLIGHT_DEFAULT_CATEGORY, highlight: true };
   }
@@ -118,7 +121,10 @@ export async function seedEvents(
 
   // Wipe-and-reinsert is safest for events since there is no natural key.
   // The seed is gated and intended to run against the prototype DB.
-  const { error: delErr } = await db.from("events").delete().not("id", "is", null);
+  const { error: delErr } = await db
+    .from("events")
+    .delete()
+    .not("id", "is", null);
   if (delErr) throw new Error(`events delete: ${delErr.message}`);
   const { error } = await db.from("events").insert(rows);
   if (error) throw new Error(`events insert: ${error.message}`);

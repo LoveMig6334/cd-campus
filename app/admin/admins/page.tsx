@@ -15,41 +15,44 @@ export default async function AdminAdminsPage() {
 
       <Card className="mb-[18px]">
         <CardTitle th="เพิ่มแอดมิน" en="New admin" />
-        <form action={createAdmin} className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+        <form
+          action={createAdmin}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Email
             <input
               name="email"
               type="email"
               required
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Display name · ชื่อแสดง
             <input
               name="display_name"
               type="text"
               required
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Password (≥ 12 chars)
             <input
               name="password"
               type="password"
               required
               minLength={12}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Tier
             <select
               name="tier"
               defaultValue="normal"
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             >
               <option value="normal">normal</option>
               <option value="root">root</option>
@@ -69,7 +72,7 @@ export default async function AdminAdminsPage() {
               {["Display name", "Email", "Tier", "Status", ""].map((h, i) => (
                 <th
                   key={i}
-                  className="border-b-[1.5px] border-ink bg-cream px-2.5 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                  className="border-ink bg-cream text-mute-700 border-b-[1.5px] px-2.5 py-2 text-left font-mono text-[10px] tracking-[0.14em] uppercase"
                 >
                   {h}
                 </th>
@@ -88,7 +91,7 @@ export default async function AdminAdminsPage() {
                   className="hover:bg-cream [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
                 >
                   <td className={td}>
-                    <span className="font-display italic text-[15px]">
+                    <span className="font-display text-[15px] italic">
                       {a.display_name}
                     </span>
                   </td>

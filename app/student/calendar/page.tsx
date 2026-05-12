@@ -5,10 +5,7 @@ import { CalendarEventCard } from "@/components/student/CalendarEventCard";
 import { CalendarGrid } from "@/components/student/CalendarGrid";
 import { CalendarMonthRow } from "@/components/student/CalendarMonthRow";
 import { IconButton } from "@/components/ui/IconButton";
-import {
-  getStudentDayEvents,
-  getStudentMonth,
-} from "@/lib/queries/events";
+import { getStudentDayEvents, getStudentMonth } from "@/lib/queries/events";
 import { CALENDAR_CHIPS, SELECTED_DAY_LABEL } from "@/lib/ui/calendar";
 
 export default async function StudentCalendar() {
@@ -43,9 +40,9 @@ export default async function StudentCalendar() {
         <CalendarChipRow chips={CALENDAR_CHIPS} activeId="all" />
         <CalendarGrid days={days} />
 
-        <div className="flex items-center gap-2 pt-1 font-mono text-[10px] uppercase tracking-[0.18em]">
+        <div className="flex items-center gap-2 pt-1 font-mono text-[10px] tracking-[0.18em] uppercase">
           <span>{SELECTED_DAY_LABEL}</span>
-          <span aria-hidden className="h-px flex-1 bg-line" />
+          <span aria-hidden className="bg-line h-px flex-1" />
         </div>
         <div className="space-y-2">
           {events.map((event, i) => (

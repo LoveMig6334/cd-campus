@@ -1,7 +1,4 @@
-import type {
-  AdminKpi,
-  PortfolioAdminRow,
-} from "@/lib/types";
+import type { AdminKpi, PortfolioAdminRow } from "@/lib/types";
 
 // Seed rows live before the DB assigns a UUID, so the `id` field on
 // PortfolioAdminRow is irrelevant here. Strip it for the seed fixtures.

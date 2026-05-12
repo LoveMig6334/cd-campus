@@ -24,27 +24,27 @@
 
 ## File structure (post-3c)
 
-| Path | Purpose |
-|---|---|
-| `lib/types.ts` | All TS types currently in `supabase/seed/data/types.ts` + `CATEGORY_COLOR` constant. **Moved** (was the seed-data types module). |
-| `lib/ui/calendar.ts` | `CALENDAR_CHIPS`, the static May 2026 day-grid skeleton (which days are in-month / today / selected / closed), `SELECTED_DAY_LABEL`. |
-| `lib/ui/booking.ts` | `BOOKING_TABS`, `BOOKING_ACTIVE_TAB`, `BOOKING_PERIODS`, `BOOKING_CONFIRM_EYEBROW`, the static May day grid for booking, `BOOKING_ROOM_STATUS_BY_NAME` map. |
-| `lib/ui/pshare.ts` | `PSHARE_TAGS`, `PSHARE_ACTIVE_TAG`. |
-| `lib/ui/portfolio.ts` | `PORTFOLIO_TABS`, `PORTFOLIO_ACTIVE_TAB`. |
-| `lib/ui/carelin.ts` | `CARELIN_DESK_TABS`, `CARELIN_DESK_ACTIVE_TAB`. |
-| `lib/ui/sport.ts` | `SPORT_HERO` (label/title/meta). |
-| `lib/ui/admin.ts` | `ADMIN_BOOKING_DATE`, `GANTT_HOURS`, `PLACEMENT_COLOR`. |
-| `lib/queries/util.ts` | Shared mapping helpers: `KEY_BY_HOUSE_ID`, `cssColorForCategory`. |
-| `lib/queries/houses.ts` | `getHouses()`, `getScoreboard()`, `getLeaderboard()`. |
-| `lib/queries/rooms.ts` | `getMusicRooms()`, `getRoomsByKind(kind)`. |
-| `lib/queries/events.ts` | `getStudentMonth()`, `getStudentDayEvents(day)`, `getAdminMonth()`, `getAdminTodayEvents()`, `getStudentUpcomingSport()`, `getAdminUpcomingSport()`. |
-| `lib/queries/sportResults.ts` | `getAdminSportResults()`, `getStudentLiveResults()`. |
-| `lib/queries/bookings.ts` | `getAdminTodayBookings()`, `getGanttRooms()`, `getRecentBookings()`. |
-| `lib/queries/projects.ts` | `getStudentProjects()`, `getAdminPortfolioRows()`. |
-| `lib/queries/pshare.ts` | `getStudentPshareFeed()`. |
-| `lib/queries/carelin.ts` | `getCarelinRequests()`, `getCarelinDeskRows()`. |
-| `lib/queries/siteConfig.ts` | `getHomeHero()`, `getAdminGreeting()`, `getOverviewKpis()`, `getPortfolioStats()`, `getPortfolioKpis()`, `getCarelinKpis()`, `getTrendChart()`. |
-| `supabase/seed/data/*.ts` | **Trimmed.** Each file retains only the typed mock arrays the seed script consumes — every static-UI export is moved out, and every `import … from "./types"` is rewritten to import from `@/lib/types`. |
+| Path                          | Purpose                                                                                                                                                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/types.ts`                | All TS types currently in `supabase/seed/data/types.ts` + `CATEGORY_COLOR` constant. **Moved** (was the seed-data types module).                                                                         |
+| `lib/ui/calendar.ts`          | `CALENDAR_CHIPS`, the static May 2026 day-grid skeleton (which days are in-month / today / selected / closed), `SELECTED_DAY_LABEL`.                                                                     |
+| `lib/ui/booking.ts`           | `BOOKING_TABS`, `BOOKING_ACTIVE_TAB`, `BOOKING_PERIODS`, `BOOKING_CONFIRM_EYEBROW`, the static May day grid for booking, `BOOKING_ROOM_STATUS_BY_NAME` map.                                              |
+| `lib/ui/pshare.ts`            | `PSHARE_TAGS`, `PSHARE_ACTIVE_TAG`.                                                                                                                                                                      |
+| `lib/ui/portfolio.ts`         | `PORTFOLIO_TABS`, `PORTFOLIO_ACTIVE_TAB`.                                                                                                                                                                |
+| `lib/ui/carelin.ts`           | `CARELIN_DESK_TABS`, `CARELIN_DESK_ACTIVE_TAB`.                                                                                                                                                          |
+| `lib/ui/sport.ts`             | `SPORT_HERO` (label/title/meta).                                                                                                                                                                         |
+| `lib/ui/admin.ts`             | `ADMIN_BOOKING_DATE`, `GANTT_HOURS`, `PLACEMENT_COLOR`.                                                                                                                                                  |
+| `lib/queries/util.ts`         | Shared mapping helpers: `KEY_BY_HOUSE_ID`, `cssColorForCategory`.                                                                                                                                        |
+| `lib/queries/houses.ts`       | `getHouses()`, `getScoreboard()`, `getLeaderboard()`.                                                                                                                                                    |
+| `lib/queries/rooms.ts`        | `getMusicRooms()`, `getRoomsByKind(kind)`.                                                                                                                                                               |
+| `lib/queries/events.ts`       | `getStudentMonth()`, `getStudentDayEvents(day)`, `getAdminMonth()`, `getAdminTodayEvents()`, `getStudentUpcomingSport()`, `getAdminUpcomingSport()`.                                                     |
+| `lib/queries/sportResults.ts` | `getAdminSportResults()`, `getStudentLiveResults()`.                                                                                                                                                     |
+| `lib/queries/bookings.ts`     | `getAdminTodayBookings()`, `getGanttRooms()`, `getRecentBookings()`.                                                                                                                                     |
+| `lib/queries/projects.ts`     | `getStudentProjects()`, `getAdminPortfolioRows()`.                                                                                                                                                       |
+| `lib/queries/pshare.ts`       | `getStudentPshareFeed()`.                                                                                                                                                                                |
+| `lib/queries/carelin.ts`      | `getCarelinRequests()`, `getCarelinDeskRows()`.                                                                                                                                                          |
+| `lib/queries/siteConfig.ts`   | `getHomeHero()`, `getAdminGreeting()`, `getOverviewKpis()`, `getPortfolioStats()`, `getPortfolioKpis()`, `getCarelinKpis()`, `getTrendChart()`.                                                          |
+| `supabase/seed/data/*.ts`     | **Trimmed.** Each file retains only the typed mock arrays the seed script consumes — every static-UI export is moved out, and every `import … from "./types"` is rewritten to import from `@/lib/types`. |
 
 ---
 
@@ -53,11 +53,11 @@
 **House key ↔ id:**
 
 | `houses.id` | `House` key |
-|---|---|
-| 1 | `green` |
-| 2 | `purple` |
-| 3 | `orange` |
-| 4 | `pink` |
+| ----------- | ----------- |
+| 1           | `green`     |
+| 2           | `purple`    |
+| 3           | `orange`    |
+| 4           | `pink`      |
 
 `KEY_BY_HOUSE_ID` (in `lib/queries/util.ts`) is the inverse of the seed's `HOUSE_ID_BY_KEY`.
 
@@ -76,6 +76,7 @@
 ### Task 1: Move types and CATEGORY_COLOR to `lib/types.ts`
 
 **Files:**
+
 - Create: `lib/types.ts` (moved-from `supabase/seed/data/types.ts`)
 - Delete: `supabase/seed/data/types.ts`
 - Modify: every `app/**`, `components/**`, and `supabase/seed/data/*.ts` file that imports from `./types` or `@/supabase/seed/data/types`.
@@ -131,6 +132,7 @@ git commit -m "move types to lib/types.ts; rewrite imports"
 ### Task 2: Move static UI config out of seed-data
 
 **Files:**
+
 - Create: `lib/ui/calendar.ts`, `lib/ui/booking.ts`, `lib/ui/pshare.ts`, `lib/ui/portfolio.ts`, `lib/ui/carelin.ts`, `lib/ui/sport.ts`, `lib/ui/admin.ts`
 - Modify: components that import these constants (CalendarLegend, EventResultsTable, others)
 
@@ -163,10 +165,21 @@ const other = (num: number): CalendarDay => ({ num, inMonth: false });
 // Dots are populated by the events query layer.
 export const MAY_2026_SKELETON: CalendarDay[] = [
   // leading April 26–30 (Sun-Thu)
-  other(26), other(27), other(28), other(29), other(30),
-  make(1), make(2),
+  other(26),
+  other(27),
+  other(28),
+  other(29),
+  other(30),
+  make(1),
+  make(2),
   // 3–9
-  make(3), make(4), make(5), make(6), make(7), make(8), make(9),
+  make(3),
+  make(4),
+  make(5),
+  make(6),
+  make(7),
+  make(8),
+  make(9),
   // 10–16
   make(10),
   make(11),
@@ -176,12 +189,29 @@ export const MAY_2026_SKELETON: CalendarDay[] = [
   make(15),
   make(16),
   // 17–23
-  make(17), make(18), make(19), make(20), make(21), make(22), make(23),
+  make(17),
+  make(18),
+  make(19),
+  make(20),
+  make(21),
+  make(22),
+  make(23),
   // 24–30
-  make(24), make(25), make(26), make(27), make(28), make(29), make(30),
+  make(24),
+  make(25),
+  make(26),
+  make(27),
+  make(28),
+  make(29),
+  make(30),
   // 31 + trailing June 1–6
   make(31),
-  other(1), other(2), other(3), other(4), other(5), other(6),
+  other(1),
+  other(2),
+  other(3),
+  other(4),
+  other(5),
+  other(6),
 ];
 ```
 
@@ -214,21 +244,48 @@ const other = (num: number): CalendarDay => ({ num, inMonth: false });
 
 /** May 2026 with 1, 6, 21 closed, 12 today, 13 selected — booking variant has no dots. */
 export const BOOKING_MAY_DAYS: CalendarDay[] = [
-  other(26), other(27), other(28), other(29), other(30),
-  make(1, { state: "closed" }), make(2),
-  make(3), make(4), make(5),
+  other(26),
+  other(27),
+  other(28),
+  other(29),
+  other(30),
+  make(1, { state: "closed" }),
+  make(2),
+  make(3),
+  make(4),
+  make(5),
   make(6, { state: "closed" }),
-  make(7), make(8), make(9),
-  make(10), make(11),
+  make(7),
+  make(8),
+  make(9),
+  make(10),
+  make(11),
   make(12, { state: "today" }),
   make(13, { state: "selected" }),
-  make(14), make(15), make(16),
-  make(17), make(18), make(19), make(20),
+  make(14),
+  make(15),
+  make(16),
+  make(17),
+  make(18),
+  make(19),
+  make(20),
   make(21, { state: "closed" }),
-  make(22), make(23),
-  make(24), make(25), make(26), make(27), make(28), make(29), make(30),
+  make(22),
+  make(23),
+  make(24),
+  make(25),
+  make(26),
+  make(27),
+  make(28),
+  make(29),
+  make(30),
   make(31),
-  other(1), other(2), other(3), other(4), other(5), other(6),
+  other(1),
+  other(2),
+  other(3),
+  other(4),
+  other(5),
+  other(6),
 ];
 
 /** Demo "free/full" overlay for the 4 student-facing music rooms. */
@@ -306,7 +363,16 @@ import { CATEGORY_COLOR } from "@/lib/types";
 export const ADMIN_BOOKING_DATE = "13 May 2026";
 
 export const GANTT_HOURS = [
-  "08", "09", "10", "11", "12", "13", "14", "15", "16", "17",
+  "08",
+  "09",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "15",
+  "16",
+  "17",
 ] as const;
 
 /** Color used for placement-rank pills (rank → CSS color). */
@@ -352,6 +418,7 @@ git commit -m "extract static ui config to lib/ui/*"
 ### Task 3: Build query helpers — utility + houses + rooms
 
 **Files:**
+
 - Create: `lib/queries/util.ts`, `lib/queries/houses.ts`, `lib/queries/rooms.ts`
 
 - [ ] **Step 1: Create `lib/queries/util.ts`**
@@ -453,9 +520,11 @@ Expected: tsc clean. Commit creates 3 files.
 ### Task 4: Build query helpers — events
 
 **Files:**
+
 - Create: `lib/queries/events.ts`
 
 `events` is the most reused entity. The helper provides shape-specific functions for each consumer:
+
 - `getStudentMonth(year, month)` returns the student calendar grid (`CalendarDay[]`) with dots derived from category counts per day, layered on top of the static `MAY_2026_SKELETON`.
 - `getStudentDayEvents(year, month, day)` returns `CalendarEvent[]` for that day, sorted by time.
 - `getAdminMonth(year, month)` returns the admin BigCal grid (`BigCalDay[]`).
@@ -495,9 +564,9 @@ import { MAY_2026_SKELETON } from "@/lib/ui/calendar";
  * select the appropriate slice for each consumer.
  */
 const TODAY_TAG_PREFIXES = ["Sport", "Music", "Admin", "Academic", "Tradition"];
-const TODAY_TAG_FILTER = TODAY_TAG_PREFIXES
-  .map((p) => `tag.ilike.${p} · %`)
-  .join(",");
+const TODAY_TAG_FILTER = TODAY_TAG_PREFIXES.map(
+  (p) => `tag.ilike.${p} · %`,
+).join(",");
 
 type EventRow = {
   id: string;
@@ -511,9 +580,10 @@ type EventRow = {
 
 function monthRange(year: number, month: number) {
   const start = `${year}-${String(month).padStart(2, "0")}-01T00:00:00+07:00`;
-  const next = month === 12
-    ? `${year + 1}-01-01T00:00:00+07:00`
-    : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
+  const next =
+    month === 12
+      ? `${year + 1}-01-01T00:00:00+07:00`
+      : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
   return { start, next };
 }
 
@@ -631,16 +701,48 @@ export async function getAdminMonth(
   const other = (num: number): BigCalDay => ({ num, inMonth: false });
 
   const grid: BigCalDay[] = [
-    other(26), other(27), other(28), other(29), other(30),
-    make(1), make(2),
-    make(3), make(4), make(5), make(6), make(7), make(8), make(9),
-    make(10), make(11),
+    other(26),
+    other(27),
+    other(28),
+    other(29),
+    other(30),
+    make(1),
+    make(2),
+    make(3),
+    make(4),
+    make(5),
+    make(6),
+    make(7),
+    make(8),
+    make(9),
+    make(10),
+    make(11),
     make(12, { isToday: true }),
-    make(13), make(14), make(15), make(16),
-    make(17), make(18), make(19), make(20), make(21), make(22), make(23),
-    make(24), make(25), make(26), make(27), make(28), make(29), make(30),
+    make(13),
+    make(14),
+    make(15),
+    make(16),
+    make(17),
+    make(18),
+    make(19),
+    make(20),
+    make(21),
+    make(22),
+    make(23),
+    make(24),
+    make(25),
+    make(26),
+    make(27),
+    make(28),
+    make(29),
+    make(30),
     make(31),
-    other(1), other(2), other(3), other(4), other(5), other(6),
+    other(1),
+    other(2),
+    other(3),
+    other(4),
+    other(5),
+    other(6),
   ];
   return grid.map((cell) => {
     if (!cell.inMonth) return cell;
@@ -714,6 +816,7 @@ git commit -m "queries: events (student + admin views, calendar grids)"
 ### Task 5: Build query helpers — sport_results, bookings, projects
 
 **Files:**
+
 - Create: `lib/queries/sportResults.ts`, `lib/queries/bookings.ts`, `lib/queries/projects.ts`
 
 - [ ] **Step 1: Create `lib/queries/sportResults.ts`**
@@ -739,9 +842,7 @@ export async function getAdminSportResults(): Promise<SportResultRow[]> {
   }));
 }
 
-export async function getStudentLiveResults(
-  limit = 2,
-): Promise<LiveResult[]> {
+export async function getStudentLiveResults(limit = 2): Promise<LiveResult[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("sport_results")
@@ -781,7 +882,11 @@ function timeFromTimestamp(ts: string): string {
   return match ? match[1] : "00:00";
 }
 
-function ganttPctFromTime(time: string, dir: "left" | "width", end?: string): number {
+function ganttPctFromTime(
+  time: string,
+  dir: "left" | "width",
+  end?: string,
+): number {
   // Gantt spans 08:00 → 18:00 → 10 hours of width.
   const span = 10 * 60; // minutes
   const [hh, mm] = time.split(":").map(Number);
@@ -835,7 +940,11 @@ export async function getGanttRooms(): Promise<GanttRoom[]> {
     ends_at: string;
     bar_variant: GanttBarVariant;
     purpose: string | null;
-    rooms: { name_en: string; name_th: string; sort_order: number | null } | null;
+    rooms: {
+      name_en: string;
+      name_th: string;
+      sort_order: number | null;
+    } | null;
   };
   const rows = (data ?? []) as unknown as Row[];
 
@@ -844,7 +953,11 @@ export async function getGanttRooms(): Promise<GanttRoom[]> {
     if (!r.rooms) continue;
     const key = r.rooms.name_en;
     if (!byRoom.has(key)) {
-      byRoom.set(key, { nameEn: r.rooms.name_en, nameTh: r.rooms.name_th, bars: [] });
+      byRoom.set(key, {
+        nameEn: r.rooms.name_en,
+        nameTh: r.rooms.name_th,
+        bars: [],
+      });
     }
     const room = byRoom.get(key)!;
     const start = timeFromTimestamp(r.starts_at);
@@ -902,9 +1015,7 @@ export async function getRecentBookings(limit = 5): Promise<AdminBookingRow[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("bookings")
-    .select(
-      "user_label, starts_at, ends_at, status, rooms!inner(name_en)",
-    )
+    .select("user_label, starts_at, ends_at, status, rooms!inner(name_en)")
     .order("starts_at", { ascending: true })
     .limit(limit);
   if (error) throw new Error(`getRecentBookings: ${error.message}`);
@@ -948,8 +1059,18 @@ function fmtSubmitted(d: string | null): string {
   const m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!m) return d;
   const monthMap: Record<string, string> = {
-    "01": "Jan","02": "Feb","03": "Mar","04": "Apr","05": "May","06": "Jun",
-    "07": "Jul","08": "Aug","09": "Sep","10": "Oct","11": "Nov","12": "Dec",
+    "01": "Jan",
+    "02": "Feb",
+    "03": "Mar",
+    "04": "Apr",
+    "05": "May",
+    "06": "Jun",
+    "07": "Jul",
+    "08": "Aug",
+    "09": "Sep",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec",
   };
   return `${parseInt(m[3], 10)} ${monthMap[m[2]] ?? m[2]}`;
 }
@@ -1039,6 +1160,7 @@ git commit -m "queries: sport_results, bookings, projects"
 ### Task 6: Build query helpers — pshare, carelin, siteConfig
 
 **Files:**
+
 - Create: `lib/queries/pshare.ts`, `lib/queries/carelin.ts`, `lib/queries/siteConfig.ts`
 
 - [ ] **Step 1: Create `lib/queries/pshare.ts`**
@@ -1048,8 +1170,18 @@ import { createClient } from "@/lib/supabase/server";
 import type { PsharePost } from "@/lib/types";
 
 const THAI_MONTHS = [
-  "ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.",
-  "ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.",
+  "ม.ค.",
+  "ก.พ.",
+  "มี.ค.",
+  "เม.ย.",
+  "พ.ค.",
+  "มิ.ย.",
+  "ก.ค.",
+  "ส.ค.",
+  "ก.ย.",
+  "ต.ค.",
+  "พ.ย.",
+  "ธ.ค.",
 ];
 
 function thaiDate(ts: string | null): string {
@@ -1078,7 +1210,8 @@ export async function getStudentPshareFeed(): Promise<PsharePost[]> {
     date: thaiDate(p.published_at),
     tags: p.tags ?? [],
     art: {
-      halftone: (p.art_halftone as PsharePost["art"]["halftone"]) ?? "halftone-bl",
+      halftone:
+        (p.art_halftone as PsharePost["art"]["halftone"]) ?? "halftone-bl",
       bg: p.art_bg ?? undefined,
       numColor: p.art_num_color ?? undefined,
     },
@@ -1117,13 +1250,14 @@ export async function getCarelinRequests(): Promise<CarelinRequest[]> {
     .order("created_at", { ascending: false });
   if (error) throw new Error(`getCarelinRequests: ${error.message}`);
   return (data ?? []).map<CarelinRequest>((r) => {
-    const replies = (r.carelin_replies as unknown as Array<{
-      teacher_name: string | null;
-      role_label: string | null;
-      body: string;
-      avatar_letter: string | null;
-      created_at: string;
-    }>) ?? [];
+    const replies =
+      (r.carelin_replies as unknown as Array<{
+        teacher_name: string | null;
+        role_label: string | null;
+        body: string;
+        avatar_letter: string | null;
+        created_at: string;
+      }>) ?? [];
     const reply = replies[0];
     return {
       title: r.title,
@@ -1170,11 +1304,7 @@ export async function getCarelinDeskRows(): Promise<CarelinDeskRow[]> {
 
 ```ts
 import { createClient } from "@/lib/supabase/server";
-import type {
-  AdminKpi,
-  HomeHero,
-  PortfolioStats,
-} from "@/lib/types";
+import type { AdminKpi, HomeHero, PortfolioStats } from "@/lib/types";
 
 async function getValue<T>(key: string): Promise<T> {
   const db = await createClient();

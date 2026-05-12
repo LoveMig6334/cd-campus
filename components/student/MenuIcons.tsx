@@ -80,10 +80,7 @@ export function PshareIcon() {
 export function CarelinIcon() {
   return (
     <svg {...SVG_PROPS}>
-      <path
-        d="M8 14 L56 14 L56 44 L36 44 L26 54 L26 44 L8 44 Z"
-        fill="#FFF"
-      />
+      <path d="M8 14 L56 14 L56 44 L36 44 L26 54 L26 44 L8 44 Z" fill="#FFF" />
       <path
         d="M32 22 c-4 -4 -12 -2 -12 5 c0 7 12 13 12 13 s12 -6 12 -13 c0 -7 -8 -9 -12 -5 Z"
         fill="#E94D8F"

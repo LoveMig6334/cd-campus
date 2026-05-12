@@ -13,7 +13,7 @@ export default function NewCarelinRequest() {
         action={
           <Link
             href="/student/carelin"
-            className="border-[1.5px] border-line bg-paper px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 border-[1.5px] px-2.5 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>

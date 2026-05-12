@@ -18,14 +18,14 @@ export function TodayEventsCard({ events }: { events: AdminEvent[] }) {
                   : undefined,
             }}
           >
-            <div className="w-14 shrink-0 font-mono text-[10px] text-mute-500">
+            <div className="text-mute-500 w-14 shrink-0 font-mono text-[10px]">
               {event.time}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="font-display italic text-[16px] leading-[1.15]">
+              <div className="font-display text-[16px] leading-[1.15] italic">
                 {event.title}
               </div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-mute-500">
+              <div className="text-mute-500 mt-0.5 font-mono text-[9px] tracking-[0.12em] uppercase">
                 {event.tag}
               </div>
             </div>

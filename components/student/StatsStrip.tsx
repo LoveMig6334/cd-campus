@@ -6,12 +6,12 @@ export function StatsStrip({ stats }: { stats: PortfolioStats[] }) {
       {stats.map((s) => (
         <div
           key={s.label}
-          className="border-[1.5px] border-line bg-paper p-2.5 text-center"
+          className="border-line bg-paper border-[1.5px] p-2.5 text-center"
         >
-          <div className="font-display italic text-[24px] leading-none text-blue">
+          <div className="font-display text-blue text-[24px] leading-none italic">
             {s.num}
           </div>
-          <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-mute-500">
+          <div className="text-mute-500 mt-1 font-mono text-[9px] tracking-[0.14em] uppercase">
             {s.label}
           </div>
         </div>

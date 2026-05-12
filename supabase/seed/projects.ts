@@ -12,9 +12,7 @@ export async function seedProjects(
 ): Promise<void> {
   const done = logStep("projects");
 
-  const descByTitle = new Map(
-    PORTFOLIO_PROJECTS.map((p) => [p.title, p.desc]),
-  );
+  const descByTitle = new Map(PORTFOLIO_PROJECTS.map((p) => [p.title, p.desc]));
 
   const rows: Insert[] = PORTFOLIO_ROWS.map((r) => ({
     title_en: r.titleEn,

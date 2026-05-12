@@ -15,14 +15,14 @@ export function CalendarGrid({
   return (
     <div
       className={cn(
-        "grid grid-cols-7 border-[1.5px] border-line bg-paper",
+        "border-line bg-paper grid grid-cols-7 border-[1.5px]",
         compact ? "gap-px p-1.5" : "gap-0.5 p-2",
       )}
     >
       {WEEKDAYS.map((d) => (
         <div
           key={d}
-          className="py-1 text-center font-mono text-[9px] uppercase tracking-[0.14em] text-mute-500"
+          className="text-mute-500 py-1 text-center font-mono text-[9px] tracking-[0.14em] uppercase"
         >
           {d}
         </div>

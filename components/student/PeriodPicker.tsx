@@ -25,7 +25,7 @@ export function PeriodPicker({ periods }: { periods: BookingPeriod[] }) {
         );
         const inner = (
           <>
-            <div className="font-display italic text-[16px] leading-none">
+            <div className="font-display text-[16px] leading-none italic">
               {p.label}
             </div>
             <div
@@ -38,7 +38,7 @@ export function PeriodPicker({ periods }: { periods: BookingPeriod[] }) {
             </div>
             <div
               className={cn(
-                "mt-1 font-mono text-[8.5px] uppercase tracking-[0.12em]",
+                "mt-1 font-mono text-[8.5px] tracking-[0.12em] uppercase",
                 STATUS_DOT[p.status],
               )}
             >

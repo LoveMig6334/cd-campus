@@ -12,7 +12,7 @@ export function Card({ children, accent, className }: Props) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden border-[1.5px] border-line bg-paper px-5 py-[18px]",
+        "border-line bg-paper relative overflow-hidden border-[1.5px] px-5 py-[18px]",
         accent && "[box-shadow:5px_5px_0_var(--color-blue)]",
         className,
       )}
@@ -33,12 +33,12 @@ export function CardTitle({
 }) {
   return (
     <div className="mb-3.5 flex items-baseline gap-2.5">
-      <span className="font-display italic text-[24px] leading-none">{th}</span>
-      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-500">
+      <span className="font-display text-[24px] leading-none italic">{th}</span>
+      <span className="text-mute-500 font-mono text-[10px] tracking-[0.18em] uppercase">
         {en}
       </span>
       {menu && (
-        <span className="ml-auto font-mono text-[11px] text-mute-500">
+        <span className="text-mute-500 ml-auto font-mono text-[11px]">
           {menu}
         </span>
       )}

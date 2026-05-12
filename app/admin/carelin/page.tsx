@@ -8,10 +8,7 @@ import { TabBar } from "@/components/admin/TabBar";
 import { getCarelinDeskRows, getCarelinTabCounts } from "@/lib/queries/carelin";
 import { getCarelinKpis } from "@/lib/queries/siteConfig";
 import { requireAdmin } from "@/lib/auth";
-import {
-  CARELIN_DESK_ACTIVE_TAB,
-  carelinDeskTabs,
-} from "@/lib/ui/carelin";
+import { CARELIN_DESK_ACTIVE_TAB, carelinDeskTabs } from "@/lib/ui/carelin";
 
 export default async function AdminCarelin() {
   const [admin, kpis, rows, counts] = await Promise.all([
@@ -42,7 +39,10 @@ export default async function AdminCarelin() {
 
       <Card>
         <CardTitle th="คำขอความช่วยเหลือ" en="All requests" />
-        <TabBar tabs={carelinDeskTabs(counts)} activeId={CARELIN_DESK_ACTIVE_TAB} />
+        <TabBar
+          tabs={carelinDeskTabs(counts)}
+          activeId={CARELIN_DESK_ACTIVE_TAB}
+        />
         <CarelinDeskTable rows={rows} isRoot={isRoot} />
       </Card>
     </>

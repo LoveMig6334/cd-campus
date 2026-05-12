@@ -10,25 +10,25 @@ const HOUSE_COLOR: Record<House, string> = {
 
 export function ScoreboardCard({ entry }: { entry: ScoreboardEntry }) {
   return (
-    <div className="relative overflow-hidden border-[1.5px] border-line bg-paper p-[18px]">
+    <div className="border-line bg-paper relative overflow-hidden border-[1.5px] p-[18px]">
       <div
         aria-hidden
         className="mb-3 h-2 w-full"
         style={{ background: HOUSE_COLOR[entry.house] }}
       />
-      <div className="font-display italic text-[26px] leading-none">
+      <div className="font-display text-[26px] leading-none italic">
         {entry.nameEn}
       </div>
-      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-mute-500">
+      <div className="text-mute-500 mt-1 font-mono text-[10px] tracking-[0.16em] uppercase">
         {entry.nameTh} · {entry.rankSubtitle}
       </div>
-      <div className="my-4 font-display italic text-[56px] leading-none">
+      <div className="font-display my-4 text-[56px] leading-none italic">
         {entry.score}
       </div>
-      <div className="font-mono text-[10px] text-mute-500">{entry.stat}</div>
+      <div className="text-mute-500 font-mono text-[10px]">{entry.stat}</div>
       <Link
         href="/admin/sport/edit"
-        className="mt-2.5 inline-block border border-blue px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-blue"
+        className="border-blue text-blue mt-2.5 inline-block border px-2 py-1 font-mono text-[10px] tracking-[0.12em] uppercase"
       >
         ✎ edit score
       </Link>

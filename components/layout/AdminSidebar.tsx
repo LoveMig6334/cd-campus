@@ -97,12 +97,12 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
   const items = [...NAV, ...extraItems];
   return (
     <aside
-      className="sticky top-6 w-[240px] shrink-0 self-start border-[1.5px] border-line bg-paper p-[20px_18px_18px]"
+      className="border-line bg-paper sticky top-6 w-[240px] shrink-0 self-start border-[1.5px] p-[20px_18px_18px]"
       style={{ boxShadow: "5px 5px 0 var(--color-ink)" }}
     >
-      <div className="mb-4 border-b-[1.5px] border-line pb-4 text-center">
+      <div className="border-line mb-4 border-b-[1.5px] pb-4 text-center">
         <span
-          className="inline-block bg-blue px-[14px] pt-1 pb-2 font-display italic text-[22px] text-white"
+          className="bg-blue font-display inline-block px-[14px] pt-1 pb-2 text-[22px] text-white italic"
           style={{
             boxShadow: "2px 2px 0 var(--color-yellow)",
             transform: "rotate(-1.5deg)",
@@ -111,16 +111,16 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
           CD Smart
         </span>
         <div
-          className="-mt-1 font-display italic text-[32px] leading-[0.9] text-yellow"
+          className="font-display text-yellow -mt-1 text-[32px] leading-[0.9] italic"
           style={{ WebkitTextStroke: "1.5px var(--color-ink)" }}
         >
           2026
         </div>
-        <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-mute-500">
+        <div className="text-mute-500 mt-1 font-mono text-[9px] tracking-[0.22em] uppercase">
           ★ Chitralada ★
         </div>
       </div>
-      <div className="px-1.5 pt-3 pb-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-mute-500">
+      <div className="text-mute-500 px-1.5 pt-3 pb-1.5 font-mono text-[9px] tracking-[0.2em] uppercase">
         Workspace
       </div>
       <nav className="flex flex-col gap-0.5">
@@ -135,10 +135,10 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 border-l-[3px] px-3 py-2.5 text-left text-[13.5px] font-sans transition-colors",
+                "flex items-center gap-3 border-l-[3px] px-3 py-2.5 text-left font-sans text-[13.5px] transition-colors",
                 active
-                  ? "border-blue bg-ink font-medium text-yellow"
-                  : "border-transparent text-ink hover:bg-cream",
+                  ? "border-blue bg-ink text-yellow font-medium"
+                  : "text-ink hover:bg-cream border-transparent",
               )}
             >
               <svg
@@ -161,7 +161,7 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
                 {item.en}{" "}
                 <span
                   className={cn(
-                    "ml-1 font-display italic text-[13px]",
+                    "font-display ml-1 text-[13px] italic",
                     active ? "text-yellow" : "text-mute-500",
                   )}
                 >
@@ -172,10 +172,10 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
           );
         })}
       </nav>
-      <form action={signOut} className="mt-3 border-t-[1.5px] border-line pt-3">
+      <form action={signOut} className="border-line mt-3 border-t-[1.5px] pt-3">
         <button
           type="submit"
-          className="w-full px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-500 transition-colors hover:text-house-pink"
+          className="text-mute-500 hover:text-house-pink w-full px-3 py-2 text-left font-mono text-[10px] tracking-[0.14em] uppercase transition-colors"
         >
           Sign out · ออกจากระบบ →
         </button>

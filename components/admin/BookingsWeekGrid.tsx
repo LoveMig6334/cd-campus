@@ -13,8 +13,18 @@ const CHIP_VARIANT: Record<GanttBarVariant, string> = {
 
 const WEEKDAY_LABELS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 const MONTH_ABBR = [
-  "jan", "feb", "mar", "apr", "may", "jun",
-  "jul", "aug", "sep", "oct", "nov", "dec",
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
 ];
 
 function dayHeader(dateISO: string, idx: number, today: string) {
@@ -41,9 +51,9 @@ export function BookingsWeekGrid({
   bookingsByRoomDay: Record<string, Record<string, WeekChip[]>>;
 }) {
   return (
-    <div className="overflow-x-auto border-[1.5px] border-line bg-cream p-3.5">
+    <div className="border-line bg-cream overflow-x-auto border-[1.5px] p-3.5">
       <div className="grid min-w-[820px] grid-cols-[160px_repeat(7,1fr)]">
-        <div className="border-b-[1.5px] border-ink bg-paper px-2.5 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-mute-500">
+        <div className="border-ink bg-paper text-mute-500 border-b-[1.5px] px-2.5 py-2 font-mono text-[10px] tracking-[0.1em] uppercase">
           Room
         </div>
         {weekDays.map((dayISO, i) => {
@@ -54,14 +64,14 @@ export function BookingsWeekGrid({
               key={dayISO}
               href={`?date=${dayISO}`}
               className={cn(
-                "border-b-[1.5px] border-ink px-2.5 py-2 text-left",
-                i < 6 && "border-r border-dashed border-mute-300",
+                "border-ink border-b-[1.5px] px-2.5 py-2 text-left",
+                i < 6 && "border-mute-300 border-r border-dashed",
                 isSelected ? "bg-blue text-white" : "bg-paper",
               )}
             >
               <div
                 className={cn(
-                  "font-mono text-[10px] uppercase tracking-[0.1em]",
+                  "font-mono text-[10px] tracking-[0.1em] uppercase",
                   isSelected ? "text-white/80" : "text-mute-500",
                 )}
               >
@@ -70,7 +80,7 @@ export function BookingsWeekGrid({
               </div>
               <div
                 className={cn(
-                  "font-display italic text-[14px] leading-tight",
+                  "font-display text-[14px] leading-tight italic",
                   isSelected ? "text-white" : "text-ink",
                 )}
               >
@@ -104,9 +114,9 @@ function RoomRow({
 }) {
   return (
     <>
-      <div className="border-r-[1.5px] border-b border-dashed border-mute-300 border-r-ink bg-paper px-2.5 py-3 font-display italic text-[15px]">
+      <div className="border-mute-300 border-r-ink bg-paper font-display border-r-[1.5px] border-b border-dashed px-2.5 py-3 text-[15px] italic">
         {room.nameEn}
-        <small className="mt-0.5 block font-mono text-[9px] not-italic uppercase tracking-[0.14em] text-mute-500">
+        <small className="text-mute-500 mt-0.5 block font-mono text-[9px] tracking-[0.14em] uppercase not-italic">
           {room.nameTh}
         </small>
       </div>
@@ -116,8 +126,8 @@ function RoomRow({
           <div
             key={dayISO}
             className={cn(
-              "relative min-h-16 overflow-hidden border-b border-dashed border-mute-300 bg-paper px-1.5 py-1.5",
-              i < 6 && "border-r border-dashed border-mute-300",
+              "border-mute-300 bg-paper relative min-h-16 overflow-hidden border-b border-dashed px-1.5 py-1.5",
+              i < 6 && "border-mute-300 border-r border-dashed",
             )}
           >
             {chips.map((c) => (
@@ -125,7 +135,7 @@ function RoomRow({
                 key={c.id}
                 href={`/admin/bookings/${c.id}/edit`}
                 className={cn(
-                  "mt-0.5 block border-[1.5px] border-ink px-1.5 py-0.5 font-mono text-[10px] [box-shadow:1px_1px_0_var(--color-ink)] first:mt-0",
+                  "border-ink mt-0.5 block border-[1.5px] px-1.5 py-0.5 font-mono text-[10px] [box-shadow:1px_1px_0_var(--color-ink)] first:mt-0",
                   CHIP_VARIANT[c.variant],
                 )}
               >

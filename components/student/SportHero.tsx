@@ -6,7 +6,7 @@ type Props = {
 
 export function SportHero({ label, title, meta }: Props) {
   return (
-    <section className="relative overflow-hidden rounded-2xl border-[1.5px] border-line bg-blue p-[18px] text-white">
+    <section className="border-line bg-blue relative overflow-hidden rounded-2xl border-[1.5px] p-[18px] text-white">
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0"
@@ -16,10 +16,10 @@ export function SportHero({ label, title, meta }: Props) {
           backgroundSize: "8px 8px",
         }}
       />
-      <div className="relative font-mono text-[10px] uppercase tracking-[0.2em] text-yellow">
+      <div className="text-yellow relative font-mono text-[10px] tracking-[0.2em] uppercase">
         {label}
       </div>
-      <div className="relative mt-1 font-display italic text-[32px] leading-none">
+      <div className="font-display relative mt-1 text-[32px] leading-none italic">
         {title}
       </div>
       <div className="relative mt-1.5 font-mono text-[11px] tracking-[0.1em]">

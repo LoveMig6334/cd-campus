@@ -3,8 +3,18 @@ import type { PsharePost } from "@/lib/types";
 import type { Database } from "@/lib/supabase/database.types";
 
 const THAI_MONTHS = [
-  "ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.",
-  "ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.",
+  "ม.ค.",
+  "ก.พ.",
+  "มี.ค.",
+  "เม.ย.",
+  "พ.ค.",
+  "มิ.ย.",
+  "ก.ค.",
+  "ส.ค.",
+  "ก.ย.",
+  "ต.ค.",
+  "พ.ย.",
+  "ธ.ค.",
 ];
 
 function thaiDate(ts: string | null): string {
@@ -33,7 +43,8 @@ export async function getStudentPshareFeed(): Promise<PsharePost[]> {
     date: thaiDate(p.published_at),
     tags: p.tags ?? [],
     art: {
-      halftone: (p.art_halftone as PsharePost["art"]["halftone"]) ?? "halftone-bl",
+      halftone:
+        (p.art_halftone as PsharePost["art"]["halftone"]) ?? "halftone-bl",
       bg: p.art_bg ?? undefined,
       numColor: p.art_num_color ?? undefined,
     },

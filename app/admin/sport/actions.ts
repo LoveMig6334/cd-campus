@@ -49,13 +49,16 @@ function parsePlacements(formData: FormData): number[] | null {
 }
 
 function parseResult(formData: FormData):
-  | { ok: true; data: {
-      title_th: string;
-      title_en: string | null;
-      category: SportCategory;
-      placements: number[];
-      time_label: string | null;
-    } }
+  | {
+      ok: true;
+      data: {
+        title_th: string;
+        title_en: string | null;
+        category: SportCategory;
+        placements: number[];
+        time_label: string | null;
+      };
+    }
   | { ok: false } {
   const title_th = String(formData.get("title_th") ?? "").trim();
   const title_en_raw = String(formData.get("title_en") ?? "").trim();

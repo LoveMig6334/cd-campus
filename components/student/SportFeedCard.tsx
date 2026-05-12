@@ -9,8 +9,8 @@ const HOUSE_COLOR: Record<House, string> = {
 
 export function SportFeedCard({ result }: { result: LiveResult }) {
   return (
-    <article className="flex gap-3 rounded-[10px] border-[1.5px] border-line bg-paper p-3.5">
-      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-yellow text-ink">
+    <article className="border-line bg-paper flex gap-3 rounded-[10px] border-[1.5px] p-3.5">
+      <div className="bg-yellow text-ink grid h-10 w-10 shrink-0 place-items-center rounded-md">
         {result.icon === "running" ? (
           <svg
             width="18"
@@ -37,17 +37,17 @@ export function SportFeedCard({ result }: { result: LiveResult }) {
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="font-display italic text-[17px] leading-[1.15]">
+        <div className="font-display text-[17px] leading-[1.15] italic">
           {result.titleTh}
         </div>
-        <div className="font-mono text-[10px] text-mute-500">
+        <div className="text-mute-500 font-mono text-[10px]">
           {result.metaEn}
         </div>
         <div className="mt-1.5 flex gap-1">
           {result.placements.map((house, i) => (
             <span
               key={i}
-              className="grid h-[18px] w-[18px] place-items-center rounded-full border-[1.5px] border-ink font-mono text-[9px] font-semibold text-white"
+              className="border-ink grid h-[18px] w-[18px] place-items-center rounded-full border-[1.5px] font-mono text-[9px] font-semibold text-white"
               style={{ background: HOUSE_COLOR[house] }}
             >
               {i + 1}

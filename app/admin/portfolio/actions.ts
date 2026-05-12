@@ -20,10 +20,7 @@ export async function setProjectStatus(formData: FormData): Promise<void> {
   if (!isProjectStatus(status)) return;
 
   const db = await createClient();
-  const { error } = await db
-    .from("projects")
-    .update({ status })
-    .eq("id", id);
+  const { error } = await db.from("projects").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/portfolio");
@@ -42,9 +39,9 @@ type ProjectFields = {
   submitted_at: string | null;
 };
 
-function parseProject(formData: FormData):
-  | { ok: true; data: ProjectFields }
-  | { ok: false } {
+function parseProject(
+  formData: FormData,
+): { ok: true; data: ProjectFields } | { ok: false } {
   const title_en = String(formData.get("title_en") ?? "").trim();
   if (!title_en) return { ok: false };
 
@@ -52,8 +49,7 @@ function parseProject(formData: FormData):
   if (!isProjectStatus(status)) return { ok: false };
 
   const title_th = String(formData.get("title_th") ?? "").trim() || null;
-  const author_line =
-    String(formData.get("author_line") ?? "").trim() || null;
+  const author_line = String(formData.get("author_line") ?? "").trim() || null;
   const klass = String(formData.get("klass") ?? "").trim() || null;
   const desc_long = String(formData.get("desc_long") ?? "").trim() || null;
   const icon_key = String(formData.get("icon_key") ?? "").trim() || null;
@@ -85,10 +81,7 @@ export async function updateProject(formData: FormData): Promise<void> {
   if (!parsed.ok) return;
 
   const db = await createClient();
-  const { error } = await db
-    .from("projects")
-    .update(parsed.data)
-    .eq("id", id);
+  const { error } = await db.from("projects").update(parsed.data).eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/portfolio");

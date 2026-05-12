@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 
 export function RoomList({ rooms }: { rooms: Room[] }) {
   return (
-    <div className="overflow-hidden rounded-[10px] border-[1.5px] border-line bg-paper">
+    <div className="border-line bg-paper overflow-hidden rounded-[10px] border-[1.5px]">
       {rooms.map((room, i) => {
         const cls = cn(
           "flex w-full items-center justify-between px-3.5 py-3 text-left transition-colors hover:bg-cream",
@@ -14,16 +14,16 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
         const inner = (
           <>
             <div>
-              <div className="font-display italic text-[17px] leading-none">
+              <div className="font-display text-[17px] leading-none italic">
                 {room.nameEn}
               </div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-mute-500">
+              <div className="text-mute-500 mt-0.5 font-mono text-[9px] tracking-[0.14em] uppercase">
                 {room.nameTh}
               </div>
             </div>
             <span
               className={cn(
-                "rounded-full border border-ink px-2 py-1 font-mono text-[10px] text-white",
+                "border-ink rounded-full border px-2 py-1 font-mono text-[10px] text-white",
                 room.status === "free"
                   ? "bg-house-green border-house-green"
                   : "bg-house-pink border-house-pink",

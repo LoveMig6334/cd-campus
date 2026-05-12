@@ -67,12 +67,14 @@ export async function seedCarelin(
     .from("carelin_replies")
     .delete()
     .not("id", "is", null);
-  if (replyDelErr) throw new Error(`carelin_replies delete: ${replyDelErr.message}`);
+  if (replyDelErr)
+    throw new Error(`carelin_replies delete: ${replyDelErr.message}`);
   const { error: reqDelErr } = await db
     .from("carelin_requests")
     .delete()
     .not("id", "is", null);
-  if (reqDelErr) throw new Error(`carelin_requests delete: ${reqDelErr.message}`);
+  if (reqDelErr)
+    throw new Error(`carelin_requests delete: ${reqDelErr.message}`);
 
   // Insert requests, capture ids, then insert replies.
   const requestsToInsert: ReqInsert[] = combined.map((c) => ({
@@ -99,14 +101,16 @@ export async function seedCarelin(
     if (!c._reply) return [];
     const id = idByKey.get(`${c.who_name}|${c.student_id_4}`);
     if (!id) return [];
-    return [{
-      request_id: id,
-      teacher_name: c._reply.teacher,
-      role_label: c._reply.role,
-      body: c._reply.body,
-      avatar_letter: c._reply.avatar,
-      created_by_admin_id: adminId,
-    }];
+    return [
+      {
+        request_id: id,
+        teacher_name: c._reply.teacher,
+        role_label: c._reply.role,
+        body: c._reply.body,
+        avatar_letter: c._reply.avatar,
+        created_by_admin_id: adminId,
+      },
+    ];
   });
 
   const doneReply = logStep("carelin_replies");

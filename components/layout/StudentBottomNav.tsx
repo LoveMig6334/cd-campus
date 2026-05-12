@@ -54,7 +54,7 @@ const TABS: Tab[] = [
 export function StudentBottomNav() {
   const pathname = usePathname();
   return (
-    <nav className="grid shrink-0 grid-cols-4 border-t-[1.5px] border-line bg-cream pt-2 pb-3.5">
+    <nav className="border-line bg-cream grid shrink-0 grid-cols-4 border-t-[1.5px] pt-2 pb-3.5">
       {TABS.map((tab) => {
         const active =
           tab.href === "/student"
@@ -66,14 +66,14 @@ export function StudentBottomNav() {
             href={tab.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "relative flex flex-col items-center gap-[3px] py-1.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors",
-              active ? "font-semibold text-blue" : "text-mute-500",
+              "relative flex flex-col items-center gap-[3px] py-1.5 font-mono text-[9px] tracking-[0.1em] uppercase transition-colors",
+              active ? "text-blue font-semibold" : "text-mute-500",
             )}
           >
             {active && (
               <span
                 aria-hidden
-                className="absolute -top-2 left-1/2 h-[3px] w-6 -translate-x-1/2 bg-blue"
+                className="bg-blue absolute -top-2 left-1/2 h-[3px] w-6 -translate-x-1/2"
               />
             )}
             <svg

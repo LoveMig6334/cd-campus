@@ -1,9 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type {
-  AdminKpi,
-  HomeHero,
-  PortfolioStats,
-} from "@/lib/types";
+import type { AdminKpi, HomeHero, PortfolioStats } from "@/lib/types";
 
 export async function getConfigByKey<T>(key: string): Promise<T> {
   return getValue<T>(key);

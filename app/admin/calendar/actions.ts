@@ -5,7 +5,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 
-const CATEGORIES = ["sport", "tradition", "music", "admin", "academic"] as const;
+const CATEGORIES = [
+  "sport",
+  "tradition",
+  "music",
+  "admin",
+  "academic",
+] as const;
 type Category = (typeof CATEGORIES)[number];
 
 function isCategory(v: string): v is Category {

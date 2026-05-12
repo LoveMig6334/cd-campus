@@ -34,8 +34,8 @@ export default async function StudentPshare() {
       />
       <MobileBody className="space-y-3.5">
         <Blurb accent="yellow">
-          ★ พี่ ม.ปลาย เขียนแชร์ความรู้ให้น้อง — โอลิมปิก, โครงงาน, การบ้าน, life
-          tips
+          ★ พี่ ม.ปลาย เขียนแชร์ความรู้ให้น้อง — โอลิมปิก, โครงงาน, การบ้าน,
+          life tips
         </Blurb>
 
         <TagChipRow tags={PSHARE_TAGS} activeTag={PSHARE_ACTIVE_TAG} />

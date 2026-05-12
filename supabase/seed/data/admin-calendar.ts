@@ -49,7 +49,9 @@ export const ADMIN_MAY_2026: BigCalDay[] = [
   make(17),
   make(18, { events: [{ title: "Mid-term Math", variant: "academic" }] }),
   make(19, { events: [{ title: "Mid-term Eng", variant: "academic" }] }),
-  make(20, { events: [{ title: "Visit royal project", variant: "tradition" }] }),
+  make(20, {
+    events: [{ title: "Visit royal project", variant: "tradition" }],
+  }),
   make(21),
   make(22, { events: [{ title: "Orchestra concert", variant: "music" }] }),
   make(23),

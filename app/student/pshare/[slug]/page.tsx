@@ -32,14 +32,14 @@ export default async function StudentPsharePost({
         <div
           className={cn(
             halftoneClass,
-            "grid aspect-[5/3] place-items-center border-[1.5px] border-ink",
+            "border-ink grid aspect-[5/3] place-items-center border-[1.5px]",
           )}
           style={{
             background: post.art_bg ?? "var(--color-cream)",
           }}
         >
           <span
-            className="font-display italic text-[64px] leading-none"
+            className="font-display text-[64px] leading-none italic"
             style={{ color: post.art_num_color ?? "var(--color-ink)" }}
           >
             {post.num_label ?? "·"}
@@ -48,15 +48,17 @@ export default async function StudentPsharePost({
 
         <header className="space-y-1.5">
           {post.author_alias && (
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-500">
+            <p className="text-mute-500 font-mono text-[10px] tracking-[0.18em] uppercase">
               {post.author_alias}
             </p>
           )}
-          <h1 className="font-display italic text-[26px] leading-tight">
+          <h1 className="font-display text-[26px] leading-tight italic">
             {post.title}
           </h1>
           {post.snippet && (
-            <p className="font-sans text-[14px] text-mute-700">{post.snippet}</p>
+            <p className="text-mute-700 font-sans text-[14px]">
+              {post.snippet}
+            </p>
           )}
         </header>
 
@@ -67,7 +69,7 @@ export default async function StudentPsharePost({
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="border border-line bg-paper px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                className="border-line bg-paper text-mute-700 border px-2 py-0.5 font-mono text-[10px] tracking-[0.14em] uppercase"
               >
                 {tag}
               </span>

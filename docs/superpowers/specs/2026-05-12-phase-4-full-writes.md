@@ -13,18 +13,18 @@ After Phase 4, the only deliberately-deferred write is **+ Add Project** on `/ad
 
 ## Decisions log
 
-| # | Topic | Decision |
-|---|---|---|
-| 1 | Student room bookings | Anonymous, mirroring Carelin. Form takes free-form name + 4-digit `student_id_4` + optional class + purpose. New RLS policy + check constraint on `bookings`. |
-| 2 | Portfolio breadth | Approve/reject (status toggle) + edit + delete. `+ Add Project` stays inert with an in-code "deferred to Phase 5" comment. |
-| 3 | Calendar edit UX | Side-rail event list on `/admin/calendar` listing this month's events with row Edit/Delete controls. BigCal cells stay non-interactive. |
-| 4 | site_config editor | One generic action `updateSiteConfig`, but routes are per-key with structured forms: `/admin/config` (index) + `/admin/config/[key]/edit`. Six keys editable: `home_hero`, `overview_kpis`, `trend_chart`, `portfolio_stats`, `portfolio_kpis`, `carelin_kpis`. `admin_greeting` hidden from the index (computed from `admins.display_name`). |
-| 5 | Sport results UI | Dedicated routes `/admin/sport/result/new` + `/[id]/edit`. The misleading `+ Add event` button is renamed `+ Record result`. Row `⋯` on `EventResultsTable` links to edit; delete from edit form. |
-| 6 | P'share reader | Included. New `app/student/pshare/[slug]/page.tsx`, RSC, renders `body_md` with `react-markdown` + `remark-gfm`. RLS already restricts anon SELECT to `status='published'`. |
-| 7 | Booking selection state | URL params (`?date=…&period=…&room=…`). Pickers become `<Link>`s; no whole-page client wrapper. `useActionState` is a small client leaf on the bottom form. |
-| 8 | Booking conflict detection | Server-side pre-check inside `bookRoom` / `createBooking` / `updateBooking` against overlapping `(room_id, time range)`. No DB-level exclusion constraint. |
-| 9 | Period→time mapping | `PERIOD_HOURS` map in `lib/ui/booking.ts` is single source of truth, consumed by both the page and the actions. Bangkok `+07:00` anchor matches 3d. |
-| 10 | Booking cancel semantics | `cancelBooking` = `DELETE FROM bookings WHERE id=…`. Avoids extending `booking_status` enum with a `Cancelled` state. Anon writes are INSERT-only — admin remains the only canceller. |
+| #   | Topic                      | Decision                                                                                                                                                                                                                                                                                                                                      |
+| --- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Student room bookings      | Anonymous, mirroring Carelin. Form takes free-form name + 4-digit `student_id_4` + optional class + purpose. New RLS policy + check constraint on `bookings`.                                                                                                                                                                                 |
+| 2   | Portfolio breadth          | Approve/reject (status toggle) + edit + delete. `+ Add Project` stays inert with an in-code "deferred to Phase 5" comment.                                                                                                                                                                                                                    |
+| 3   | Calendar edit UX           | Side-rail event list on `/admin/calendar` listing this month's events with row Edit/Delete controls. BigCal cells stay non-interactive.                                                                                                                                                                                                       |
+| 4   | site_config editor         | One generic action `updateSiteConfig`, but routes are per-key with structured forms: `/admin/config` (index) + `/admin/config/[key]/edit`. Six keys editable: `home_hero`, `overview_kpis`, `trend_chart`, `portfolio_stats`, `portfolio_kpis`, `carelin_kpis`. `admin_greeting` hidden from the index (computed from `admins.display_name`). |
+| 5   | Sport results UI           | Dedicated routes `/admin/sport/result/new` + `/[id]/edit`. The misleading `+ Add event` button is renamed `+ Record result`. Row `⋯` on `EventResultsTable` links to edit; delete from edit form.                                                                                                                                             |
+| 6   | P'share reader             | Included. New `app/student/pshare/[slug]/page.tsx`, RSC, renders `body_md` with `react-markdown` + `remark-gfm`. RLS already restricts anon SELECT to `status='published'`.                                                                                                                                                                   |
+| 7   | Booking selection state    | URL params (`?date=…&period=…&room=…`). Pickers become `<Link>`s; no whole-page client wrapper. `useActionState` is a small client leaf on the bottom form.                                                                                                                                                                                   |
+| 8   | Booking conflict detection | Server-side pre-check inside `bookRoom` / `createBooking` / `updateBooking` against overlapping `(room_id, time range)`. No DB-level exclusion constraint.                                                                                                                                                                                    |
+| 9   | Period→time mapping        | `PERIOD_HOURS` map in `lib/ui/booking.ts` is single source of truth, consumed by both the page and the actions. Bangkok `+07:00` anchor matches 3d.                                                                                                                                                                                           |
+| 10  | Booking cancel semantics   | `cancelBooking` = `DELETE FROM bookings WHERE id=…`. Avoids extending `booking_status` enum with a `Cancelled` state. Anon writes are INSERT-only — admin remains the only canceller.                                                                                                                                                         |
 
 ## Sub-phase outline
 
@@ -32,16 +32,16 @@ Phase 4 ships as **one logical phase**, but each row in the [per-entity write se
 
 ## Per-entity write set
 
-| # | Entity | Actions | New routes | Auth | Notes |
-|---|---|---|---|---|---|
-| 1 | Carelin | `deleteCarelinRequest` | (extends `app/admin/carelin/actions.ts`) | **root** | Service-role. Row `⋯` on `CarelinDeskTable` shows Delete only if `requireRootAdmin()` resolves for the caller — server-resolved at table-render time. |
-| 2 | P'share reader | (read-only) | `app/student/pshare/[slug]/page.tsx` | anon | New `getPsharePostBySlug` query helper. Renders art panel + markdown body. `notFound()` on missing slug. |
-| 3 | Calendar | `updateEvent`, `deleteEvent` | `app/admin/calendar/[id]/edit/page.tsx` + `components/admin/AdminCalendarEventList.tsx` | admin | Side-rail right of BigCal on `/admin/calendar`. New `getAdminMonthEventList(year, month)` returns sorted `{id, starts_at, title_th, category, location}[]`. |
-| 4 | Sport results | `recordSportResult`, `updateSportResult`, `deleteSportResult` | `app/admin/sport/result/new`, `app/admin/sport/result/[id]/edit` | admin | 4 ordered house slots, category, time_label, bilingual titles. `EventResultsTable` gains a new trailing `⋯` column → edit link. Delete from edit form. Topbar button renamed "+ Record result." |
-| 5 | Portfolio | `setProjectStatus`, `updateProject`, `deleteProject` | `app/admin/portfolio/[id]/edit/page.tsx` | admin | `PortfolioAdminTable`'s existing `⋯` cell becomes a small form rendering 3 `<button formAction={setProjectStatus}>` controls (one per status) + an Edit link. Delete on edit form. |
-| 6 | site_config | `updateSiteConfig` (key-dispatched) | `app/admin/config/page.tsx`, `app/admin/config/[key]/edit/page.tsx` | admin | Six keys: `home_hero`, `overview_kpis`, `trend_chart`, `portfolio_stats`, `portfolio_kpis`, `carelin_kpis`. Per-key structured form. `trend_chart` form has 13 point inputs; server derives the SVG `path` string at write time. `home_hero` form is flat ~10 fields (with nested `leading` + `weather` flattened). KPI keys render as repeating 4-card field groups. |
-| 7 | Admin bookings | `createBooking`, `updateBooking`, `cancelBooking` | `app/admin/bookings/new`, `app/admin/bookings/[id]/edit` | admin | Wires the `+ New Booking` topbar button. `AdminTodayBookingsTable` gains a new trailing `⋯` column → edit link (table has none today). `cancelBooking` is a hard DELETE. Reuses the [conflict pre-check](#conflict-pre-check). |
-| 8 | Student bookings | `bookRoom` | (writes from existing `/student/booking`) | **anon** | New RLS policy + check constraint. Form uses `useActionState`. 4-digit `student_id_4` + name + optional class + purpose. Derives `starts_at`/`ends_at` from `PERIOD_HOURS[period]` + date. |
+| #   | Entity           | Actions                                                       | New routes                                                                              | Auth     | Notes                                                                                                                                                                                                                                                                                                                                                                 |
+| --- | ---------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Carelin          | `deleteCarelinRequest`                                        | (extends `app/admin/carelin/actions.ts`)                                                | **root** | Service-role. Row `⋯` on `CarelinDeskTable` shows Delete only if `requireRootAdmin()` resolves for the caller — server-resolved at table-render time.                                                                                                                                                                                                                 |
+| 2   | P'share reader   | (read-only)                                                   | `app/student/pshare/[slug]/page.tsx`                                                    | anon     | New `getPsharePostBySlug` query helper. Renders art panel + markdown body. `notFound()` on missing slug.                                                                                                                                                                                                                                                              |
+| 3   | Calendar         | `updateEvent`, `deleteEvent`                                  | `app/admin/calendar/[id]/edit/page.tsx` + `components/admin/AdminCalendarEventList.tsx` | admin    | Side-rail right of BigCal on `/admin/calendar`. New `getAdminMonthEventList(year, month)` returns sorted `{id, starts_at, title_th, category, location}[]`.                                                                                                                                                                                                           |
+| 4   | Sport results    | `recordSportResult`, `updateSportResult`, `deleteSportResult` | `app/admin/sport/result/new`, `app/admin/sport/result/[id]/edit`                        | admin    | 4 ordered house slots, category, time_label, bilingual titles. `EventResultsTable` gains a new trailing `⋯` column → edit link. Delete from edit form. Topbar button renamed "+ Record result."                                                                                                                                                                       |
+| 5   | Portfolio        | `setProjectStatus`, `updateProject`, `deleteProject`          | `app/admin/portfolio/[id]/edit/page.tsx`                                                | admin    | `PortfolioAdminTable`'s existing `⋯` cell becomes a small form rendering 3 `<button formAction={setProjectStatus}>` controls (one per status) + an Edit link. Delete on edit form.                                                                                                                                                                                    |
+| 6   | site_config      | `updateSiteConfig` (key-dispatched)                           | `app/admin/config/page.tsx`, `app/admin/config/[key]/edit/page.tsx`                     | admin    | Six keys: `home_hero`, `overview_kpis`, `trend_chart`, `portfolio_stats`, `portfolio_kpis`, `carelin_kpis`. Per-key structured form. `trend_chart` form has 13 point inputs; server derives the SVG `path` string at write time. `home_hero` form is flat ~10 fields (with nested `leading` + `weather` flattened). KPI keys render as repeating 4-card field groups. |
+| 7   | Admin bookings   | `createBooking`, `updateBooking`, `cancelBooking`             | `app/admin/bookings/new`, `app/admin/bookings/[id]/edit`                                | admin    | Wires the `+ New Booking` topbar button. `AdminTodayBookingsTable` gains a new trailing `⋯` column → edit link (table has none today). `cancelBooking` is a hard DELETE. Reuses the [conflict pre-check](#conflict-pre-check).                                                                                                                                        |
+| 8   | Student bookings | `bookRoom`                                                    | (writes from existing `/student/booking`)                                               | **anon** | New RLS policy + check constraint. Form uses `useActionState`. 4-digit `student_id_4` + name + optional class + purpose. Derives `starts_at`/`ends_at` from `PERIOD_HOURS[period]` + date.                                                                                                                                                                            |
 
 **Service-role usage** after Phase 4: `createAdmin`, `disableAdmin`, `deleteCarelinRequest`. Nothing else.
 
@@ -125,25 +125,25 @@ After `supabase db push`, regenerate `lib/supabase/database.types.ts` and commit
 
 ## Revalidate matrix
 
-| Action | `revalidatePath` calls | Followup |
-|---|---|---|
-| `deleteCarelinRequest` | `/admin/carelin`, `/admin/carelin/[id]` | `redirect('/admin/carelin')` |
-| `updateEvent` | `/admin/calendar`, `/student/calendar`, `/admin`, `/student` | `redirect('/admin/calendar')` |
-| `deleteEvent` | same as updateEvent | `redirect('/admin/calendar')` |
-| `recordSportResult` | `/admin/sport`, `/student/sport` | `redirect('/admin/sport')` |
-| `updateSportResult` | same | `redirect('/admin/sport')` |
-| `deleteSportResult` | same | `redirect('/admin/sport')` |
-| `setProjectStatus` | `/admin/portfolio`, `/student/portfolio` | (no redirect — same page) |
-| `updateProject` | same | `redirect('/admin/portfolio')` |
-| `deleteProject` | same | `redirect('/admin/portfolio')` |
-| `updateSiteConfig` (`home_hero`) | `/student`, `/admin/config`, `/admin/config/home_hero/edit` | `redirect('/admin/config')` |
-| `updateSiteConfig` (`overview_kpis`, `trend_chart`) | `/admin`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')` |
-| `updateSiteConfig` (`portfolio_kpis`, `portfolio_stats`) | `/admin/portfolio`, `/student/portfolio`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')` |
-| `updateSiteConfig` (`carelin_kpis`) | `/admin/carelin`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')` |
-| `createBooking` | `/admin/bookings`, `/student/booking`, `/admin` | `redirect('/admin/bookings')` |
-| `updateBooking` | same | `redirect('/admin/bookings')` |
-| `cancelBooking` (DELETE) | same | `redirect('/admin/bookings')` |
-| `bookRoom` (anon) | `/student/booking`, `/admin/bookings`, `/admin` | returns `{ok:true}` (form uses `useActionState`); page renders success state on `?ok=1` round-trip |
+| Action                                                   | `revalidatePath` calls                                                                | Followup                                                                                           |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `deleteCarelinRequest`                                   | `/admin/carelin`, `/admin/carelin/[id]`                                               | `redirect('/admin/carelin')`                                                                       |
+| `updateEvent`                                            | `/admin/calendar`, `/student/calendar`, `/admin`, `/student`                          | `redirect('/admin/calendar')`                                                                      |
+| `deleteEvent`                                            | same as updateEvent                                                                   | `redirect('/admin/calendar')`                                                                      |
+| `recordSportResult`                                      | `/admin/sport`, `/student/sport`                                                      | `redirect('/admin/sport')`                                                                         |
+| `updateSportResult`                                      | same                                                                                  | `redirect('/admin/sport')`                                                                         |
+| `deleteSportResult`                                      | same                                                                                  | `redirect('/admin/sport')`                                                                         |
+| `setProjectStatus`                                       | `/admin/portfolio`, `/student/portfolio`                                              | (no redirect — same page)                                                                          |
+| `updateProject`                                          | same                                                                                  | `redirect('/admin/portfolio')`                                                                     |
+| `deleteProject`                                          | same                                                                                  | `redirect('/admin/portfolio')`                                                                     |
+| `updateSiteConfig` (`home_hero`)                         | `/student`, `/admin/config`, `/admin/config/home_hero/edit`                           | `redirect('/admin/config')`                                                                        |
+| `updateSiteConfig` (`overview_kpis`, `trend_chart`)      | `/admin`, `/admin/config`, `/admin/config/[key]/edit`                                 | `redirect('/admin/config')`                                                                        |
+| `updateSiteConfig` (`portfolio_kpis`, `portfolio_stats`) | `/admin/portfolio`, `/student/portfolio`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')`                                                                        |
+| `updateSiteConfig` (`carelin_kpis`)                      | `/admin/carelin`, `/admin/config`, `/admin/config/[key]/edit`                         | `redirect('/admin/config')`                                                                        |
+| `createBooking`                                          | `/admin/bookings`, `/student/booking`, `/admin`                                       | `redirect('/admin/bookings')`                                                                      |
+| `updateBooking`                                          | same                                                                                  | `redirect('/admin/bookings')`                                                                      |
+| `cancelBooking` (DELETE)                                 | same                                                                                  | `redirect('/admin/bookings')`                                                                      |
+| `bookRoom` (anon)                                        | `/student/booking`, `/admin/bookings`, `/admin`                                       | returns `{ok:true}` (form uses `useActionState`); page renders success state on `?ok=1` round-trip |
 
 ## Bookings flow
 
@@ -159,6 +159,7 @@ The existing prototype layout on `/student/booking` stays — same chrome, same 
 Page is server-rendered; `searchParams: Promise<{...}>` is awaited per Next 16. Selected state for the eyebrow ("13 MAY · MIDDAY · MUSIC ROOM 1") is derived server-side from the URL.
 
 The Confirm form at the bottom is a small `'use client'` leaf using `useActionState`:
+
 - Hidden inputs for `date`, `period`, `room`, `tab` (read from URL via the parent server component and forwarded as props).
 - Text inputs for `name`, `student_id_4`, `klass` (optional), `purpose` (optional).
 - `bookRoom` returns `ActionResult`; on `{ok: false}`, the error renders inline above the CTA.
@@ -170,7 +171,7 @@ The Confirm form at the bottom is a small `'use client'` leaf using `useActionSt
 // lib/ui/booking.ts
 export const PERIOD_HOURS = {
   morning: { start: "08:00", end: "11:00" },
-  midday:  { start: "11:30", end: "14:30" },
+  midday: { start: "11:30", end: "14:30" },
   evening: { start: "15:00", end: "18:00" },
 } as const;
 
@@ -178,9 +179,10 @@ export type PeriodId = keyof typeof PERIOD_HOURS;
 ```
 
 Action derives ISO timestamps:
+
 ```ts
 const starts_at = `${date}T${PERIOD_HOURS[period].start}:00+07:00`;
-const ends_at   = `${date}T${PERIOD_HOURS[period].end}:00+07:00`;
+const ends_at = `${date}T${PERIOD_HOURS[period].end}:00+07:00`;
 ```
 
 The existing `BOOKING_PERIODS` array stays; it gains `id: PeriodId` keys so the URL value and the display label share one source.
@@ -231,9 +233,9 @@ See [Phase 3d plan](../plans/2026-05-12-supabase-3d-writes.md) and the [Supabase
 
 The §RLS policy summary table in the migration design covers Phase 4 verbatim, with **one addition**:
 
-| Table | Phase-3 anon write | Phase-4 anon write |
-|---|---|---|
-| `bookings` | none | **INSERT allowed**, gated by check constraints on `student_id_4` format and `user_label` non-empty, plus `starts_at < ends_at` |
+| Table      | Phase-3 anon write | Phase-4 anon write                                                                                                             |
+| ---------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `bookings` | none               | **INSERT allowed**, gated by check constraints on `student_id_4` format and `user_label` non-empty, plus `starts_at < ends_at` |
 
 All other anon-write rows stay at "none." All authenticated-admin rows are unchanged.
 
@@ -241,14 +243,14 @@ Service-role usage extends from 2 functions (`createAdmin`, `disableAdmin`) to *
 
 ## Open items / risks
 
-1. **Anon write surface doubles** (Carelin + bookings). Both check-constrained at the DB level; both run hand-rolled validators in the action. **No rate limiting** in Phase 4 either. *Mitigation:* check constraints catch garbage; admin can `deleteCarelinRequest` and `cancelBooking` spam. If abuse appears, Phase 5 should add IP-based throttling at the proxy layer.
+1. **Anon write surface doubles** (Carelin + bookings). Both check-constrained at the DB level; both run hand-rolled validators in the action. **No rate limiting** in Phase 4 either. _Mitigation:_ check constraints catch garbage; admin can `deleteCarelinRequest` and `cancelBooking` spam. If abuse appears, Phase 5 should add IP-based throttling at the proxy layer.
 2. **Service-role list grows by one.** `deleteCarelinRequest` joins `createAdmin` / `disableAdmin`. All three are gated by `requireRootAdmin()` and live in `app/admin/.../actions.ts`. No new client-side import paths.
-3. **Booking conflict pre-check has a small race window** between SELECT and INSERT. Acceptable for prototype scale. *Future:* add `EXCLUDE USING gist` constraint (needs `btree_gist` extension migration) if multi-tenant load matters.
+3. **Booking conflict pre-check has a small race window** between SELECT and INSERT. Acceptable for prototype scale. _Future:_ add `EXCLUDE USING gist` constraint (needs `btree_gist` extension migration) if multi-tenant load matters.
 4. **`bookings.user_label` semantics widen.** Previously admin-typed only; now also anon-supplied. The column stays a free-form display name; no roster lookup. Document in the migration file.
-5. **`admin_greeting` site_config row is dead-code-ish.** Still queried via `getAdminGreeting` (untouched in Phase 4) but the actual displayed greeting comes from `admins.display_name`. Phase 4 hides it from `/admin/config`. *Cleanup candidate for Phase 5:* drop the row and the helper.
+5. **`admin_greeting` site_config row is dead-code-ish.** Still queried via `getAdminGreeting` (untouched in Phase 4) but the actual displayed greeting comes from `admins.display_name`. Phase 4 hides it from `/admin/config`. _Cleanup candidate for Phase 5:_ drop the row and the helper.
 6. **`+ Add Project` on `/admin/portfolio` stays inert.** Mark with a code comment `// deferred to Phase 5 — needs student submission flow design`. Per the exit criterion, this is the only intentionally-inert button left after Phase 4.
 7. **The `⋯` cell in `PortfolioAdminTable`** today is decorative. Phase 4 replaces it with a small status-toggle form + edit link in the same `<td>`. Width may need tightening.
-8. **`BOOKING_ROOM_STATUS_BY_NAME` overlay in `lib/ui/booking.ts`** is a static demo overlay (free/full chips on the room list). Phase 4 leaves it as-is — real availability would mean another query, and the prototype's visual identity depends on the overlay. *Future:* compute availability from real bookings if it becomes confusing once real data is created.
+8. **`BOOKING_ROOM_STATUS_BY_NAME` overlay in `lib/ui/booking.ts`** is a static demo overlay (free/full chips on the room list). Phase 4 leaves it as-is — real availability would mean another query, and the prototype's visual identity depends on the overlay. _Future:_ compute availability from real bookings if it becomes confusing once real data is created.
 
 ## Out of scope
 

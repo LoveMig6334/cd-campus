@@ -2,15 +2,15 @@ import type { HomeHero } from "@/lib/types";
 
 export function HeroCard({ hero }: { hero: HomeHero }) {
   return (
-    <section className="relative overflow-hidden rounded-2xl border-[1.5px] border-line bg-paper p-4">
+    <section className="border-line bg-paper relative overflow-hidden rounded-2xl border-[1.5px] p-4">
       <span
         aria-hidden
         className="halftone-bl pointer-events-none absolute -top-[30px] -right-[30px] h-[120px] w-[120px] opacity-50"
       />
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-mute-500">
+      <p className="text-mute-500 font-mono text-[10px] tracking-[0.16em] uppercase">
         {hero.eyebrow}
       </p>
-      <h2 className="relative z-[1] mt-1 mb-[14px] font-display italic text-[26px] leading-[1.05]">
+      <h2 className="font-display relative z-[1] mt-1 mb-[14px] text-[26px] leading-[1.05] italic">
         {hero.titleLines.map((line, i) => (
           <span key={i} className="block">
             {line}
@@ -23,7 +23,7 @@ export function HeroCard({ hero }: { hero: HomeHero }) {
           value={
             <>
               {hero.leading.label}{" "}
-              <small className="text-[11px] text-yellow/80">
+              <small className="text-yellow/80 text-[11px]">
                 {hero.leading.points} pts
               </small>
             </>
@@ -59,20 +59,20 @@ function HeroPill({
     <div
       className={
         blue
-          ? "flex-1 rounded-md border border-blue bg-blue px-2.5 py-2 text-white"
-          : "flex-1 rounded-md border border-line bg-cream px-2.5 py-2"
+          ? "border-blue bg-blue flex-1 rounded-md border px-2.5 py-2 text-white"
+          : "border-line bg-cream flex-1 rounded-md border px-2.5 py-2"
       }
     >
       <div
         className={
           blue
-            ? "font-mono text-[9px] uppercase tracking-[0.12em] text-yellow"
-            : "font-mono text-[9px] uppercase tracking-[0.12em] text-mute-500"
+            ? "text-yellow font-mono text-[9px] tracking-[0.12em] uppercase"
+            : "text-mute-500 font-mono text-[9px] tracking-[0.12em] uppercase"
         }
       >
         {label}
       </div>
-      <div className="mt-0.5 font-display italic text-[17px] leading-[1.1]">
+      <div className="font-display mt-0.5 text-[17px] leading-[1.1] italic">
         {value}
       </div>
     </div>

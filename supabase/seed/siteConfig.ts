@@ -26,9 +26,17 @@ export async function seedSiteConfig(
 ): Promise<void> {
   const done = logStep("site_config");
   const rows: Insert[] = [
-    { key: "home_hero",       value: json(HOME_HERO),        updated_by_admin_id: adminId },
-    { key: "admin_greeting",  value: json(ADMIN_GREETING),   updated_by_admin_id: adminId },
-    { key: "overview_kpis",   value: json(ADMIN_KPIS),       updated_by_admin_id: adminId },
+    { key: "home_hero", value: json(HOME_HERO), updated_by_admin_id: adminId },
+    {
+      key: "admin_greeting",
+      value: json(ADMIN_GREETING),
+      updated_by_admin_id: adminId,
+    },
+    {
+      key: "overview_kpis",
+      value: json(ADMIN_KPIS),
+      updated_by_admin_id: adminId,
+    },
     {
       key: "trend_chart",
       value: json({
@@ -38,9 +46,21 @@ export async function seedSiteConfig(
       }),
       updated_by_admin_id: adminId,
     },
-    { key: "portfolio_stats", value: json(PORTFOLIO_STATS),   updated_by_admin_id: adminId },
-    { key: "portfolio_kpis",  value: json(PORTFOLIO_KPIS),    updated_by_admin_id: adminId },
-    { key: "carelin_kpis",    value: json(CARELIN_DESK_KPIS), updated_by_admin_id: adminId },
+    {
+      key: "portfolio_stats",
+      value: json(PORTFOLIO_STATS),
+      updated_by_admin_id: adminId,
+    },
+    {
+      key: "portfolio_kpis",
+      value: json(PORTFOLIO_KPIS),
+      updated_by_admin_id: adminId,
+    },
+    {
+      key: "carelin_kpis",
+      value: json(CARELIN_DESK_KPIS),
+      updated_by_admin_id: adminId,
+    },
   ];
   const { error } = await db
     .from("site_config")

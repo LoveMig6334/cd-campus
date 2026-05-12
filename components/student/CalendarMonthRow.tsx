@@ -13,12 +13,12 @@ export function CalendarMonthRow({ titleTh, subEn, compact }: Props) {
       <div
         className={
           compact
-            ? "font-display italic text-[20px] leading-none"
-            : "font-display italic text-[26px] leading-none"
+            ? "font-display text-[20px] leading-none italic"
+            : "font-display text-[26px] leading-none italic"
         }
       >
         {titleTh}
-        <small className="mt-0.5 block font-mono text-[10px] not-italic uppercase tracking-[0.16em] text-mute-500">
+        <small className="text-mute-500 mt-0.5 block font-mono text-[10px] tracking-[0.16em] uppercase not-italic">
           {subEn}
         </small>
       </div>

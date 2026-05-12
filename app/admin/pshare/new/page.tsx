@@ -11,7 +11,7 @@ export default function NewPsharePost() {
         actions={
           <Link
             href="/admin/pshare"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>

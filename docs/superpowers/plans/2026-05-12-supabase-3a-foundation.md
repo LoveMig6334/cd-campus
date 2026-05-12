@@ -22,18 +22,18 @@
 
 ## File structure
 
-| File | Purpose | New / Modified |
-|---|---|---|
-| `package.json` + `package-lock.json` | Add `@supabase/supabase-js`, `@supabase/ssr`, `server-only` | Modified |
-| `.env.example` | Documented placeholders for Supabase env vars | New |
-| `lib/supabase/server.ts` | `createClient()` for RSC + Server Actions, cookie-bridged | New |
-| `lib/supabase/client.ts` | `createClient()` for browser components | New |
-| `lib/supabase/serviceRole.ts` | `getSupabaseServiceRole()`, `import 'server-only'` | New |
-| `middleware.ts` | Refresh session cookies, gate `/admin/**` on session | New |
-| `app/login/page.tsx` | Email + password form, zine styling | New |
-| `app/login/actions.ts` | `signIn` Server Action | New |
-| `app/auth/signout/actions.ts` | `signOut` Server Action | New |
-| `components/layout/AdminSidebar.tsx` | Append a Sign-out form below the nav | Modified |
+| File                                 | Purpose                                                     | New / Modified |
+| ------------------------------------ | ----------------------------------------------------------- | -------------- |
+| `package.json` + `package-lock.json` | Add `@supabase/supabase-js`, `@supabase/ssr`, `server-only` | Modified       |
+| `.env.example`                       | Documented placeholders for Supabase env vars               | New            |
+| `lib/supabase/server.ts`             | `createClient()` for RSC + Server Actions, cookie-bridged   | New            |
+| `lib/supabase/client.ts`             | `createClient()` for browser components                     | New            |
+| `lib/supabase/serviceRole.ts`        | `getSupabaseServiceRole()`, `import 'server-only'`          | New            |
+| `middleware.ts`                      | Refresh session cookies, gate `/admin/**` on session        | New            |
+| `app/login/page.tsx`                 | Email + password form, zine styling                         | New            |
+| `app/login/actions.ts`               | `signIn` Server Action                                      | New            |
+| `app/auth/signout/actions.ts`        | `signOut` Server Action                                     | New            |
+| `components/layout/AdminSidebar.tsx` | Append a Sign-out form below the nav                        | Modified       |
 
 ---
 
@@ -56,6 +56,7 @@ These are one-time setup steps the engineer must do before running through the p
 ### Task 1: Install dependencies
 
 **Files:**
+
 - Modify: `package.json`, `package-lock.json`
 
 - [ ] **Step 1: Install the three packages**
@@ -86,6 +87,7 @@ git commit -m "add supabase + server-only deps for phase 3a"
 ### Task 2: Add .env.example and verify .gitignore
 
 **Files:**
+
 - Create: `.env.example`
 - Verify only: `.gitignore`
 
@@ -134,6 +136,7 @@ git commit -m "add .env.example for supabase keys"
 ### Task 3: Create the server-side Supabase client
 
 **Files:**
+
 - Create: `lib/supabase/server.ts`
 
 - [ ] **Step 1: Write the file**
@@ -193,6 +196,7 @@ git commit -m "add server-side supabase client (rsc + server actions)"
 ### Task 4: Create the browser Supabase client
 
 **Files:**
+
 - Create: `lib/supabase/client.ts`
 
 - [ ] **Step 1: Write the file**
@@ -232,6 +236,7 @@ git commit -m "add browser supabase client"
 ### Task 5: Create the service-role Supabase client
 
 **Files:**
+
 - Create: `lib/supabase/serviceRole.ts`
 
 - [ ] **Step 1: Write the file**
@@ -277,6 +282,7 @@ git commit -m "add service-role supabase client (server-only)"
 ### Task 6: Create middleware
 
 **Files:**
+
 - Create: `middleware.ts` (top-level, sibling to `app/`)
 
 - [ ] **Step 1: Write the middleware**
@@ -359,6 +365,7 @@ git commit -m "add middleware to refresh session and gate /admin/**"
 ### Task 7: Create the signIn Server Action
 
 **Files:**
+
 - Create: `app/login/actions.ts`
 
 - [ ] **Step 1: Write the action**
@@ -418,6 +425,7 @@ git commit -m "add signIn server action"
 ### Task 8: Create the login page
 
 **Files:**
+
 - Create: `app/login/page.tsx`
 
 - [ ] **Step 1: Write the page**
@@ -437,15 +445,15 @@ export default async function LoginPage({
   const { error, next } = await searchParams;
 
   return (
-    <main className="grid min-h-screen place-items-center bg-cream px-6 py-10">
+    <main className="bg-cream grid min-h-screen place-items-center px-6 py-10">
       <form
         action={signIn}
-        className="w-full max-w-sm border-[1.5px] border-line bg-paper p-6"
+        className="border-line bg-paper w-full max-w-sm border-[1.5px] p-6"
         style={{ boxShadow: "5px 5px 0 var(--color-blue)" }}
       >
-        <h1 className="font-display italic text-[28px] leading-none">
+        <h1 className="font-display text-[28px] leading-none italic">
           Admin sign in
-          <span className="mt-1 block font-mono text-[10px] not-italic uppercase tracking-[0.2em] text-mute-500">
+          <span className="text-mute-500 mt-1 block font-mono text-[10px] tracking-[0.2em] uppercase not-italic">
             CD Smart Campus · เข้าสู่ระบบ
           </span>
         </h1>
@@ -453,7 +461,7 @@ export default async function LoginPage({
         <input type="hidden" name="next" value={next ?? "/admin"} />
 
         <label className="mt-5 block">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-mute-500">
+          <span className="text-mute-500 font-mono text-[9px] tracking-[0.14em] uppercase">
             Email · อีเมล
           </span>
           <input
@@ -461,12 +469,12 @@ export default async function LoginPage({
             name="email"
             required
             autoComplete="email"
-            className="mt-1 block w-full border-[1.2px] border-ink bg-cream px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1 focus:outline-blue"
+            className="border-ink bg-cream focus:outline-blue mt-1 block w-full border-[1.2px] px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1"
           />
         </label>
 
         <label className="mt-3 block">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-mute-500">
+          <span className="text-mute-500 font-mono text-[9px] tracking-[0.14em] uppercase">
             Password · รหัสผ่าน
           </span>
           <input
@@ -474,14 +482,14 @@ export default async function LoginPage({
             name="password"
             required
             autoComplete="current-password"
-            className="mt-1 block w-full border-[1.2px] border-ink bg-cream px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1 focus:outline-blue"
+            className="border-ink bg-cream focus:outline-blue mt-1 block w-full border-[1.2px] px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1"
           />
         </label>
 
         {error && (
           <p
             role="alert"
-            className="mt-3 border border-house-pink bg-house-pink/10 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-house-pink"
+            className="border-house-pink bg-house-pink/10 text-house-pink mt-3 border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.1em] uppercase"
           >
             {error}
           </p>
@@ -489,7 +497,7 @@ export default async function LoginPage({
 
         <button
           type="submit"
-          className="mt-5 w-full border-[1.5px] border-line bg-blue px-4 py-2.5 font-display italic text-[19px] text-white [box-shadow:4px_4px_0_var(--color-ink)] transition-transform hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:5px_5px_0_var(--color-ink)]"
+          className="border-line bg-blue font-display mt-5 w-full border-[1.5px] px-4 py-2.5 text-[19px] text-white italic [box-shadow:4px_4px_0_var(--color-ink)] transition-transform hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:5px_5px_0_var(--color-ink)]"
         >
           Sign in →
         </button>
@@ -521,6 +529,7 @@ git commit -m "add /login page (server component + zine styling)"
 ### Task 9: Create the signOut Server Action
 
 **Files:**
+
 - Create: `app/auth/signout/actions.ts`
 
 - [ ] **Step 1: Write the action**
@@ -562,6 +571,7 @@ git commit -m "add signOut server action"
 ### Task 10: Add Sign out form to AdminSidebar
 
 **Files:**
+
 - Modify: `components/layout/AdminSidebar.tsx`
 
 - [ ] **Step 1: Read the existing file to find the insertion point**
@@ -581,10 +591,10 @@ import { signOut } from "@/app/auth/signout/actions";
 After the `</nav>` tag and before `</aside>`, insert:
 
 ```tsx
-<form action={signOut} className="mt-3 border-t-[1.5px] border-line pt-3">
+<form action={signOut} className="border-line mt-3 border-t-[1.5px] pt-3">
   <button
     type="submit"
-    className="w-full px-3 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-500 transition-colors hover:text-house-pink"
+    className="text-mute-500 hover:text-house-pink w-full px-3 py-2 text-left font-mono text-[10px] tracking-[0.14em] uppercase transition-colors"
   >
     Sign out · ออกจากระบบ →
   </button>
@@ -629,6 +639,7 @@ npm run build
 ```
 
 Expected: clean exit. The route table should now include:
+
 - `/login` (static or dynamic — either is fine)
 - `/admin/*` routes still listed (now dynamic because of middleware)
 - No new warnings about middleware size or Edge runtime issues.
@@ -636,6 +647,7 @@ Expected: clean exit. The route table should now include:
 - [ ] **Step 3: If anything fails, fix it inline before proceeding**
 
 Common failures and fixes:
+
 - `Cannot find module '@supabase/...'` → Task 1 didn't install correctly; re-run `npm install`.
 - `Module not found: Can't resolve '@/app/auth/signout/actions'` → check the file path in Task 9 matches the import in Task 10.
 - TypeScript errors on `cookies().getAll()` → check Task 3 used `await cookies()` (Next 16 requires `await`).
@@ -701,6 +713,7 @@ No commit needed (no code changed in this task). The plan is done when all 12 ta
 ## Self-review
 
 **Spec coverage** (against §3a in the spec):
+
 - ✅ Install `@supabase/supabase-js` and `@supabase/ssr` → Task 1
 - ✅ Create `lib/supabase/server.ts`, `lib/supabase/serviceRole.ts`, `lib/supabase/client.ts` → Tasks 3, 4, 5
 - ✅ Wire env vars (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) → Task 2 + Prerequisites
@@ -708,7 +721,7 @@ No commit needed (no code changed in this task). The plan is done when all 12 ta
 - ✅ Build `app/auth/signout/actions.ts` → Task 9
 - ✅ Build `middleware.ts` gating `/admin/**` → Task 6
 - ✅ Verification: log in as root, see admin overview; log out, redirected → Task 12
-- ⚠️ Bootstrap root admin row in `admins` table — **deferred to Phase 3b** (the table doesn't exist yet). In 3a, *any* authenticated Supabase Auth user can access `/admin`. The "root vs normal" distinction is enforced starting in 3b once the `admins` table + `is_root_admin()` helper exist. Documented in Task 12 step 4.
+- ⚠️ Bootstrap root admin row in `admins` table — **deferred to Phase 3b** (the table doesn't exist yet). In 3a, _any_ authenticated Supabase Auth user can access `/admin`. The "root vs normal" distinction is enforced starting in 3b once the `admins` table + `is_root_admin()` helper exist. Documented in Task 12 step 4.
 - ⚠️ Sign-out button — not in the spec text, but practically required to verify the auth round-trip. Added in Task 10. Flagging here for transparency.
 
 **Placeholder scan:** No "TBD"/"TODO"/"implement later" patterns. Every step has concrete commands or code.
@@ -716,5 +729,6 @@ No commit needed (no code changed in this task). The plan is done when all 12 ta
 **Type consistency:** `createClient()` is the export name in both `lib/supabase/server.ts` and `lib/supabase/client.ts` — but they're never imported into the same file (server.ts only used in Server Components/Actions/middleware; client.ts only used in client components). The login action and signout action both `import { createClient } from "@/lib/supabase/server"` consistently. The service-role client uses a different name (`getSupabaseServiceRole`) to make it visually distinct in code reviews.
 
 **Risks called out in plan:**
+
 - The `admins` table doesn't exist yet → 3a's auth gate is "any logged-in Supabase Auth user", not "any row in `admins`". This is correct per the spec's sub-phase split but worth knowing.
 - The Sign-out form lives in the AdminSidebar, which is `"use client"`. Server Actions are invocable from client components in Next 16 — this is supported. Confirmed in Task 10 step 3.

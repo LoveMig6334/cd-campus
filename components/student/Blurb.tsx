@@ -9,7 +9,7 @@ type Props = {
 export function Blurb({ accent = "yellow", children }: Props) {
   return (
     <div
-      className="border-[1.5px] border-line bg-paper px-3.5 py-3 text-[12.5px] leading-[1.45] text-mute-700"
+      className="border-line bg-paper text-mute-700 border-[1.5px] px-3.5 py-3 text-[12.5px] leading-[1.45]"
       style={{
         boxShadow:
           accent === "pink"

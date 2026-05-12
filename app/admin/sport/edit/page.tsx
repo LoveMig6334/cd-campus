@@ -17,7 +17,7 @@ export default async function EditScoreboardPage() {
         actions={
           <Link
             href="/admin/sport"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -25,12 +25,15 @@ export default async function EditScoreboardPage() {
       />
       <Card>
         <CardTitle th="คะแนนบ้าน" en="House scores" />
-        <form action={editScoreboard} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={editScoreboard}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           {scoreboard.map((entry) => {
             const id = HOUSE_ID_BY_KEY[entry.house];
             return (
               <label key={entry.house} className="block">
-                <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+                <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
                   {entry.nameEn} · {entry.nameTh}
                 </span>
                 <input
@@ -40,7 +43,7 @@ export default async function EditScoreboardPage() {
                   step={1}
                   required
                   defaultValue={entry.score}
-                  className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-display italic text-[24px] text-ink"
+                  className="border-line bg-paper font-display text-ink mt-1 w-full border-[1.5px] px-3 py-2 text-[24px] italic"
                 />
               </label>
             );

@@ -10,7 +10,9 @@ export async function getAdminSportResults(): Promise<SportResultRow[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("sport_results")
-    .select("id, title_th, title_en, category, placements, time_label, recorded_at")
+    .select(
+      "id, title_th, title_en, category, placements, time_label, recorded_at",
+    )
     .order("recorded_at", { ascending: true });
   if (error) throw new Error(`getAdminSportResults: ${error.message}`);
   return (data ?? []).map<SportResultRow>((r) => ({
@@ -36,9 +38,7 @@ export async function getSportResultById(
   return data;
 }
 
-export async function getStudentLiveResults(
-  limit = 2,
-): Promise<LiveResult[]> {
+export async function getStudentLiveResults(limit = 2): Promise<LiveResult[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("sport_results")

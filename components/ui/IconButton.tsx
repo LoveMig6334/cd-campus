@@ -11,7 +11,7 @@ export function IconButton({
     <button
       type="button"
       aria-label={label}
-      className="grid h-9 w-9 place-items-center rounded-full border-[1.5px] border-line bg-paper transition-colors hover:bg-yellow"
+      className="border-line bg-paper hover:bg-yellow grid h-9 w-9 place-items-center rounded-full border-[1.5px] transition-colors"
     >
       {children}
     </button>

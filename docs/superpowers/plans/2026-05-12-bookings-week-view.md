@@ -19,6 +19,7 @@
 Pure additions to `lib/queries/bookings.ts`. Existing call sites stay green; no other files change.
 
 **Files:**
+
 - Modify: `lib/queries/bookings.ts`
 
 - [ ] **Step 1: Inspect current imports**
@@ -133,6 +134,7 @@ git commit -m "add: getWeekBookings query + date helpers"
 The two existing day-scoped queries get a `dateISO` parameter, and the file-level `TODAY` constant is removed. The single call site in the bookings page is updated to pass the (still-hardcoded for now) date so the build stays green.
 
 **Files:**
+
 - Modify: `lib/queries/bookings.ts`
 - Modify: `app/admin/bookings/page.tsx`
 
@@ -206,19 +208,13 @@ Note: the only structural change vs the original `getAdminTodayBookings` is the 
 Open `app/admin/bookings/page.tsx`. Replace the import line:
 
 ```ts
-import {
-  getAdminTodayBookings,
-  getGanttRooms,
-} from "@/lib/queries/bookings";
+import { getAdminTodayBookings, getGanttRooms } from "@/lib/queries/bookings";
 ```
 
 with:
 
 ```ts
-import {
-  getDayBookings,
-  getGanttRooms,
-} from "@/lib/queries/bookings";
+import { getDayBookings, getGanttRooms } from "@/lib/queries/bookings";
 ```
 
 And update the `Promise.all` block:
@@ -252,6 +248,7 @@ git commit -m "refactor: date-parametrize day-scoped booking queries"
 Add the rooms × 7-days RSC component. File created but not yet rendered anywhere — Task 4 wires it in. Safe additive change.
 
 **Files:**
+
 - Create: `components/admin/BookingsWeekGrid.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -274,8 +271,18 @@ const CHIP_VARIANT: Record<GanttBarVariant, string> = {
 
 const WEEKDAY_LABELS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 const MONTH_ABBR = [
-  "jan", "feb", "mar", "apr", "may", "jun",
-  "jul", "aug", "sep", "oct", "nov", "dec",
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
 ];
 
 function dayHeader(dateISO: string, idx: number, today: string) {
@@ -302,9 +309,9 @@ export function BookingsWeekGrid({
   bookingsByRoomDay: Record<string, Record<string, WeekChip[]>>;
 }) {
   return (
-    <div className="overflow-x-auto border-[1.5px] border-line bg-cream p-3.5">
+    <div className="border-line bg-cream overflow-x-auto border-[1.5px] p-3.5">
       <div className="grid min-w-[820px] grid-cols-[160px_repeat(7,1fr)]">
-        <div className="border-b-[1.5px] border-ink bg-paper px-2.5 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-mute-500">
+        <div className="border-ink bg-paper text-mute-500 border-b-[1.5px] px-2.5 py-2 font-mono text-[10px] tracking-[0.1em] uppercase">
           Room
         </div>
         {weekDays.map((dayISO, i) => {
@@ -315,14 +322,14 @@ export function BookingsWeekGrid({
               key={dayISO}
               href={`?date=${dayISO}`}
               className={cn(
-                "border-b-[1.5px] border-ink px-2.5 py-2 text-left",
-                i < 6 && "border-r border-dashed border-mute-300",
+                "border-ink border-b-[1.5px] px-2.5 py-2 text-left",
+                i < 6 && "border-mute-300 border-r border-dashed",
                 isSelected ? "bg-blue text-white" : "bg-paper",
               )}
             >
               <div
                 className={cn(
-                  "font-mono text-[10px] uppercase tracking-[0.1em]",
+                  "font-mono text-[10px] tracking-[0.1em] uppercase",
                   isSelected ? "text-white/80" : "text-mute-500",
                 )}
               >
@@ -331,7 +338,7 @@ export function BookingsWeekGrid({
               </div>
               <div
                 className={cn(
-                  "font-display italic text-[14px] leading-tight",
+                  "font-display text-[14px] leading-tight italic",
                   isSelected ? "text-white" : "text-ink",
                 )}
               >
@@ -365,9 +372,9 @@ function RoomRow({
 }) {
   return (
     <>
-      <div className="border-r-[1.5px] border-b border-dashed border-mute-300 border-r-ink bg-paper px-2.5 py-3 font-display italic text-[15px]">
+      <div className="border-mute-300 border-r-ink bg-paper font-display border-r-[1.5px] border-b border-dashed px-2.5 py-3 text-[15px] italic">
         {room.nameEn}
-        <small className="mt-0.5 block font-mono text-[9px] not-italic uppercase tracking-[0.14em] text-mute-500">
+        <small className="text-mute-500 mt-0.5 block font-mono text-[9px] tracking-[0.14em] uppercase not-italic">
           {room.nameTh}
         </small>
       </div>
@@ -377,8 +384,8 @@ function RoomRow({
           <div
             key={dayISO}
             className={cn(
-              "relative min-h-16 overflow-hidden border-b border-dashed border-mute-300 bg-paper px-1.5 py-1.5",
-              i < 6 && "border-r border-dashed border-mute-300",
+              "border-mute-300 bg-paper relative min-h-16 overflow-hidden border-b border-dashed px-1.5 py-1.5",
+              i < 6 && "border-mute-300 border-r border-dashed",
             )}
           >
             {chips.map((c) => (
@@ -386,7 +393,7 @@ function RoomRow({
                 key={c.id}
                 href={`/admin/bookings/${c.id}/edit`}
                 className={cn(
-                  "mt-0.5 block border-[1.5px] border-ink px-1.5 py-0.5 font-mono text-[10px] [box-shadow:1px_1px_0_var(--color-ink)] first:mt-0",
+                  "border-ink mt-0.5 block border-[1.5px] px-1.5 py-0.5 font-mono text-[10px] [box-shadow:1px_1px_0_var(--color-ink)] first:mt-0",
                   CHIP_VARIANT[c.variant],
                 )}
               >
@@ -421,6 +428,7 @@ git commit -m "add: BookingsWeekGrid component"
 Final task: rewrite the page to read `?date`, render the week grid, switch the lower Gantt and table over to the selected date, and drop the now-dead `ADMIN_BOOKING_DATE` constant.
 
 **Files:**
+
 - Modify: `app/admin/bookings/page.tsx`
 - Modify: `lib/ui/admin.ts`
 
@@ -464,12 +472,32 @@ import { GANTT_HOURS } from "@/lib/ui/admin";
 
 const TODAY = "2026-05-12";
 const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 const MONTHS_TH = [
-  "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-  "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
+  "ม.ค.",
+  "ก.พ.",
+  "มี.ค.",
+  "เม.ย.",
+  "พ.ค.",
+  "มิ.ย.",
+  "ก.ค.",
+  "ส.ค.",
+  "ก.ย.",
+  "ต.ค.",
+  "พ.ย.",
+  "ธ.ค.",
 ];
 
 function isValidDate(s: string | undefined): s is string {
@@ -520,7 +548,9 @@ export default async function AdminBookings({
     getDayBookings(selectedDate),
   ]);
 
-  const activeCount = dayBookings.filter((b) => b.status === "Confirmed").length;
+  const activeCount = dayBookings.filter(
+    (b) => b.status === "Confirmed",
+  ).length;
   const pendingCount = dayBookings.filter((b) => b.status === "Pending").length;
 
   return (
@@ -539,7 +569,7 @@ export default async function AdminBookings({
             </Link>
             <Link
               href="/admin/bookings/new"
-              className="inline-block border-[1.5px] border-line bg-blue px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white transition-all [box-shadow:3px_3px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep hover:[box-shadow:4px_4px_0_var(--color-ink)]"
+              className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"
             >
               + New Booking
             </Link>

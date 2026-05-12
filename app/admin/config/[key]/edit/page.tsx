@@ -52,7 +52,7 @@ export default async function EditConfigPage({
         actions={
           <Link
             href="/admin/config"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -77,7 +77,7 @@ export default async function EditConfigPage({
             </Btn>
             <Link
               href="/admin/config"
-              className="inline-block border-[1.5px] border-line bg-paper px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink"
+              className="border-line bg-paper text-ink inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] uppercase"
             >
               Cancel
             </Link>
@@ -211,9 +211,9 @@ async function KpiArrayFields({
         return (
           <div
             key={i}
-            className="border-[1.5px] border-line bg-cream px-4 py-3"
+            className="border-line bg-cream border-[1.5px] px-4 py-3"
           >
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <div className="text-mute-700 mb-2 font-mono text-[10px] tracking-[0.16em] uppercase">
               KPI #{i + 1}
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -291,9 +291,9 @@ async function PortfolioStatsFields() {
         return (
           <div
             key={i}
-            className="border-[1.5px] border-line bg-cream px-4 py-3"
+            className="border-line bg-cream border-[1.5px] px-4 py-3"
           >
-            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <div className="text-mute-700 mb-2 font-mono text-[10px] tracking-[0.16em] uppercase">
               Stat #{i + 1}
             </div>
             <label className="block">
@@ -332,8 +332,8 @@ async function TrendChartFields() {
   }>("trend_chart");
   return (
     <div className="grid grid-cols-1 gap-4">
-      <div className="border-[1.5px] border-line bg-cream px-4 py-3">
-        <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+      <div className="border-line bg-cream border-[1.5px] px-4 py-3">
+        <div className="text-mute-700 mb-2 font-mono text-[10px] tracking-[0.16em] uppercase">
           Months · 12 labels (last entry is highlighted)
         </div>
         <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
@@ -353,8 +353,8 @@ async function TrendChartFields() {
         </div>
       </div>
 
-      <div className="border-[1.5px] border-line bg-cream px-4 py-3">
-        <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+      <div className="border-line bg-cream border-[1.5px] px-4 py-3">
+        <div className="text-mute-700 mb-2 font-mono text-[10px] tracking-[0.16em] uppercase">
           Points · 13 (x, y) pairs in viewBox 0 0 600 120 · SVG path is
           re-derived on save
         </div>
@@ -363,7 +363,7 @@ async function TrendChartFields() {
             const p = v.points[i] ?? { x: 0, y: 0 };
             return (
               <div key={i} className="flex items-end gap-2">
-                <span className="pb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+                <span className="text-mute-700 pb-2 font-mono text-[10px] tracking-[0.16em] uppercase">
                   #{i + 1}
                 </span>
                 <label className="block flex-1">

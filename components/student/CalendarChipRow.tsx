@@ -12,14 +12,13 @@ export function CalendarChipRow({
     <div className="flex flex-wrap gap-1.5">
       {chips.map((chip) => {
         const active = chip.id === activeId;
-        const dotColor =
-          chip.id === "all" ? null : CATEGORY_COLOR[chip.id];
+        const dotColor = chip.id === "all" ? null : CATEGORY_COLOR[chip.id];
         return (
           <button
             key={chip.id}
             type="button"
             className={cn(
-              "rounded-full border-[1.2px] border-line px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] transition-colors",
+              "border-line rounded-full border-[1.2px] px-2.5 py-1 font-mono text-[10px] tracking-[0.08em] uppercase transition-colors",
               active ? "bg-ink text-yellow" : "bg-paper text-ink",
             )}
           >

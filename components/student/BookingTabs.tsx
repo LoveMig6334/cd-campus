@@ -10,7 +10,7 @@ export function BookingTabs({
   activeId: BookingTab["id"];
 }) {
   return (
-    <div className="grid grid-cols-2 border-[1.5px] border-line bg-paper p-[3px]">
+    <div className="border-line bg-paper grid grid-cols-2 border-[1.5px] p-[3px]">
       {tabs.map((tab) => {
         const active = tab.id === activeId;
         const cls = cn(

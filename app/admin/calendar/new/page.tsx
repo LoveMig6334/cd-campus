@@ -21,7 +21,7 @@ export default function NewEventPage() {
         actions={
           <Link
             href="/admin/calendar"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -29,54 +29,93 @@ export default function NewEventPage() {
       />
       <Card>
         <CardTitle th="รายละเอียดกิจกรรม" en="Event details" />
-        <form action={addEvent} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={addEvent}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Thai title · ชื่อภาษาไทย (required)
             </span>
-            <input name="title_th" type="text" required maxLength={120} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="title_th"
+              type="text"
+              required
+              maxLength={120}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               English title (optional)
             </span>
-            <input name="title_en" type="text" maxLength={120} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="title_en"
+              type="text"
+              maxLength={120}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Category
             </span>
-            <select name="category" required defaultValue="academic" className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink">
-              {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+            <select
+              name="category"
+              required
+              defaultValue="academic"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
             </select>
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Tag · e.g. &quot;Sport · ลานกีฬากลาง&quot; (optional)
             </span>
-            <input name="tag" type="text" maxLength={80} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="tag"
+              type="text"
+              maxLength={80}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Starts at (Asia/Bangkok)
             </span>
-            <input name="starts_at" type="datetime-local" required defaultValue="2026-05-12T09:00" className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="starts_at"
+              type="datetime-local"
+              required
+              defaultValue="2026-05-12T09:00"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Location (optional)
             </span>
-            <input name="location" type="text" maxLength={120} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="location"
+              type="text"
+              maxLength={120}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="flex items-center gap-2 md:col-span-2">
             <input name="highlight" type="checkbox" />
-            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-mute-700">
+            <span className="text-mute-700 font-mono text-[11px] tracking-[0.14em] uppercase">
               Highlight (yellow briefing chip)
             </span>
           </label>

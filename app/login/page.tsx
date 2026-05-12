@@ -10,15 +10,15 @@ export default async function LoginPage({
   const { error, next } = await searchParams;
 
   return (
-    <main className="grid min-h-screen place-items-center bg-cream px-6 py-10">
+    <main className="bg-cream grid min-h-screen place-items-center px-6 py-10">
       <form
         action={signIn}
-        className="w-full max-w-sm border-[1.5px] border-line bg-paper p-6"
+        className="border-line bg-paper w-full max-w-sm border-[1.5px] p-6"
         style={{ boxShadow: "5px 5px 0 var(--color-blue)" }}
       >
-        <h1 className="font-display italic text-[28px] leading-none">
+        <h1 className="font-display text-[28px] leading-none italic">
           Admin sign in
-          <span className="mt-1 block font-mono text-[10px] not-italic uppercase tracking-[0.2em] text-mute-500">
+          <span className="text-mute-500 mt-1 block font-mono text-[10px] tracking-[0.2em] uppercase not-italic">
             CD Smart Campus · เข้าสู่ระบบ
           </span>
         </h1>
@@ -26,7 +26,7 @@ export default async function LoginPage({
         <input type="hidden" name="next" value={next ?? "/admin"} />
 
         <label className="mt-5 block">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-mute-500">
+          <span className="text-mute-500 font-mono text-[9px] tracking-[0.14em] uppercase">
             Email · อีเมล
           </span>
           <input
@@ -34,12 +34,12 @@ export default async function LoginPage({
             name="email"
             required
             autoComplete="email"
-            className="mt-1 block w-full border-[1.2px] border-ink bg-cream px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1 focus:outline-blue"
+            className="border-ink bg-cream focus:outline-blue mt-1 block w-full border-[1.2px] px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1"
           />
         </label>
 
         <label className="mt-3 block">
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-mute-500">
+          <span className="text-mute-500 font-mono text-[9px] tracking-[0.14em] uppercase">
             Password · รหัสผ่าน
           </span>
           <input
@@ -47,14 +47,14 @@ export default async function LoginPage({
             name="password"
             required
             autoComplete="current-password"
-            className="mt-1 block w-full border-[1.2px] border-ink bg-cream px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1 focus:outline-blue"
+            className="border-ink bg-cream focus:outline-blue mt-1 block w-full border-[1.2px] px-2.5 py-2 font-sans text-[13px] focus:outline focus:outline-2 focus:-outline-offset-1"
           />
         </label>
 
         {error && (
           <p
             role="alert"
-            className="mt-3 border border-house-pink bg-house-pink/10 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-house-pink"
+            className="border-house-pink bg-house-pink/10 text-house-pink mt-3 border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.1em] uppercase"
           >
             {error}
           </p>
@@ -62,7 +62,7 @@ export default async function LoginPage({
 
         <button
           type="submit"
-          className="mt-5 w-full border-[1.5px] border-line bg-blue px-4 py-2.5 font-display italic text-[19px] text-white [box-shadow:4px_4px_0_var(--color-ink)] transition-transform hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:5px_5px_0_var(--color-ink)]"
+          className="border-line bg-blue font-display mt-5 w-full border-[1.5px] px-4 py-2.5 text-[19px] text-white italic [box-shadow:4px_4px_0_var(--color-ink)] transition-transform hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:5px_5px_0_var(--color-ink)]"
         >
           Sign in →
         </button>

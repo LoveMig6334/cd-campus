@@ -10,35 +10,35 @@ The visual language of the CD Smart Campus prototype. Use this when adding pages
 
 All tokens are defined in `app/globals.css` under `@theme` and consumed via Tailwind utilities (`bg-blue`, `text-yellow`, etc.).
 
-| Token | Hex | Use |
-| ----- | --- | --- |
-| `--color-blue` | `#1E2EE4` | Primary brand accent. Buttons, headings, KPIs, blue text accents inside Thai headlines |
-| `--color-blue-deep` | `#0A14A8` | Hover state for primary buttons |
-| `--color-yellow` | `#F7E33A` | Secondary accent — offset shadows behind branded marks, highlight pills, ★ accents, "Selected" foreground |
-| `--color-ink` | `#15151A` | Primary text + most borders |
-| `--color-line` | `#1A1A1A` | Dedicated border color (visually identical to ink, kept separate for future tweaks) |
-| `--color-cream` | `#F6F3E7` | Page background |
-| `--color-cream-2` | `#EFEBD9` | Alternate cream for inset surfaces (page intro decoration, calendar greyed days) |
-| `--color-paper` | `#FFFFFF` | Card / surface background |
-| `--color-mute-100` | `#ECE9DC` | Faint surface tint, disabled bg |
-| `--color-mute-200` | `#DAD6C4` | Dashed dividers |
-| `--color-mute-300` | `#B7B4A6` | Muted strokes, "other month" calendar text |
-| `--color-mute-500` | `#6C6A60` | Secondary body text, mono labels |
-| `--color-mute-700` | `#2E2D27` | Primary body text on cream |
-| `--color-house-green` | `#3FAE6C` | Green house, success status, "Answered" pill |
-| `--color-house-purple` | `#8E5BD9` | Purple house, "Review" status |
-| `--color-house-orange` | `#F2843B` | Orange house |
-| `--color-house-pink` | `#E94D8F` | Pink house, **CD Carelin accent**, downward delta |
+| Token                  | Hex       | Use                                                                                                       |
+| ---------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
+| `--color-blue`         | `#1E2EE4` | Primary brand accent. Buttons, headings, KPIs, blue text accents inside Thai headlines                    |
+| `--color-blue-deep`    | `#0A14A8` | Hover state for primary buttons                                                                           |
+| `--color-yellow`       | `#F7E33A` | Secondary accent — offset shadows behind branded marks, highlight pills, ★ accents, "Selected" foreground |
+| `--color-ink`          | `#15151A` | Primary text + most borders                                                                               |
+| `--color-line`         | `#1A1A1A` | Dedicated border color (visually identical to ink, kept separate for future tweaks)                       |
+| `--color-cream`        | `#F6F3E7` | Page background                                                                                           |
+| `--color-cream-2`      | `#EFEBD9` | Alternate cream for inset surfaces (page intro decoration, calendar greyed days)                          |
+| `--color-paper`        | `#FFFFFF` | Card / surface background                                                                                 |
+| `--color-mute-100`     | `#ECE9DC` | Faint surface tint, disabled bg                                                                           |
+| `--color-mute-200`     | `#DAD6C4` | Dashed dividers                                                                                           |
+| `--color-mute-300`     | `#B7B4A6` | Muted strokes, "other month" calendar text                                                                |
+| `--color-mute-500`     | `#6C6A60` | Secondary body text, mono labels                                                                          |
+| `--color-mute-700`     | `#2E2D27` | Primary body text on cream                                                                                |
+| `--color-house-green`  | `#3FAE6C` | Green house, success status, "Answered" pill                                                              |
+| `--color-house-purple` | `#8E5BD9` | Purple house, "Review" status                                                                             |
+| `--color-house-orange` | `#F2843B` | Orange house                                                                                              |
+| `--color-house-pink`   | `#E94D8F` | Pink house, **CD Carelin accent**, downward delta                                                         |
 
 **Selection inversion.** Anything in a selected/active state inverts to `bg-ink text-yellow` (or `bg-blue text-yellow` for primary). Don't break this — it's the strongest visual signal in the system.
 
 ## Typography
 
-| Family | Role | Notes |
-| ------ | ---- | ----- |
-| **Instrument Serif** (italic) | Display headlines, page titles, hero numbers, card titles | Always italic; weight 400 only |
-| **IBM Plex Sans Thai** | Body Thai + English | Weights 300/400/500/600/700; covers Thai script |
-| **IBM Plex Mono** | Labels, eyebrows, metadata, dates, status pills | Almost always uppercase + letter-spacing 0.1–0.22em |
+| Family                        | Role                                                      | Notes                                               |
+| ----------------------------- | --------------------------------------------------------- | --------------------------------------------------- |
+| **Instrument Serif** (italic) | Display headlines, page titles, hero numbers, card titles | Always italic; weight 400 only                      |
+| **IBM Plex Sans Thai**        | Body Thai + English                                       | Weights 300/400/500/600/700; covers Thai script     |
+| **IBM Plex Mono**             | Labels, eyebrows, metadata, dates, status pills           | Almost always uppercase + letter-spacing 0.1–0.22em |
 
 **Pattern.** Pair a small mono eyebrow above an italic serif headline. Body text rides in IBM Plex Sans Thai. Never invert the roles.
 
@@ -74,10 +74,10 @@ Don't strip one of the two — the bilingualism is a brand feature, not duplicat
 
 Three reusable backgrounds, kept as global CSS utilities (because they use `radial-gradient`):
 
-| Class | Pattern | Use |
-| ----- | ------- | --- |
-| `.halftone-bk` | Black radial dots, 7×7 | Default zine accent on tiles |
-| `.halftone-bl` | Blue radial dots, 7×7 | Brand-tinted accent |
+| Class            | Pattern                             | Use                                                  |
+| ---------------- | ----------------------------------- | ---------------------------------------------------- |
+| `.halftone-bk`   | Black radial dots, 7×7              | Default zine accent on tiles                         |
+| `.halftone-bl`   | Blue radial dots, 7×7               | Brand-tinted accent                                  |
 | `.halftone-soft` | Soft black dots, 6×6, lower opacity | Subtle background washes (page intros, hero corners) |
 
 Apply on `__art` panels of menu tiles, hero cards, page-intro decorations. Never use as the sole background of a content area — they're texture, not surface.
@@ -94,12 +94,12 @@ Apply on `__art` panels of menu tiles, hero cards, page-intro decorations. Never
 
 1px ink border, mono caps, color-coded by status. Small (3px 8px padding).
 
-| Variant | Bg | Use |
-| ------- | -- | --- |
-| `pill--ok` | green | "Sent", "Answered", "Published" |
-| `pill--pend` | yellow | "Open", "Pending" |
-| `pill--rev` | purple | "Review" |
-| `pill--draft` | mute-200 | "Draft" |
+| Variant       | Bg       | Use                             |
+| ------------- | -------- | ------------------------------- |
+| `pill--ok`    | green    | "Sent", "Answered", "Published" |
+| `pill--pend`  | yellow   | "Open", "Pending"               |
+| `pill--rev`   | purple   | "Review"                        |
+| `pill--draft` | mute-200 | "Draft"                         |
 
 ### Card
 

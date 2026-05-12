@@ -1,7 +1,9 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
 <!-- END:nextjs-agent-rules -->
 
 Quick reminders for Next 16 / React 19 (don't trust your training data):
@@ -59,6 +61,7 @@ Thai and English live side-by-side in the UI. Don't strip one. The pattern is mo
 Server Actions are co-located with the page that owns them (`app/.../actions.ts`). Hand-rolled validation — no Zod, no `react-hook-form`. The Carelin request form at `/student/carelin/new` is the only **public** (anon) write surface, gated by the Postgres `student_id_4 ~ '^[0-9]{4}$'` check constraint and a hand-rolled validator. All other writes require an authenticated admin; root-only writes (creating/disabling other admins) call `requireRootAdmin()` and then use the service-role client (`lib/supabase/serviceRole.ts`) — service-role bypasses RLS, which is the intended escape hatch for `admins`-table writes.
 
 **Action signature convention:**
+
 - Forms consumed by `useActionState` (only the student Carelin form): `(prev: ActionResult, formData: FormData) => Promise<ActionResult>`. Errors surface inline via `state.error`.
 - Every other Server Action: `(formData: FormData) => Promise<void>` (required for `<form action={fn}>` typing in React 19). Validation early-returns silently (client-side `required`/`pattern` shadow them); real DB failures `throw new Error(msg)` to surface in Next's error boundary; success calls `revalidatePath(...)` then `redirect(...)`.
 

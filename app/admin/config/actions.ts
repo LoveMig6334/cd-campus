@@ -78,8 +78,10 @@ function parseHomeHero(formData: FormData): HomeHero {
   if (titleLines.length === 0) throw new Error("titleLines required");
   if (!whereTh) throw new Error("whereTh required");
   if (!label) throw new Error("leading.label required");
-  if (!Number.isFinite(points)) throw new Error("leading.points must be a number");
-  if (!Number.isFinite(degrees)) throw new Error("weather.degrees must be a number");
+  if (!Number.isFinite(points))
+    throw new Error("leading.points must be a number");
+  if (!Number.isFinite(degrees))
+    throw new Error("weather.degrees must be a number");
   if (!glyph) throw new Error("weather.glyph required");
 
   return {

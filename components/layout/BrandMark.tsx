@@ -10,7 +10,7 @@ export function BrandMark({ size = 44, className }: BrandMarkProps) {
   return (
     <span
       className={cn(
-        "inline-block bg-paper border-[1.5px] border-line",
+        "bg-paper border-line inline-block border-[1.5px]",
         "shadow-[2px_2px_0_var(--color-yellow)]",
         className,
       )}

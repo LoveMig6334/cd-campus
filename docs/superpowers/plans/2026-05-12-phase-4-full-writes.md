@@ -53,25 +53,25 @@ Shape (B) early-returns silently on validation failure (client-side `required` /
 
 Use this when implementing each task. Routes that depend on each entity:
 
-| Action | revalidatePath calls | Then |
-|---|---|---|
-| `deleteCarelinRequest` | `/admin/carelin`, `/admin/carelin/[id]` (use literal of id) | `redirect('/admin/carelin')` |
-| `updateEvent` | `/admin/calendar`, `/student/calendar`, `/admin`, `/student` | `redirect('/admin/calendar')` |
-| `deleteEvent` | same as updateEvent | `redirect('/admin/calendar')` |
-| `recordSportResult` | `/admin/sport`, `/student/sport` | `redirect('/admin/sport')` |
-| `updateSportResult` | same | `redirect('/admin/sport')` |
-| `deleteSportResult` | same | `redirect('/admin/sport')` |
-| `setProjectStatus` | `/admin/portfolio`, `/student/portfolio` | (no redirect — caller is already on `/admin/portfolio`) |
-| `updateProject` | same | `redirect('/admin/portfolio')` |
-| `deleteProject` | same | `redirect('/admin/portfolio')` |
-| `updateSiteConfig` (`home_hero`) | `/student`, `/admin/config`, `/admin/config/home_hero/edit` | `redirect('/admin/config')` |
-| `updateSiteConfig` (`overview_kpis`, `trend_chart`) | `/admin`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')` |
-| `updateSiteConfig` (`portfolio_kpis`, `portfolio_stats`) | `/admin/portfolio`, `/student/portfolio`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')` |
-| `updateSiteConfig` (`carelin_kpis`) | `/admin/carelin`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')` |
-| `createBooking` | `/admin/bookings`, `/student/booking`, `/admin` | `redirect('/admin/bookings')` |
-| `updateBooking` | same | `redirect('/admin/bookings')` |
-| `cancelBooking` (DELETE) | same | `redirect('/admin/bookings')` |
-| `bookRoom` (anon) | `/student/booking`, `/admin/bookings`, `/admin` | returns `{ok:true}`; client form calls `router.replace('/student/booking?ok=1')` |
+| Action                                                   | revalidatePath calls                                                                  | Then                                                                             |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `deleteCarelinRequest`                                   | `/admin/carelin`, `/admin/carelin/[id]` (use literal of id)                           | `redirect('/admin/carelin')`                                                     |
+| `updateEvent`                                            | `/admin/calendar`, `/student/calendar`, `/admin`, `/student`                          | `redirect('/admin/calendar')`                                                    |
+| `deleteEvent`                                            | same as updateEvent                                                                   | `redirect('/admin/calendar')`                                                    |
+| `recordSportResult`                                      | `/admin/sport`, `/student/sport`                                                      | `redirect('/admin/sport')`                                                       |
+| `updateSportResult`                                      | same                                                                                  | `redirect('/admin/sport')`                                                       |
+| `deleteSportResult`                                      | same                                                                                  | `redirect('/admin/sport')`                                                       |
+| `setProjectStatus`                                       | `/admin/portfolio`, `/student/portfolio`                                              | (no redirect — caller is already on `/admin/portfolio`)                          |
+| `updateProject`                                          | same                                                                                  | `redirect('/admin/portfolio')`                                                   |
+| `deleteProject`                                          | same                                                                                  | `redirect('/admin/portfolio')`                                                   |
+| `updateSiteConfig` (`home_hero`)                         | `/student`, `/admin/config`, `/admin/config/home_hero/edit`                           | `redirect('/admin/config')`                                                      |
+| `updateSiteConfig` (`overview_kpis`, `trend_chart`)      | `/admin`, `/admin/config`, `/admin/config/[key]/edit`                                 | `redirect('/admin/config')`                                                      |
+| `updateSiteConfig` (`portfolio_kpis`, `portfolio_stats`) | `/admin/portfolio`, `/student/portfolio`, `/admin/config`, `/admin/config/[key]/edit` | `redirect('/admin/config')`                                                      |
+| `updateSiteConfig` (`carelin_kpis`)                      | `/admin/carelin`, `/admin/config`, `/admin/config/[key]/edit`                         | `redirect('/admin/config')`                                                      |
+| `createBooking`                                          | `/admin/bookings`, `/student/booking`, `/admin`                                       | `redirect('/admin/bookings')`                                                    |
+| `updateBooking`                                          | same                                                                                  | `redirect('/admin/bookings')`                                                    |
+| `cancelBooking` (DELETE)                                 | same                                                                                  | `redirect('/admin/bookings')`                                                    |
+| `bookRoom` (anon)                                        | `/student/booking`, `/admin/bookings`, `/admin`                                       | returns `{ok:true}`; client form calls `router.replace('/student/booking?ok=1')` |
 
 ---
 
@@ -92,13 +92,15 @@ Use this when implementing each task. Routes that depend on each entity:
 Reused across every new admin form in Phase 4 (matches `app/admin/admins/page.tsx` from 3d). Save typing — keep this snippet handy:
 
 ```tsx
-className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+className =
+  "border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink";
 ```
 
 Label wrapper:
 
 ```tsx
-className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+className =
+  "flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700";
 ```
 
 Submit button: use `<Btn variant="primary">…→</Btn>` from `components/admin/Btn.tsx`. Second submit on same form: use plain `<button type="submit" formAction={fn}>` (`Btn` hardcodes `type="button"` — confirmed in 3d).
@@ -112,6 +114,7 @@ Submit button: use `<Btn variant="primary">…→</Btn>` from `components/admin/
 Smallest item — extends an existing actions file, gates the new row control to root in a server-resolved prop, and exercises the service-role escape hatch pattern one more time.
 
 **Files:**
+
 - Modify: `app/admin/carelin/actions.ts`
 - Modify: `components/admin/CarelinDeskTable.tsx`
 - Modify: `app/admin/carelin/page.tsx`
@@ -142,10 +145,7 @@ export async function deleteCarelinRequest(formData: FormData): Promise<void> {
   if (!id) return;
 
   const svc = getSupabaseServiceRole();
-  const { error } = await svc
-    .from("carelin_requests")
-    .delete()
-    .eq("id", id);
+  const { error } = await svc.from("carelin_requests").delete().eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/carelin");
@@ -166,7 +166,7 @@ import { requireAdmin } from "@/lib/auth";
 const admin = await requireAdmin();
 const isRoot = admin.tier === "root";
 // …pass to the table component:
-<CarelinDeskTable rows={rows} isRoot={isRoot} />
+<CarelinDeskTable rows={rows} isRoot={isRoot} />;
 ```
 
 If the existing page already calls `requireAdmin()`, just keep its result and add `const isRoot = admin.tier === "root";`. Do not call `requireRootAdmin()` here — normal admins must still see the page.
@@ -236,6 +236,7 @@ git commit -m "add: deleteCarelinRequest root-only action + row control"
 Closes the publish→read loop from 3d. Single new page + one new query helper. Read-only.
 
 **Files:**
+
 - Modify: `lib/queries/pshare.ts`
 - Create: `app/student/pshare/[slug]/page.tsx`
 - Create: `components/student/PshareReader.tsx`
@@ -288,7 +289,7 @@ import remarkGfm from "remark-gfm";
 
 export function PshareReader({ body }: { body: string }) {
   return (
-    <div className="prose prose-sm max-w-none font-sans text-[14px] leading-[1.7] text-ink [&_h1]:font-display [&_h1]:italic [&_h1]:text-[22px] [&_h2]:font-display [&_h2]:italic [&_h2]:text-[18px] [&_a]:underline">
+    <div className="prose prose-sm text-ink [&_h1]:font-display [&_h2]:font-display max-w-none font-sans text-[14px] leading-[1.7] [&_a]:underline [&_h1]:text-[22px] [&_h1]:italic [&_h2]:text-[18px] [&_h2]:italic">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
     </div>
   );
@@ -334,7 +335,16 @@ export default async function StudentPsharePost({
         action={
           <Link href="/student/pshare">
             <IconButton label="Back · กลับ">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M15 18l-6-6 6-6" />
               </svg>
             </IconButton>
@@ -343,13 +353,13 @@ export default async function StudentPsharePost({
       />
       <MobileBody className="space-y-3.5">
         <div
-          className={`${halftoneClass} grid aspect-[5/3] place-items-center border-[1.5px] border-ink`}
+          className={`${halftoneClass} border-ink grid aspect-[5/3] place-items-center border-[1.5px]`}
           style={{
             background: post.art_bg ?? "var(--color-cream)",
           }}
         >
           <span
-            className="font-display italic text-[64px] leading-none"
+            className="font-display text-[64px] leading-none italic"
             style={{ color: post.art_num_color ?? "var(--color-ink)" }}
           >
             {post.num_label ?? "·"}
@@ -357,14 +367,16 @@ export default async function StudentPsharePost({
         </div>
 
         <header className="space-y-1.5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-500">
+          <p className="text-mute-500 font-mono text-[10px] tracking-[0.18em] uppercase">
             {post.author_alias ?? ""}
           </p>
-          <h1 className="font-display italic text-[26px] leading-tight">
+          <h1 className="font-display text-[26px] leading-tight italic">
             {post.title}
           </h1>
           {post.snippet && (
-            <p className="font-sans text-[14px] text-mute-700">{post.snippet}</p>
+            <p className="text-mute-700 font-sans text-[14px]">
+              {post.snippet}
+            </p>
           )}
         </header>
 
@@ -375,7 +387,7 @@ export default async function StudentPsharePost({
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="border border-line bg-paper px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                className="border-line bg-paper text-mute-700 border px-2 py-0.5 font-mono text-[10px] tracking-[0.14em] uppercase"
               >
                 {tag}
               </span>
@@ -421,6 +433,7 @@ git commit -m "add: /student/pshare/[slug] reader page"
 Schema-only task. Lands before any bookings feature work so subsequent tasks have the columns and policy available. Additive change only — no existing row breaks.
 
 **Files:**
+
 - Create: `supabase/migrations/0003_phase4_anon_bookings.sql`
 - Modify: `lib/supabase/database.types.ts` (regenerated; committed verbatim)
 
@@ -504,6 +517,7 @@ git commit -m "add: migration 0003 — anon bookings INSERT policy + identity co
 Side-rail right of `BigCalGrid` listing this month's events with per-row Edit link + Delete button. BigCal cells remain non-interactive.
 
 **Files:**
+
 - Modify: `lib/queries/events.ts`
 - Modify: `app/admin/calendar/actions.ts`
 - Modify: `app/admin/calendar/page.tsx`
@@ -543,10 +557,15 @@ export async function getAdminMonthEventList(
 ): Promise<AdminCalendarRow[]> {
   const db = await createClient();
   const start = `${year}-${String(month).padStart(2, "0")}-01T00:00:00+07:00`;
-  const next = month === 12 ? `${year + 1}-01-01T00:00:00+07:00` : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
+  const next =
+    month === 12
+      ? `${year + 1}-01-01T00:00:00+07:00`
+      : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
   const { data, error } = await db
     .from("events")
-    .select("id, starts_at, title_th, title_en, tag, category, location, highlight")
+    .select(
+      "id, starts_at, title_th, title_en, tag, category, location, highlight",
+    )
     .gte("starts_at", start)
     .lt("starts_at", next)
     .order("starts_at", { ascending: true });
@@ -554,11 +573,15 @@ export async function getAdminMonthEventList(
   return (data ?? []) as AdminCalendarRow[];
 }
 
-export async function getEventById(id: string): Promise<AdminCalendarRow | null> {
+export async function getEventById(
+  id: string,
+): Promise<AdminCalendarRow | null> {
   const db = await createClient();
   const { data, error } = await db
     .from("events")
-    .select("id, starts_at, title_th, title_en, tag, category, location, highlight")
+    .select(
+      "id, starts_at, title_th, title_en, tag, category, location, highlight",
+    )
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(`getEventById: ${error.message}`);
@@ -650,21 +673,34 @@ function formatDateTime(ts: string): { date: string; time: string } {
   const m = ts.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})/);
   if (!m) return { date: ts.slice(0, 10), time: ts.slice(11, 16) };
   const monthMap: Record<string, string> = {
-    "01": "Jan","02": "Feb","03": "Mar","04": "Apr","05": "May","06": "Jun",
-    "07": "Jul","08": "Aug","09": "Sep","10": "Oct","11": "Nov","12": "Dec",
+    "01": "Jan",
+    "02": "Feb",
+    "03": "Mar",
+    "04": "Apr",
+    "05": "May",
+    "06": "Jun",
+    "07": "Jul",
+    "08": "Aug",
+    "09": "Sep",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec",
   };
-  return { date: `${parseInt(m[3], 10)} ${monthMap[m[2]] ?? m[2]}`, time: m[4] };
+  return {
+    date: `${parseInt(m[3], 10)} ${monthMap[m[2]] ?? m[2]}`,
+    time: m[4],
+  };
 }
 
 export function AdminCalendarEventList({ rows }: { rows: AdminCalendarRow[] }) {
   return (
-    <div className="border-[1.5px] border-ink bg-paper">
-      <div className="border-b-[1.5px] border-ink bg-cream px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+    <div className="border-ink bg-paper border-[1.5px]">
+      <div className="border-ink bg-cream text-mute-700 border-b-[1.5px] px-3 py-2 font-mono text-[10px] tracking-[0.14em] uppercase">
         This month · {rows.length} events
       </div>
       <ul>
         {rows.length === 0 && (
-          <li className="px-3 py-3 font-mono text-[12px] text-mute-500">
+          <li className="text-mute-500 px-3 py-3 font-mono text-[12px]">
             No events this month.
           </li>
         )}
@@ -679,33 +715,33 @@ export function AdminCalendarEventList({ rows }: { rows: AdminCalendarRow[] }) {
               className={`flex items-center gap-3 px-3 py-2.5 ${border}`}
             >
               <span
-                className="h-2 w-2 shrink-0 border border-ink"
+                className="border-ink h-2 w-2 shrink-0 border"
                 style={{ background: dot }}
                 aria-hidden
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline gap-2">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-mute-500">
+                  <span className="text-mute-500 font-mono text-[10px] tracking-[0.14em] uppercase">
                     {date} · {time}
                   </span>
                   {row.highlight && (
-                    <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-yellow-700">
+                    <span className="font-mono text-[9px] tracking-[0.14em] text-yellow-700 uppercase">
                       ★ briefing
                     </span>
                   )}
                 </div>
-                <div className="truncate font-display italic text-[14px]">
+                <div className="font-display truncate text-[14px] italic">
                   {row.title_th}
                 </div>
                 {row.tag && (
-                  <div className="truncate font-mono text-[10px] text-mute-500">
+                  <div className="text-mute-500 truncate font-mono text-[10px]">
                     {row.tag}
                   </div>
                 )}
               </div>
               <Link
                 href={`/admin/calendar/${row.id}/edit`}
-                className="border-[1.5px] border-line bg-paper px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 hover:bg-cream"
+                className="border-line bg-paper text-mute-700 hover:bg-cream border-[1.5px] px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] uppercase"
               >
                 Edit
               </Link>
@@ -713,7 +749,7 @@ export function AdminCalendarEventList({ rows }: { rows: AdminCalendarRow[] }) {
                 <input type="hidden" name="id" value={row.id} />
                 <button
                   type="submit"
-                  className="font-mono text-[10px] uppercase tracking-[0.14em] text-red-600 hover:text-red-700"
+                  className="font-mono text-[10px] tracking-[0.14em] text-red-600 uppercase hover:text-red-700"
                 >
                   Delete
                 </button>
@@ -766,7 +802,13 @@ import { Card, CardTitle } from "@/components/admin/Card";
 import { getEventById } from "@/lib/queries/events";
 import { deleteEvent, updateEvent } from "../../actions";
 
-const CATEGORIES = ["sport", "tradition", "music", "admin", "academic"] as const;
+const CATEGORIES = [
+  "sport",
+  "tradition",
+  "music",
+  "admin",
+  "academic",
+] as const;
 
 function toDateTimeLocal(iso: string): string {
   // "2026-05-13T11:30:00+07:00" → "2026-05-13T11:30"
@@ -791,75 +833,80 @@ export default async function AdminCalendarEdit({
       />
       <Card>
         <CardTitle th="แก้ไขกิจกรรม" en="Edit event" />
-        <form action={updateEvent} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={updateEvent}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <input type="hidden" name="id" value={event.id} />
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 md:col-span-2">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase md:col-span-2">
             Title TH · ชื่อกิจกรรม
             <input
               name="title_th"
               type="text"
               required
               defaultValue={event.title_th}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Title EN (optional)
             <input
               name="title_en"
               type="text"
               defaultValue={event.title_en ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Tag (e.g. "Sport · Stadium")
             <input
               name="tag"
               type="text"
               defaultValue={event.tag ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Category
             <select
               name="category"
               defaultValue={event.category}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             >
               {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
           </label>
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Starts at
             <input
               name="starts_at"
               type="datetime-local"
               required
               defaultValue={toDateTimeLocal(event.starts_at)}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Location (optional)
             <input
               name="location"
               type="text"
               defaultValue={event.location ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
 
-          <label className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 md:col-span-2">
+          <label className="text-mute-700 flex items-center gap-2 font-mono text-[10px] tracking-[0.14em] uppercase md:col-span-2">
             <input
               name="highlight"
               type="checkbox"
@@ -873,7 +920,7 @@ export default async function AdminCalendarEdit({
             <button
               type="submit"
               formAction={deleteEvent}
-              className="border-[1.5px] border-line bg-paper px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+              className="border-line bg-paper border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-red-700 uppercase hover:bg-red-50"
             >
               Delete event
             </button>
@@ -920,6 +967,7 @@ git commit -m "add: calendar edit/delete + month-event side rail"
 Three new actions, two new pages, row-`⋯` column on the existing results table, and a button rename.
 
 **Files:**
+
 - Modify: `lib/queries/sportResults.ts`
 - Modify: `app/admin/sport/actions.ts`
 - Modify: `app/admin/sport/page.tsx`
@@ -987,13 +1035,16 @@ function parsePlacements(formData: FormData): number[] | null {
 }
 
 function parseResult(formData: FormData):
-  | { ok: true; data: {
-      title_th: string;
-      title_en: string | null;
-      category: SportCategory;
-      placements: number[];
-      time_label: string | null;
-    } }
+  | {
+      ok: true;
+      data: {
+        title_th: string;
+        title_en: string | null;
+        category: SportCategory;
+        placements: number[];
+        time_label: string | null;
+      };
+    }
   | { ok: false } {
   const title_th = String(formData.get("title_th") ?? "").trim();
   const title_en_raw = String(formData.get("title_en") ?? "").trim();
@@ -1093,54 +1144,62 @@ export default function AdminSportResultNew() {
       />
       <Card>
         <CardTitle th="บันทึกผลใหม่" en="New result" />
-        <form action={recordSportResult} className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 md:col-span-2">
+        <form
+          action={recordSportResult}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase md:col-span-2">
             Title TH · ชื่อรายการ
             <input
               name="title_th"
               type="text"
               required
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Title EN (optional)
             <input
               name="title_en"
               type="text"
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Category
             <select
               name="category"
               defaultValue="Track"
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             >
               <option value="Track">Track</option>
               <option value="Team">Team</option>
             </select>
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Time label (optional, e.g. "10:42")
             <input
               name="time_label"
               type="text"
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
           {(["p1", "p2", "p3", "p4"] as const).map((slot, i) => (
-            <label key={slot} className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            <label
+              key={slot}
+              className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase"
+            >
               {`${i + 1}${i === 0 ? "st" : i === 1 ? "nd" : i === 2 ? "rd" : "th"} place`}
               <select
                 name={slot}
                 required
-                className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+                className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
               >
                 <option value="">—</option>
                 {HOUSES.map((h) => (
-                  <option key={h.id} value={h.id}>{h.label}</option>
+                  <option key={h.id} value={h.id}>
+                    {h.label}
+                  </option>
                 ))}
               </select>
             </label>
@@ -1193,60 +1252,68 @@ export default async function AdminSportResultEdit({
       />
       <Card>
         <CardTitle th="แก้ไขผลการแข่งขัน" en="Edit result" />
-        <form action={updateSportResult} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={updateSportResult}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <input type="hidden" name="id" value={row.id} />
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 md:col-span-2">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase md:col-span-2">
             Title TH
             <input
               name="title_th"
               type="text"
               required
               defaultValue={row.title_th}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Title EN
             <input
               name="title_en"
               type="text"
               defaultValue={row.title_en ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Category
             <select
               name="category"
               defaultValue={row.category}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             >
               <option value="Track">Track</option>
               <option value="Team">Team</option>
             </select>
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Time label
             <input
               name="time_label"
               type="text"
               defaultValue={row.time_label ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
           {(["p1", "p2", "p3", "p4"] as const).map((slot, i) => (
-            <label key={slot} className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            <label
+              key={slot}
+              className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase"
+            >
               {`${i + 1}${i === 0 ? "st" : i === 1 ? "nd" : i === 2 ? "rd" : "th"} place`}
               <select
                 name={slot}
                 required
                 defaultValue={String(placements[i] ?? "")}
-                className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+                className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
               >
                 <option value="">—</option>
                 {HOUSES.map((h) => (
-                  <option key={h.id} value={h.id}>{h.label}</option>
+                  <option key={h.id} value={h.id}>
+                    {h.label}
+                  </option>
                 ))}
               </select>
             </label>
@@ -1256,7 +1323,7 @@ export default async function AdminSportResultEdit({
             <button
               type="submit"
               formAction={deleteSportResult}
-              className="border-[1.5px] border-line bg-paper px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+              className="border-line bg-paper border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-red-700 uppercase hover:bg-red-50"
             >
               Delete result
             </button>
@@ -1276,7 +1343,7 @@ Modify `components/admin/EventResultsTable.tsx`. The component currently takes `
 
 ```ts
 export type SportResultRow = {
-  id?: string;        // optional for backwards compat — populated by the admin query
+  id?: string; // optional for backwards compat — populated by the admin query
   titleTh: string;
   titleEn: string;
   category: "Track" | "Team";
@@ -1294,7 +1361,7 @@ export type SportResultRow = {
   {row.id && (
     <Link
       href={`/admin/sport/result/${row.id}/edit`}
-      className="font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 hover:text-ink"
+      className="text-mute-700 hover:text-ink font-mono text-[10px] tracking-[0.14em] uppercase"
     >
       Edit
     </Link>
@@ -1320,13 +1387,13 @@ import Link from "next/link";
       <Btn>Export</Btn>
       <Link
         href="/admin/sport/result/new"
-        className="inline-block border-[1.5px] border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-all bg-blue text-white [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep"
+        className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"
       >
         + Record result
       </Link>
     </>
   }
-/>
+/>;
 ```
 
 The Link styling matches the `+ Add Event` button on `/admin/calendar` from 3d for visual parity.
@@ -1363,6 +1430,7 @@ git commit -m "add: sport result record/update/delete + edit route"
 Three actions, one edit page, status submenu in the existing `⋯` cell. `+ Add Project` stays inert with a flagged comment.
 
 **Files:**
+
 - Modify: `lib/queries/projects.ts`
 - Create: `app/admin/portfolio/actions.ts`
 - Create: `app/admin/portfolio/[id]/edit/page.tsx`
@@ -1404,7 +1472,9 @@ const { data, error } = await db
 // …
 return (data ?? []).map<PortfolioAdminRow>((p) => ({
   id: p.id,
-  thumb: { /* unchanged */ },
+  thumb: {
+    /* unchanged */
+  },
   // …rest unchanged
 }));
 ```
@@ -1412,8 +1482,7 @@ return (data ?? []).map<PortfolioAdminRow>((p) => ({
 Add `getProjectById`:
 
 ```ts
-export type ProjectFull =
-  Database["public"]["Tables"]["projects"]["Row"];
+export type ProjectFull = Database["public"]["Tables"]["projects"]["Row"];
 
 export async function getProjectById(id: string): Promise<ProjectFull | null> {
   const db = await createClient();
@@ -1456,10 +1525,7 @@ export async function setProjectStatus(formData: FormData): Promise<void> {
   if (!id || !isStatus(status)) return;
 
   const db = await createClient();
-  const { error } = await db
-    .from("projects")
-    .update({ status })
-    .eq("id", id);
+  const { error } = await db.from("projects").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePortfolio();
@@ -1548,7 +1614,7 @@ const STATUS_OPTIONS: PortfolioAdminRow["status"][] = [
           name="status"
           value={s}
           title={`Set to ${s}`}
-          className="border-[1.5px] border-line bg-paper px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-mute-700 hover:bg-cream"
+          className="border-line bg-paper text-mute-700 hover:bg-cream border-[1.5px] px-2 py-0.5 font-mono text-[9px] tracking-[0.14em] uppercase"
         >
           {s === "Published" ? "Pub" : s === "Under Review" ? "Rev" : "Drf"}
         </button>
@@ -1556,12 +1622,12 @@ const STATUS_OPTIONS: PortfolioAdminRow["status"][] = [
     </form>
     <Link
       href={`/admin/portfolio/${row.id}/edit`}
-      className="font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 hover:text-ink"
+      className="text-mute-700 hover:text-ink font-mono text-[10px] tracking-[0.14em] uppercase"
     >
       Edit
     </Link>
   </div>
-</td>
+</td>;
 ```
 
 The header for that column stays `""`.
@@ -1571,8 +1637,10 @@ The header for that column stays `""`.
 Modify `app/admin/portfolio/page.tsx`. Find the `<Btn variant="primary">+ Add Project</Btn>` line and prefix with a comment:
 
 ```tsx
-{/* + Add Project: deferred to Phase 5 — needs student submission flow design. */}
-<Btn variant="primary">+ Add Project</Btn>
+{
+  /* + Add Project: deferred to Phase 5 — needs student submission flow design. */
+}
+<Btn variant="primary">+ Add Project</Btn>;
 ```
 
 - [ ] **Step 6: Create the edit page**
@@ -1587,7 +1655,17 @@ import { Card, CardTitle } from "@/components/admin/Card";
 import { getProjectById } from "@/lib/queries/projects";
 import { deleteProject, updateProject } from "../../actions";
 
-const ICON_KEYS = ["trend", "sun", "wave", "cube", "calendar", "beakers", "crop", "solar", "shm"];
+const ICON_KEYS = [
+  "trend",
+  "sun",
+  "wave",
+  "cube",
+  "calendar",
+  "beakers",
+  "crop",
+  "solar",
+  "shm",
+];
 
 export default async function AdminPortfolioEdit({
   params,
@@ -1606,96 +1684,101 @@ export default async function AdminPortfolioEdit({
       />
       <Card>
         <CardTitle th="แก้ไขโครงงาน" en="Edit project" />
-        <form action={updateProject} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={updateProject}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <input type="hidden" name="id" value={project.id} />
 
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Title EN
             <input
               name="title_en"
               type="text"
               required
               defaultValue={project.title_en}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Title TH
             <input
               name="title_th"
               type="text"
               defaultValue={project.title_th ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 md:col-span-2">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase md:col-span-2">
             Description (long)
             <textarea
               name="desc_long"
               rows={4}
               defaultValue={project.desc_long ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Author line (e.g. "ธรรศ์ × นนท์ — Y9 / 2025")
             <input
               name="author_line"
               type="text"
               defaultValue={project.author_line ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Class (e.g. "Y9 / 2025")
             <input
               name="klass"
               type="text"
               defaultValue={project.klass ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Status
             <select
               name="status"
               defaultValue={project.status}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             >
               <option value="Published">Published</option>
               <option value="Under Review">Under Review</option>
               <option value="Draft">Draft</option>
             </select>
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Icon key
             <select
               name="icon_key"
               defaultValue={project.icon_key ?? "trend"}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             >
               {ICON_KEYS.map((k) => (
-                <option key={k} value={k}>{k}</option>
+                <option key={k} value={k}>
+                  {k}
+                </option>
               ))}
             </select>
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Thumb background (CSS color)
             <input
               name="thumb_bg"
               type="text"
               defaultValue={project.thumb_bg ?? ""}
               placeholder="var(--color-blue)"
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
             Submitted at (YYYY-MM-DD)
             <input
               name="submitted_at"
               type="date"
               defaultValue={project.submitted_at ?? ""}
-              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
           <div className="flex items-center gap-3 md:col-span-2">
@@ -1703,13 +1786,14 @@ export default async function AdminPortfolioEdit({
             <button
               type="submit"
               formAction={deleteProject}
-              className="border-[1.5px] border-line bg-paper px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+              className="border-line bg-paper border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-red-700 uppercase hover:bg-red-50"
             >
               Delete project
             </button>
           </div>
-          <p className="md:col-span-2 font-mono text-[10px] text-mute-500">
-            Tags are managed in Phase 5 — existing tags are preserved by this form.
+          <p className="text-mute-500 font-mono text-[10px] md:col-span-2">
+            Tags are managed in Phase 5 — existing tags are preserved by this
+            form.
           </p>
         </form>
       </Card>
@@ -1750,6 +1834,7 @@ git commit -m "add: portfolio status/update/delete + edit route"
 Largest content surface. One generic `updateSiteConfig` action that key-dispatches; one index page; one `[key]/edit` route with six conditional form bodies.
 
 **Files:**
+
 - Modify: `lib/queries/siteConfig.ts`
 - Create: `app/admin/config/page.tsx`
 - Create: `app/admin/config/[key]/edit/page.tsx`
@@ -1810,7 +1895,8 @@ function revalidateFor(key: EditableKey) {
   revalidatePath("/admin/config");
   revalidatePath(`/admin/config/${key}/edit`);
   if (key === "home_hero") revalidatePath("/student");
-  if (key === "overview_kpis" || key === "trend_chart") revalidatePath("/admin");
+  if (key === "overview_kpis" || key === "trend_chart")
+    revalidatePath("/admin");
   if (key === "portfolio_kpis" || key === "portfolio_stats") {
     revalidatePath("/admin/portfolio");
     revalidatePath("/student/portfolio");
@@ -1820,7 +1906,10 @@ function revalidateFor(key: EditableKey) {
 
 function parseHomeHero(fd: FormData): Json {
   const titleLinesRaw = String(fd.get("title_lines") ?? "");
-  const titleLines = titleLinesRaw.split("\n").map((s) => s.trim()).filter(Boolean);
+  const titleLines = titleLinesRaw
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
   return {
     eyebrow: String(fd.get("eyebrow") ?? "").trim(),
     titleLines,
@@ -1869,7 +1958,11 @@ function parsePortfolioStats(fd: FormData): Json {
 function parseTrendChart(fd: FormData): Json {
   const months: string[] = [];
   for (let i = 0; i < 12; i++) {
-    months.push(String(fd.get(`month_${i}`) ?? "").trim().toUpperCase());
+    months.push(
+      String(fd.get(`month_${i}`) ?? "")
+        .trim()
+        .toUpperCase(),
+    );
   }
   const points: { x: number; y: number }[] = [];
   for (let i = 0; i < 13; i++) {
@@ -1930,33 +2023,35 @@ import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Card, CardTitle } from "@/components/admin/Card";
 
 const KEYS = [
-  { key: "home_hero",       th: "หน้าแรกของนักเรียน",  en: "Student home hero" },
-  { key: "overview_kpis",   th: "KPI ภาพรวม",          en: "Admin overview KPIs" },
-  { key: "trend_chart",     th: "กราฟแนวโน้ม",         en: "12-month trend chart" },
-  { key: "portfolio_stats", th: "สถิติ Portfolio",     en: "Portfolio stats (3)" },
-  { key: "portfolio_kpis",  th: "KPI Portfolio",       en: "Portfolio KPIs" },
-  { key: "carelin_kpis",    th: "KPI Carelin",         en: "Carelin desk KPIs" },
+  { key: "home_hero", th: "หน้าแรกของนักเรียน", en: "Student home hero" },
+  { key: "overview_kpis", th: "KPI ภาพรวม", en: "Admin overview KPIs" },
+  { key: "trend_chart", th: "กราฟแนวโน้ม", en: "12-month trend chart" },
+  { key: "portfolio_stats", th: "สถิติ Portfolio", en: "Portfolio stats (3)" },
+  { key: "portfolio_kpis", th: "KPI Portfolio", en: "Portfolio KPIs" },
+  { key: "carelin_kpis", th: "KPI Carelin", en: "Carelin desk KPIs" },
 ];
 
 export default function AdminConfigIndex() {
   return (
     <>
-      <AdminTopbar
-        titleTh="ตั้งค่าเนื้อหา"
-        eyebrow="Site config · admin"
-      />
+      <AdminTopbar titleTh="ตั้งค่าเนื้อหา" eyebrow="Site config · admin" />
       <Card>
         <CardTitle th="ค่าที่แก้ไขได้" en="Editable site_config keys" />
-        <ul className="divide-y divide-dashed divide-mute-200">
+        <ul className="divide-mute-200 divide-y divide-dashed">
           {KEYS.map((k) => (
-            <li key={k.key} className="flex items-center justify-between px-3 py-3">
+            <li
+              key={k.key}
+              className="flex items-center justify-between px-3 py-3"
+            >
               <div>
-                <div className="font-display italic text-[15px]">{k.en}</div>
-                <div className="font-mono text-[11px] text-mute-500">{k.key} · {k.th}</div>
+                <div className="font-display text-[15px] italic">{k.en}</div>
+                <div className="text-mute-500 font-mono text-[11px]">
+                  {k.key} · {k.th}
+                </div>
               </div>
               <Link
                 href={`/admin/config/${k.key}/edit`}
-                className="border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700 hover:bg-cream"
+                className="border-line bg-paper text-mute-700 hover:bg-cream border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
               >
                 Edit →
               </Link>
@@ -2007,20 +2102,26 @@ export default async function AdminConfigEdit({
 
   return (
     <>
-      <AdminTopbar
-        titleTh="แก้ไขค่า"
-        eyebrow={`Site config · ${key}`}
-      />
+      <AdminTopbar titleTh="แก้ไขค่า" eyebrow={`Site config · ${key}`} />
       <Card>
         <CardTitle th="แก้ไขค่า" en={`Edit ${key}`} />
-        <form action={updateSiteConfig} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={updateSiteConfig}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <input type="hidden" name="key" value={key} />
-          {key === "home_hero"       && <HomeHeroFields />}
-          {key === "overview_kpis"   && <KpiArrayFields configKey="overview_kpis" />}
-          {key === "portfolio_kpis"  && <KpiArrayFields configKey="portfolio_kpis" />}
-          {key === "carelin_kpis"    && <KpiArrayFields configKey="carelin_kpis" />}
+          {key === "home_hero" && <HomeHeroFields />}
+          {key === "overview_kpis" && (
+            <KpiArrayFields configKey="overview_kpis" />
+          )}
+          {key === "portfolio_kpis" && (
+            <KpiArrayFields configKey="portfolio_kpis" />
+          )}
+          {key === "carelin_kpis" && (
+            <KpiArrayFields configKey="carelin_kpis" />
+          )}
           {key === "portfolio_stats" && <PortfolioStatsFields />}
-          {key === "trend_chart"     && <TrendChartFields />}
+          {key === "trend_chart" && <TrendChartFields />}
           <div className="md:col-span-2">
             <Btn variant="primary">Save changes →</Btn>
           </div>
@@ -2036,11 +2137,21 @@ async function HomeHeroFields() {
     <>
       <label className={LABEL_CLS}>
         Eyebrow
-        <input name="eyebrow" type="text" defaultValue={v.eyebrow} className={INPUT_CLS} />
+        <input
+          name="eyebrow"
+          type="text"
+          defaultValue={v.eyebrow}
+          className={INPUT_CLS}
+        />
       </label>
       <label className={LABEL_CLS}>
         Where TH
-        <input name="where_th" type="text" defaultValue={v.whereTh} className={INPUT_CLS} />
+        <input
+          name="where_th"
+          type="text"
+          defaultValue={v.whereTh}
+          className={INPUT_CLS}
+        />
       </label>
       <label className={`${LABEL_CLS} md:col-span-2`}>
         Title lines (one per line)
@@ -2053,15 +2164,26 @@ async function HomeHeroFields() {
       </label>
       <label className={LABEL_CLS}>
         Leading house
-        <select name="leading_house" defaultValue={v.leading.house} className={INPUT_CLS}>
+        <select
+          name="leading_house"
+          defaultValue={v.leading.house}
+          className={INPUT_CLS}
+        >
           {(["green", "purple", "orange", "pink"] as const).map((h) => (
-            <option key={h} value={h}>{h}</option>
+            <option key={h} value={h}>
+              {h}
+            </option>
           ))}
         </select>
       </label>
       <label className={LABEL_CLS}>
         Leading label
-        <input name="leading_label" type="text" defaultValue={v.leading.label} className={INPUT_CLS} />
+        <input
+          name="leading_label"
+          type="text"
+          defaultValue={v.leading.label}
+          className={INPUT_CLS}
+        />
       </label>
       <label className={LABEL_CLS}>
         Leading points
@@ -2085,7 +2207,12 @@ async function HomeHeroFields() {
       </label>
       <label className={LABEL_CLS}>
         Weather glyph (e.g. "☼")
-        <input name="weather_glyph" type="text" defaultValue={v.weather.glyph} className={INPUT_CLS} />
+        <input
+          name="weather_glyph"
+          type="text"
+          defaultValue={v.weather.glyph}
+          className={INPUT_CLS}
+        />
       </label>
     </>
   );
@@ -2093,31 +2220,55 @@ async function HomeHeroFields() {
 
 async function KpiArrayFields({ configKey }: { configKey: string }) {
   const v = await getConfigByKey<AdminKpi[]>(configKey);
-  const filled: AdminKpi[] = Array.from({ length: 4 }, (_, i) =>
-    v[i] ?? { label: "", th: "", num: "", delta: { kind: "flat", text: "" } },
+  const filled: AdminKpi[] = Array.from(
+    { length: 4 },
+    (_, i) =>
+      v[i] ?? { label: "", th: "", num: "", delta: { kind: "flat", text: "" } },
   );
   return (
     <>
       {filled.map((kpi, i) => (
-        <div key={i} className="md:col-span-2 grid grid-cols-1 gap-2 border-[1.5px] border-line bg-paper p-3 md:grid-cols-4">
-          <div className="md:col-span-4 font-mono text-[11px] uppercase tracking-[0.14em] text-mute-700">
+        <div
+          key={i}
+          className="border-line bg-paper grid grid-cols-1 gap-2 border-[1.5px] p-3 md:col-span-2 md:grid-cols-4"
+        >
+          <div className="text-mute-700 font-mono text-[11px] tracking-[0.14em] uppercase md:col-span-4">
             KPI {i + 1}
           </div>
           <label className={LABEL_CLS}>
             Label
-            <input name={`kpi_${i}_label`} type="text" defaultValue={kpi.label} className={INPUT_CLS} />
+            <input
+              name={`kpi_${i}_label`}
+              type="text"
+              defaultValue={kpi.label}
+              className={INPUT_CLS}
+            />
           </label>
           <label className={LABEL_CLS}>
             TH
-            <input name={`kpi_${i}_th`} type="text" defaultValue={kpi.th} className={INPUT_CLS} />
+            <input
+              name={`kpi_${i}_th`}
+              type="text"
+              defaultValue={kpi.th}
+              className={INPUT_CLS}
+            />
           </label>
           <label className={LABEL_CLS}>
             Number (string)
-            <input name={`kpi_${i}_num`} type="text" defaultValue={kpi.num} className={INPUT_CLS} />
+            <input
+              name={`kpi_${i}_num`}
+              type="text"
+              defaultValue={kpi.num}
+              className={INPUT_CLS}
+            />
           </label>
           <label className={LABEL_CLS}>
             Delta kind
-            <select name={`kpi_${i}_delta_kind`} defaultValue={kpi.delta.kind} className={INPUT_CLS}>
+            <select
+              name={`kpi_${i}_delta_kind`}
+              defaultValue={kpi.delta.kind}
+              className={INPUT_CLS}
+            >
               <option value="up">up</option>
               <option value="down">down</option>
               <option value="flat">flat</option>
@@ -2125,7 +2276,12 @@ async function KpiArrayFields({ configKey }: { configKey: string }) {
           </label>
           <label className={`${LABEL_CLS} md:col-span-4`}>
             Delta text
-            <input name={`kpi_${i}_delta_text`} type="text" defaultValue={kpi.delta.text} className={INPUT_CLS} />
+            <input
+              name={`kpi_${i}_delta_text`}
+              type="text"
+              defaultValue={kpi.delta.text}
+              className={INPUT_CLS}
+            />
           </label>
         </div>
       ))}
@@ -2135,14 +2291,18 @@ async function KpiArrayFields({ configKey }: { configKey: string }) {
 
 async function PortfolioStatsFields() {
   const v = await getConfigByKey<PortfolioStats[]>("portfolio_stats");
-  const filled: PortfolioStats[] = Array.from({ length: 3 }, (_, i) =>
-    v[i] ?? { num: 0, label: "" },
+  const filled: PortfolioStats[] = Array.from(
+    { length: 3 },
+    (_, i) => v[i] ?? { num: 0, label: "" },
   );
   return (
     <>
       {filled.map((stat, i) => (
-        <div key={i} className="md:col-span-2 grid grid-cols-1 gap-2 border-[1.5px] border-line bg-paper p-3 md:grid-cols-2">
-          <div className="md:col-span-2 font-mono text-[11px] uppercase tracking-[0.14em] text-mute-700">
+        <div
+          key={i}
+          className="border-line bg-paper grid grid-cols-1 gap-2 border-[1.5px] p-3 md:col-span-2 md:grid-cols-2"
+        >
+          <div className="text-mute-700 font-mono text-[11px] tracking-[0.14em] uppercase md:col-span-2">
             Stat {i + 1}
           </div>
           <label className={LABEL_CLS}>
@@ -2156,7 +2316,12 @@ async function PortfolioStatsFields() {
           </label>
           <label className={LABEL_CLS}>
             Label
-            <input name={`stat_${i}_label`} type="text" defaultValue={stat.label} className={INPUT_CLS} />
+            <input
+              name={`stat_${i}_label`}
+              type="text"
+              defaultValue={stat.label}
+              className={INPUT_CLS}
+            />
           </label>
         </div>
       ))}
@@ -2168,7 +2333,7 @@ async function TrendChartFields() {
   const v = await getConfigByKey<TrendChartData>("trend_chart");
   return (
     <>
-      <div className="md:col-span-2 font-mono text-[11px] uppercase tracking-[0.14em] text-mute-700">
+      <div className="text-mute-700 font-mono text-[11px] tracking-[0.14em] uppercase md:col-span-2">
         Months (12, mono caps)
       </div>
       {Array.from({ length: 12 }).map((_, i) => (
@@ -2183,11 +2348,12 @@ async function TrendChartFields() {
           />
         </label>
       ))}
-      <div className="md:col-span-2 mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-mute-700">
-        Polyline points (13 × {`{x, y}`}). Server derives the SVG path string from these.
+      <div className="text-mute-700 mt-3 font-mono text-[11px] tracking-[0.14em] uppercase md:col-span-2">
+        Polyline points (13 × {`{x, y}`}). Server derives the SVG path string
+        from these.
       </div>
       {Array.from({ length: 13 }).map((_, i) => (
-        <div key={`p${i}`} className="md:col-span-2 grid grid-cols-2 gap-2">
+        <div key={`p${i}`} className="grid grid-cols-2 gap-2 md:col-span-2">
           <label className={LABEL_CLS}>
             Point {i + 1} · x
             <input
@@ -2247,6 +2413,7 @@ git commit -m "add: /admin/config index + per-key structured editors"
 Three actions, two new pages, row-edit column on `AdminTodayBookingsTable`, and the `+ New Booking` button wired up.
 
 **Files:**
+
 - Modify: `lib/queries/bookings.ts`
 - Modify: `lib/types.ts`
 - Modify: `lib/ui/booking.ts`
@@ -2272,15 +2439,20 @@ Replace the existing `BOOKING_PERIODS` block with one that keys on a period id:
 ```ts
 export const PERIOD_HOURS = {
   morning: { start: "08:00", end: "11:00" },
-  midday:  { start: "11:30", end: "14:30" },
+  midday: { start: "11:30", end: "14:30" },
   evening: { start: "15:00", end: "18:00" },
 } as const;
 
 export type PeriodId = keyof typeof PERIOD_HOURS;
 
 export const BOOKING_PERIODS: (BookingPeriod & { id: PeriodId })[] = [
-  { id: "morning", label: "Morning", time: "08:00 — 11:00", status: "available" },
-  { id: "midday",  label: "Midday",  time: "11:30 — 14:30", status: "selected" },
+  {
+    id: "morning",
+    label: "Morning",
+    time: "08:00 — 11:00",
+    status: "available",
+  },
+  { id: "midday", label: "Midday", time: "11:30 — 14:30", status: "selected" },
   { id: "evening", label: "Evening", time: "15:00 — 18:00", status: "booked" },
 ];
 ```
@@ -2291,7 +2463,7 @@ In `lib/types.ts`:
 
 ```ts
 export type BookingPeriod = {
-  id?: "morning" | "midday" | "evening";  // populated in Phase 4 task 8 onwards
+  id?: "morning" | "midday" | "evening"; // populated in Phase 4 task 8 onwards
   label: string;
   time: string;
   status: "available" | "selected" | "booked";
@@ -2506,13 +2678,13 @@ export default async function AdminBookingsNew() {
   const rooms = await getMusicRooms();
   return (
     <>
-      <AdminTopbar
-        titleTh="จองห้อง · ใหม่"
-        eyebrow="Bookings · new"
-      />
+      <AdminTopbar titleTh="จองห้อง · ใหม่" eyebrow="Bookings · new" />
       <Card>
         <CardTitle th="จองห้องใหม่" en="New booking" />
-        <form action={createBooking} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={createBooking}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <label className={LABEL_CLS}>
             Room
             <select name="room_id" required className={INPUT_CLS}>
@@ -2526,7 +2698,12 @@ export default async function AdminBookingsNew() {
           </label>
           <label className={LABEL_CLS}>
             Status
-            <select name="status" defaultValue="Confirmed" required className={INPUT_CLS}>
+            <select
+              name="status"
+              defaultValue="Confirmed"
+              required
+              className={INPUT_CLS}
+            >
               <option value="Confirmed">Confirmed</option>
               <option value="Pending">Pending</option>
               <option value="Review">Review</option>
@@ -2544,7 +2721,12 @@ export default async function AdminBookingsNew() {
           </label>
           <label className={LABEL_CLS}>
             Period
-            <select name="period" defaultValue="midday" required className={INPUT_CLS}>
+            <select
+              name="period"
+              defaultValue="midday"
+              required
+              className={INPUT_CLS}
+            >
               <option value="morning">Morning · 08:00–11:00</option>
               <option value="midday">Midday · 11:30–14:30</option>
               <option value="evening">Evening · 15:00–18:00</option>
@@ -2552,7 +2734,12 @@ export default async function AdminBookingsNew() {
           </label>
           <label className={LABEL_CLS}>
             User label (name or club)
-            <input name="user_label" type="text" required className={INPUT_CLS} />
+            <input
+              name="user_label"
+              type="text"
+              required
+              className={INPUT_CLS}
+            />
           </label>
           <label className={LABEL_CLS}>
             Purpose (optional)
@@ -2618,17 +2805,22 @@ export default async function AdminBookingsEdit({
 
   return (
     <>
-      <AdminTopbar
-        titleTh="แก้ไขการจอง"
-        eyebrow={`Bookings · edit`}
-      />
+      <AdminTopbar titleTh="แก้ไขการจอง" eyebrow={`Bookings · edit`} />
       <Card>
         <CardTitle th="แก้ไขการจอง" en="Edit booking" />
-        <form action={updateBooking} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={updateBooking}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <input type="hidden" name="id" value={booking.id} />
           <label className={LABEL_CLS}>
             Room
-            <select name="room_id" required defaultValue={booking.room_id} className={INPUT_CLS}>
+            <select
+              name="room_id"
+              required
+              defaultValue={booking.room_id}
+              className={INPUT_CLS}
+            >
               {rooms.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.nameEn} · {r.nameTh}
@@ -2638,7 +2830,12 @@ export default async function AdminBookingsEdit({
           </label>
           <label className={LABEL_CLS}>
             Status
-            <select name="status" defaultValue={booking.status} required className={INPUT_CLS}>
+            <select
+              name="status"
+              defaultValue={booking.status}
+              required
+              className={INPUT_CLS}
+            >
               <option value="Confirmed">Confirmed</option>
               <option value="Pending">Pending</option>
               <option value="Review">Review</option>
@@ -2646,11 +2843,22 @@ export default async function AdminBookingsEdit({
           </label>
           <label className={LABEL_CLS}>
             Date
-            <input name="date" type="date" required defaultValue={date} className={INPUT_CLS} />
+            <input
+              name="date"
+              type="date"
+              required
+              defaultValue={date}
+              className={INPUT_CLS}
+            />
           </label>
           <label className={LABEL_CLS}>
             Period
-            <select name="period" defaultValue={period} required className={INPUT_CLS}>
+            <select
+              name="period"
+              defaultValue={period}
+              required
+              className={INPUT_CLS}
+            >
               <option value="morning">Morning · 08:00–11:00</option>
               <option value="midday">Midday · 11:30–14:30</option>
               <option value="evening">Evening · 15:00–18:00</option>
@@ -2658,18 +2866,29 @@ export default async function AdminBookingsEdit({
           </label>
           <label className={LABEL_CLS}>
             User label
-            <input name="user_label" type="text" required defaultValue={booking.user_label} className={INPUT_CLS} />
+            <input
+              name="user_label"
+              type="text"
+              required
+              defaultValue={booking.user_label}
+              className={INPUT_CLS}
+            />
           </label>
           <label className={LABEL_CLS}>
             Purpose
-            <input name="purpose" type="text" defaultValue={booking.purpose ?? ""} className={INPUT_CLS} />
+            <input
+              name="purpose"
+              type="text"
+              defaultValue={booking.purpose ?? ""}
+              className={INPUT_CLS}
+            />
           </label>
           <div className="flex items-center gap-3 md:col-span-2">
             <Btn variant="primary">Save booking →</Btn>
             <button
               type="submit"
               formAction={cancelBooking}
-              className="border-[1.5px] border-line bg-paper px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+              className="border-line bg-paper border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-red-700 uppercase hover:bg-red-50"
             >
               Cancel booking (delete)
             </button>
@@ -2690,10 +2909,10 @@ import Link from "next/link";
 // …
 <Link
   href="/admin/bookings/new"
-  className="inline-block border-[1.5px] border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-all bg-blue text-white [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep"
+  className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"
 >
   + New Booking
-</Link>
+</Link>;
 ```
 
 Modify `components/admin/AdminTodayBookingsTable.tsx` — add a trailing `""` header and a per-row Edit link:
@@ -2751,6 +2970,7 @@ git commit -m "add: admin bookings create/update/cancel + edit route"
 Largest task. Rewrites `/student/booking` to URL-driven selection, adds an inline form leaf using `useActionState`, and ships the `bookRoom` action under the new RLS policy from Task 3.
 
 **Files:**
+
 - Modify: `app/student/booking/page.tsx`
 - Create: `app/student/booking/actions.ts`
 - Create: `components/student/BookingConfirmForm.tsx`
@@ -2803,10 +3023,13 @@ export async function bookRoom(
   const purposeRaw = String(formData.get("purpose") ?? "").trim();
 
   if (!room_id) return { ok: false, error: "Please choose a room." };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { ok: false, error: "Please choose a date." };
-  if (!isPeriod(period)) return { ok: false, error: "Please choose a time period." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
+    return { ok: false, error: "Please choose a date." };
+  if (!isPeriod(period))
+    return { ok: false, error: "Please choose a time period." };
   if (!name) return { ok: false, error: "Please tell us your name." };
-  if (!ID_RE.test(student_id_4)) return { ok: false, error: "Student ID must be 4 digits." };
+  if (!ID_RE.test(student_id_4))
+    return { ok: false, error: "Student ID must be 4 digits." };
 
   const slot = PERIOD_HOURS[period];
   const starts_at = `${date}T${slot.start}:00+07:00`;
@@ -2888,11 +3111,11 @@ export function BookingConfirmForm({ date, period, room, eyebrow }: Props) {
       <input type="hidden" name="room" value={room} />
 
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-        <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+        <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
           Name · ชื่อ
           <input name="name" type="text" required className={INPUT_CLS} />
         </label>
-        <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+        <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
           Student ID (4 digits)
           <input
             name="student_id_4"
@@ -2903,11 +3126,11 @@ export function BookingConfirmForm({ date, period, room, eyebrow }: Props) {
             className={INPUT_CLS}
           />
         </label>
-        <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+        <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
           Class · ชั้น (optional)
           <input name="klass" type="text" className={INPUT_CLS} />
         </label>
-        <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+        <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
           Purpose (optional)
           <input name="purpose" type="text" className={INPUT_CLS} />
         </label>
@@ -2963,8 +3186,9 @@ function isPeriodId(v: string): v is PeriodId {
 }
 
 const MAY_DATES = new Set(
-  Array.from({ length: 31 }, (_, i) =>
-    `2026-05-${String(i + 1).padStart(2, "0")}`,
+  Array.from(
+    { length: 31 },
+    (_, i) => `2026-05-${String(i + 1).padStart(2, "0")}`,
   ),
 );
 
@@ -2985,7 +3209,10 @@ function periodLabel(p: PeriodId): string {
   return BOOKING_PERIODS.find((bp) => bp.id === p)?.label ?? "";
 }
 
-function roomLabel(rooms: { id: string; nameEn: string }[], id: string): string {
+function roomLabel(
+  rooms: { id: string; nameEn: string }[],
+  id: string,
+): string {
   return rooms.find((r) => r.id === id)?.nameEn ?? "";
 }
 
@@ -3010,7 +3237,8 @@ export default async function StudentBooking({
   const room = String(sp.room ?? "");
   const ok = sp.ok === "1";
 
-  const rooms = tab === "music" ? await getMusicRooms() : await getMeetingRooms();
+  const rooms =
+    tab === "music" ? await getMusicRooms() : await getMeetingRooms();
 
   const currentParams: Record<string, string> = {};
   if (tab !== "music") currentParams.tab = tab;
@@ -3020,7 +3248,10 @@ export default async function StudentBooking({
 
   const tabs = BOOKING_TABS.map((t) => ({
     ...t,
-    href: buildHref(currentParams, { tab: t.id === "music" ? undefined : t.id, room: undefined }),
+    href: buildHref(currentParams, {
+      tab: t.id === "music" ? undefined : t.id,
+      room: undefined,
+    }),
   }));
 
   const days = BOOKING_MAY_DAYS.map((d) => {
@@ -3045,14 +3276,22 @@ export default async function StudentBooking({
     selected: r.id === room,
   }));
 
-  const eyebrow = buildEyebrow(date, period && periodLabel(period), roomLabel(rooms, room));
+  const eyebrow = buildEyebrow(
+    date,
+    period && periodLabel(period),
+    roomLabel(rooms, room),
+  );
 
   return (
     <>
-      <PageHead titleTh="จองห้อง" titleEn="Room Booking" action={<IconButton label="Help · ช่วย">?</IconButton>} />
+      <PageHead
+        titleTh="จองห้อง"
+        titleEn="Room Booking"
+        action={<IconButton label="Help · ช่วย">?</IconButton>}
+      />
       <MobileBody className="space-y-3.5">
         {ok && (
-          <div className="border-[1.5px] border-ink bg-yellow px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-ink">
+          <div className="border-ink bg-yellow text-ink border-[1.5px] px-3 py-2 font-mono text-[11px] tracking-[0.14em] uppercase">
             ✓ Booking submitted — admin will confirm shortly.
           </div>
         )}
@@ -3122,17 +3361,19 @@ export type CalendarDay = {
 The CalendarGrid render:
 
 ```tsx
-{day.href ? (
-  <Link href={day.href} className={cellClasses}>
-    {day.num}
-    {dots}
-  </Link>
-) : (
-  <div className={cellClasses}>
-    {day.num}
-    {dots}
-  </div>
-)}
+{
+  day.href ? (
+    <Link href={day.href} className={cellClasses}>
+      {day.num}
+      {dots}
+    </Link>
+  ) : (
+    <div className={cellClasses}>
+      {day.num}
+      {dots}
+    </div>
+  );
+}
 ```
 
 Apply analogous changes to `PeriodPicker.tsx` (each period button → `<Link>` when `href` is set) and `RoomList.tsx` (each room row → `<Link>`). Update the `BookingPeriod` and `Room` types in `lib/types.ts` to include optional `href?: string` and `selected?: boolean`.
@@ -3158,6 +3399,7 @@ npm run dev
 ```
 
 In an incognito window (anon — no admin session):
+
 1. Visit `/student/booking` → tabs, calendar, periods, rooms render. None selected.
 2. Click day 13 → URL updates to `?date=2026-05-13`; day 13 gets the **selected** state styling.
 3. Click **Midday** → URL adds `&period=midday`; period gets **selected**.
@@ -3195,6 +3437,7 @@ git commit -m "add: bookRoom anon action + URL-param booking flow"
 Final pass. No code changes unless the walkthrough surfaces a regression.
 
 **Files:**
+
 - (Optional) Modify: `docs/handoff.md`
 - (Optional) Modify: `README.md`
 
@@ -3243,15 +3486,15 @@ npm run lint && npm run build
 
 In Supabase Studio (or `psql`), record before/after counts. After the walkthrough, expected deltas:
 
-| Table | Δ rows |
-|---|---|
-| `bookings` | +2 (one anon, one admin) − 1 (admin cancelled) = **+1** |
-| `events` | +0 (one edit, one delete) — net depending on walkthrough |
-| `sport_results` | +1 (recorded), then −1 (deleted) = **0** |
-| `projects` | −1 (deleted) |
-| `carelin_requests` | +1 (anon) −1 (root-deleted) = **0** |
-| `pshare_posts` | 0 |
-| `site_config` | 0 (1 row updated, not inserted) |
+| Table              | Δ rows                                                   |
+| ------------------ | -------------------------------------------------------- |
+| `bookings`         | +2 (one anon, one admin) − 1 (admin cancelled) = **+1**  |
+| `events`           | +0 (one edit, one delete) — net depending on walkthrough |
+| `sport_results`    | +1 (recorded), then −1 (deleted) = **0**                 |
+| `projects`         | −1 (deleted)                                             |
+| `carelin_requests` | +1 (anon) −1 (root-deleted) = **0**                      |
+| `pshare_posts`     | 0                                                        |
+| `site_config`      | 0 (1 row updated, not inserted)                          |
 
 - [ ] **Step 6: Update `docs/handoff.md` for the next session**
 
@@ -3267,6 +3510,7 @@ git commit -m "docs: phase 4 shipped — refresh handoff for phase 5"
 - [ ] **Step 8: Stop for review**
 
 Per the spec's exit criteria and the user's directive, **do not start Phase 5**. Surface to the user:
+
 1. Total commits added in Phase 4.
 2. Row-count deltas observed.
 3. Any open items / risks that surfaced during the walkthrough.

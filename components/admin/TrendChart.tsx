@@ -43,13 +43,11 @@ export function TrendChart({ data }: { data: TrendChartData }) {
           </g>
         </svg>
       </div>
-      <div className="mt-1.5 flex justify-between font-mono text-[9px] text-mute-500">
+      <div className="text-mute-500 mt-1.5 flex justify-between font-mono text-[9px]">
         {months.map((m, i) => (
           <span
             key={m}
-            className={
-              i === months.length - 1 ? "font-semibold text-blue" : ""
-            }
+            className={i === months.length - 1 ? "text-blue font-semibold" : ""}
           >
             {m}
           </span>

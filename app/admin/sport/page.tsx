@@ -27,7 +27,7 @@ export default async function AdminSport() {
             <Btn>Export</Btn>
             <Link
               href="/admin/sport/result/new"
-              className="inline-block border-[1.5px] border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-all bg-blue text-white [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep"
+              className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"
             >
               + Record result
             </Link>
@@ -42,11 +42,7 @@ export default async function AdminSport() {
       </div>
 
       <Card className="mt-[18px]">
-        <CardTitle
-          th="ผลการแข่งขัน"
-          en="Event results"
-          menu="↗ Full bracket"
-        />
+        <CardTitle th="ผลการแข่งขัน" en="Event results" menu="↗ Full bracket" />
         <EventResultsTable rows={results} />
       </Card>
 

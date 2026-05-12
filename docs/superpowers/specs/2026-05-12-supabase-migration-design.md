@@ -10,22 +10,23 @@ Replace the typed mock arrays in `data/*.ts` with a Supabase-backed Postgres dat
 
 ## Decisions log
 
-| # | Topic | Decision |
-|---|---|---|
-| 1 | Migration scope | Everything moves. All entity sets become Postgres tables; mocks become reproducible seed input. |
-| 2 | Auth model | Supabase Auth, admins only. Two tiers: `root` (manages other admins) + `normal` (edits content). Students never log in. |
-| 3 | Student identity (Carelin) | Free-form `name` + 4-digit `student_id`. No roster table. Optional `klass` field added to the form so the admin desk view keeps its `ม.X/Y` line. |
-| 4 | Local dev | Hosted Supabase project only (no Docker). Env vars in `.env.local` for dev, Vercel env for prod, **same project** for both. |
-| 5 | Schema source of truth | Supabase CLI migrations (SQL files in `supabase/migrations/`), TS types generated via `supabase gen types`. |
-| 6 | Realtime / Storage | Both deferred. Phase 3 is SSR-only; no Supabase Storage. |
-| 7 | Read pattern (default) | Server client (`@supabase/ssr`) called from RSC via thin `lib/queries/<entity>.ts` helpers. No caching in Phase 3 — pages are dynamic. |
-| 8 | Write pattern (default) | Server Actions co-located with the page that owns them (`app/.../actions.ts`). Hand-rolled validation, no Zod, no `react-hook-form`. |
+| #   | Topic                      | Decision                                                                                                                                          |
+| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Migration scope            | Everything moves. All entity sets become Postgres tables; mocks become reproducible seed input.                                                   |
+| 2   | Auth model                 | Supabase Auth, admins only. Two tiers: `root` (manages other admins) + `normal` (edits content). Students never log in.                           |
+| 3   | Student identity (Carelin) | Free-form `name` + 4-digit `student_id`. No roster table. Optional `klass` field added to the form so the admin desk view keeps its `ม.X/Y` line. |
+| 4   | Local dev                  | Hosted Supabase project only (no Docker). Env vars in `.env.local` for dev, Vercel env for prod, **same project** for both.                       |
+| 5   | Schema source of truth     | Supabase CLI migrations (SQL files in `supabase/migrations/`), TS types generated via `supabase gen types`.                                       |
+| 6   | Realtime / Storage         | Both deferred. Phase 3 is SSR-only; no Supabase Storage.                                                                                          |
+| 7   | Read pattern (default)     | Server client (`@supabase/ssr`) called from RSC via thin `lib/queries/<entity>.ts` helpers. No caching in Phase 3 — pages are dynamic.            |
+| 8   | Write pattern (default)    | Server Actions co-located with the page that owns them (`app/.../actions.ts`). Hand-rolled validation, no Zod, no `react-hook-form`.              |
 
 ## Sub-phase outline
 
 Phase 3 splits into four small sub-phases mirroring the Phase 0/1/2 cadence already in the repo:
 
 ### 3a — Foundation
+
 - Install `@supabase/supabase-js` and `@supabase/ssr`.
 - Create `lib/supabase/server.ts`, `lib/supabase/serviceRole.ts`, `lib/supabase/client.ts` (the third only used if a future client widget needs it).
 - Wire env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
@@ -37,6 +38,7 @@ Phase 3 splits into four small sub-phases mirroring the Phase 0/1/2 cadence alre
 **Verification:** logging in as root and visiting `/admin` shows a placeholder; logging out and revisiting redirects to `/login`. No data tables yet.
 
 ### 3b — Schema
+
 - Author `supabase/migrations/0001_init.sql` (tables + enums) and `0002_rls.sql` (helper functions + policies).
 - Author `supabase/seed/index.ts` — TS script that uses the service-role client to upsert from imported data files.
 - Move `data/*.ts` → `supabase/seed/data/*.ts` so the source-of-truth shift is explicit.
@@ -45,6 +47,7 @@ Phase 3 splits into four small sub-phases mirroring the Phase 0/1/2 cadence alre
 **Verification:** open Supabase Studio, see all rows; generated types compile; the app still reads from the moved seed-data files (no behavioural change yet).
 
 ### 3c — Read swap
+
 - For each page, replace `import { X } from "@/supabase/seed/data/..."` with an async fetch via `lib/queries/<entity>.ts` against the server client.
 - Visual parity gate: every page should look pixel-identical to its current Phase 2 output.
 - After all 14 pages are swapped, the seed-data files only feed the seed script — they are no longer imported by `app/`.
@@ -52,6 +55,7 @@ Phase 3 splits into four small sub-phases mirroring the Phase 0/1/2 cadence alre
 **Verification:** `npm run build` clean; eyeballing each route against the prototype shows no regressions.
 
 ### 3d — Writes
+
 Server Actions per writable surface (full list under [Write pattern](#write-pattern) below). Forms use `<form action={…}>`; the Carelin form additionally uses `useActionState` for inline error display. Everything that doesn't have a Server Action this phase remains as static UI (buttons exist, do nothing).
 
 **Verification:** post a Carelin request anonymously; reply as admin; mark answered; publish a P'share post; edit a scoreboard score; add a calendar event. All survive a page refresh.
@@ -255,6 +259,7 @@ site_config                                         -- key/value for non-entity 
 ### Things intentionally **not** in the database
 
 These are navigation/UI configuration, not user content. They stay in code:
+
 - The 6 student-home menu tile labels and inline SVG icons (`components/student/MenuIcons.tsx`).
 - Calendar chip categories (`All` + 5 category enum values).
 - Booking periods (Morning / Midday / Evening) — fixed business rule.
@@ -274,17 +279,20 @@ These are navigation/UI configuration, not user content. They stay in code:
 ## Auth + RLS
 
 ### Login mechanics
+
 - **Email + password** via `supabase.auth.signInWithPassword`.
 - `/login` renders the form; `signIn` Server Action handles the call.
 - `/auth/signout` POST-only Server Action calls `supabase.auth.signOut` then redirects.
 - `middleware.ts` refreshes session cookies on every request and redirects unauthenticated `/admin/**` traffic to `/login`.
 
 ### Bootstrapping the root admin (one-time)
+
 1. Create your own user manually in the Supabase dashboard (Auth → Users → Invite, set password).
 2. `supabase/seed.sql` inserts a row into `admins` with `tier='root'` and your `auth_user_id` (you paste your UUID into the seed file once).
 3. Log in. From then on you create other admins from inside the app.
 
 ### Creating a normal admin (root-only flow)
+
 - `app/admin/admins/page.tsx` lists all admins; root sees a "create new" form.
 - The `createAdmin({email, display_name, password})` Server Action verifies the caller is root via `is_root_admin()`, then uses the **service-role client** to:
   1. Call `supabase.auth.admin.createUser({email, password, email_confirm: true})`.
@@ -293,7 +301,9 @@ These are navigation/UI configuration, not user content. They stay in code:
 - Root tells the new admin their initial password out-of-band. Self-service "change password" is a later phase.
 
 ### RLS helper functions
+
 All `security definer` so they can read `admins` while RLS is on:
+
 ```sql
 create function current_admin_id() returns uuid …
 create function is_admin()         returns boolean …
@@ -302,21 +312,22 @@ create function is_root_admin()    returns boolean …
 
 ### RLS policy summary
 
-| Table | anon SELECT | anon write | authenticated (admin) |
-|---|---|---|---|
-| `admins` | none | none | SELECT own row; INSERT/UPDATE only via service role |
-| `houses` | all | none | full CRUD if `is_admin()` |
-| `events` | all | none | full CRUD if `is_admin()` |
-| `sport_results` | all | none | full CRUD if `is_admin()` |
-| `rooms` | all | none | INSERT/UPDATE/DELETE if `is_root_admin()`; SELECT for any admin |
-| `bookings` | all | none | full CRUD if `is_admin()` |
-| `projects` | all | none | full CRUD if `is_admin()` |
-| `pshare_posts` | `status = 'published'` only | none | full CRUD if `is_admin()` |
-| `carelin_requests` | all | **INSERT allowed** (the only public write) | UPDATE status if `is_admin()`; DELETE if `is_root_admin()` |
-| `carelin_replies` | all | none | INSERT/UPDATE if `is_admin()` |
-| `site_config` | all | none | UPDATE if `is_admin()` |
+| Table              | anon SELECT                 | anon write                                 | authenticated (admin)                                           |
+| ------------------ | --------------------------- | ------------------------------------------ | --------------------------------------------------------------- |
+| `admins`           | none                        | none                                       | SELECT own row; INSERT/UPDATE only via service role             |
+| `houses`           | all                         | none                                       | full CRUD if `is_admin()`                                       |
+| `events`           | all                         | none                                       | full CRUD if `is_admin()`                                       |
+| `sport_results`    | all                         | none                                       | full CRUD if `is_admin()`                                       |
+| `rooms`            | all                         | none                                       | INSERT/UPDATE/DELETE if `is_root_admin()`; SELECT for any admin |
+| `bookings`         | all                         | none                                       | full CRUD if `is_admin()`                                       |
+| `projects`         | all                         | none                                       | full CRUD if `is_admin()`                                       |
+| `pshare_posts`     | `status = 'published'` only | none                                       | full CRUD if `is_admin()`                                       |
+| `carelin_requests` | all                         | **INSERT allowed** (the only public write) | UPDATE status if `is_admin()`; DELETE if `is_root_admin()`      |
+| `carelin_replies`  | all                         | none                                       | INSERT/UPDATE if `is_admin()`                                   |
+| `site_config`      | all                         | none                                       | UPDATE if `is_admin()`                                          |
 
 ### Two flagged risks
+
 1. **Anonymous Carelin INSERT is the entire public-write surface.** Server Action additionally validates the 4-digit ID format. No rate limiting in Phase 3 — revisit if spam appears. The Postgres `check (student_id_4 ~ '^[0-9]{4}$')` is the bottom line.
 2. **Service-role key never reaches the browser.** Lives in `SUPABASE_SERVICE_ROLE_KEY` (no `NEXT_PUBLIC_` prefix). The single file that uses it (`lib/supabase/serviceRole.ts`) starts with `import 'server-only'` so Next 16 errors at build time if anything client-side reaches it.
 
@@ -326,36 +337,41 @@ create function is_root_admin()    returns boolean …
 
 ```ts
 // lib/supabase/server.ts
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function getSupabaseServer() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { /* getAll/setAll wired to cookieStore */ } },
-  )
+    {
+      cookies: {
+        /* getAll/setAll wired to cookieStore */
+      },
+    },
+  );
 }
 ```
 
 ```ts
 // lib/supabase/serviceRole.ts  (server-only, never imported into a client component)
-import 'server-only'
-import { createClient } from '@supabase/supabase-js'
+import "server-only";
+import { createClient } from "@supabase/supabase-js";
 
 export function getSupabaseServiceRole() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false } },
-  )
+  );
 }
 ```
 
 ### Query helpers
 
 `lib/queries/<entity>.ts` exports small typed async functions:
+
 ```ts
 // lib/queries/events.ts
 export async function getEventsByMonth(year: number, month: number) { … }
@@ -368,6 +384,7 @@ Pages call these directly. No repo class, no abstraction beyond "named functions
 ### Caching
 
 **No caching in Phase 3.** Pages render dynamically (one DB round-trip per page request). Reasons:
+
 - Next 16 doesn't cache `fetch` by default; explicit opt-in via `'use cache'` + `cacheLife()` is the new pattern.
 - For a prototype, "always fresh" beats "stale until revalidated" debugging.
 
@@ -393,11 +410,13 @@ app/auth/signout/actions.ts          signOut
 ### Action contract
 
 ```ts
-'use server'
+"use server";
 
-type ActionResult = { ok: true } | { ok: false; error: string }
+type ActionResult = { ok: true } | { ok: false; error: string };
 
-export async function postCarelinRequest(formData: FormData): Promise<ActionResult> {
+export async function postCarelinRequest(
+  formData: FormData,
+): Promise<ActionResult> {
   // 1. parse + hand-rolled validation (4-digit ID regex, required fields)
   // 2. supabase.from('carelin_requests').insert(...)
   // 3. on PostgrestError: return { ok: false, error: '...' }
@@ -447,6 +466,7 @@ supabase/seed/
 ```
 
 The script:
+
 - Imports the typed mock arrays.
 - Connects via service role (bypasses RLS).
 - Truncates-then-upserts each table in dependency order (`houses`, `rooms`, then content tables, then `events`, `bookings`, …).
@@ -456,6 +476,7 @@ The script:
 Run via a new `npm run seed` script that wraps `tsx supabase/seed/index.ts`. The project uses npm (no Bun in the toolchain).
 
 ### Truncation safety
+
 - The seed script checks `process.env.SUPABASE_ALLOW_SEED === '1'` at startup and exits with a printed message if unset.
 - The flag goes in `.env.local` only — **never on Vercel**.
 - This ensures a stray invocation against prod becomes a no-op once admins start posting real Carelin requests.
@@ -464,12 +485,12 @@ Run via a new `npm run seed` script that wraps `tsx supabase/seed/index.ts`. The
 
 ### Env vars (`.env.local` and Vercel project settings)
 
-| Variable | Source | Where it's read |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Settings → API | client + server |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Settings → API | client + server |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Settings → API | **server only** (`lib/supabase/serviceRole.ts`) |
-| `SUPABASE_ALLOW_SEED` | hand-set in `.env.local` only | seed script |
+| Variable                        | Source                        | Where it's read                                 |
+| ------------------------------- | ----------------------------- | ----------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase Settings → API       | client + server                                 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Settings → API       | client + server                                 |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Supabase Settings → API       | **server only** (`lib/supabase/serviceRole.ts`) |
+| `SUPABASE_ALLOW_SEED`           | hand-set in `.env.local` only | seed script                                     |
 
 ### Supabase CLI commands
 
@@ -489,16 +510,17 @@ supabase gen types typescript --linked \
 4. Commit migration + generated types in the same commit.
 
 ### Vercel
+
 - Set the three env vars in the Vercel project (omit `SUPABASE_ALLOW_SEED`).
 - Build is unchanged — the generated `database.types.ts` is committed, so Vercel never needs the CLI.
 
 ## Risks / open issues
 
-1. **Same Supabase project for dev and prod.** Destructive migrations affect live data. *Mitigation:* keep migrations additive until things stabilize; back up via Supabase dashboard before any destructive change. *Future:* split into a separate hosted prod project once it matters.
-2. **Seed script can wipe real data.** Once admins start posting in prod, re-running the seed with truncate-and-insert nukes their work. *Mitigation:* `SUPABASE_ALLOW_SEED=1` gate, set in `.env.local` only.
-3. **Service-role key leakage.** If anything imports `lib/supabase/serviceRole.ts` from a `'use client'` component, RLS is bypassed in browsers. *Mitigation:* `import 'server-only'` at the top of that file (Next 16 errors at build time if a client component reaches it).
+1. **Same Supabase project for dev and prod.** Destructive migrations affect live data. _Mitigation:_ keep migrations additive until things stabilize; back up via Supabase dashboard before any destructive change. _Future:_ split into a separate hosted prod project once it matters.
+2. **Seed script can wipe real data.** Once admins start posting in prod, re-running the seed with truncate-and-insert nukes their work. _Mitigation:_ `SUPABASE_ALLOW_SEED=1` gate, set in `.env.local` only.
+3. **Service-role key leakage.** If anything imports `lib/supabase/serviceRole.ts` from a `'use client'` component, RLS is bypassed in browsers. _Mitigation:_ `import 'server-only'` at the top of that file (Next 16 errors at build time if a client component reaches it).
 4. **No automated tests.** Server Actions go unverified except by manual page exercise. Not blocking. A Vitest + Playwright harness against a separate test Supabase project is the natural follow-up if interactions get complex.
-5. **Page latency post-3c.** "Always fresh" reads add one DB round-trip per page render. *Mitigation:* eyeball during the 3c parity gate; selectively wrap rare-changing queries (`getRooms`, `getHouses`, `siteConfig`) in `'use cache'` + `cacheLife('hours')` only if pages feel sluggish.
+5. **Page latency post-3c.** "Always fresh" reads add one DB round-trip per page render. _Mitigation:_ eyeball during the 3c parity gate; selectively wrap rare-changing queries (`getRooms`, `getHouses`, `siteConfig`) in `'use cache'` + `cacheLife('hours')` only if pages feel sluggish.
 6. **Password rules.** Supabase Auth defaults to a 6-char minimum. Bump to 12+ in Auth → Policies before any non-prototype use. Not blocking now.
 
 ## Out of scope

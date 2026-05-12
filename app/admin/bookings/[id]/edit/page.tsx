@@ -57,7 +57,7 @@ export default async function EditBookingPage({
         actions={
           <Link
             href="/admin/bookings"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -65,18 +65,21 @@ export default async function EditBookingPage({
       />
       <Card>
         <CardTitle th="รายละเอียดการจอง" en="Booking details" />
-        <form action={updateBooking} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={updateBooking}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <input type="hidden" name="id" value={booking.id} />
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Room
             </span>
             <select
               name="room_id"
               required
               defaultValue={booking.room_id}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
               {rooms.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -87,14 +90,14 @@ export default async function EditBookingPage({
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Status
             </span>
             <select
               name="status"
               required
               defaultValue={booking.status}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
               {STATUSES.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -105,7 +108,7 @@ export default async function EditBookingPage({
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Date (Asia/Bangkok)
             </span>
             <input
@@ -113,19 +116,19 @@ export default async function EditBookingPage({
               type="date"
               required
               defaultValue={date}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Period
             </span>
             <select
               name="period"
               required
               defaultValue={period}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
               {BOOKING_PERIODS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -136,7 +139,7 @@ export default async function EditBookingPage({
           </label>
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               User label · ผู้จอง (required)
             </span>
             <input
@@ -145,12 +148,12 @@ export default async function EditBookingPage({
               required
               maxLength={120}
               defaultValue={booking.user_label}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Purpose (optional)
             </span>
             <input
@@ -158,16 +161,18 @@ export default async function EditBookingPage({
               type="text"
               maxLength={200}
               defaultValue={booking.purpose ?? ""}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <div className="flex items-center gap-3 md:col-span-2">
-            <Btn type="submit" variant="primary">Save booking →</Btn>
+            <Btn type="submit" variant="primary">
+              Save booking →
+            </Btn>
             <button
               type="submit"
               formAction={cancelBooking}
-              className="font-mono text-[11px] uppercase tracking-[0.14em] text-red-600 hover:text-red-700"
+              className="font-mono text-[11px] tracking-[0.14em] text-red-600 uppercase hover:text-red-700"
             >
               Cancel booking (delete)
             </button>

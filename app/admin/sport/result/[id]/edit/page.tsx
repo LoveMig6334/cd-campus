@@ -35,8 +35,7 @@ export default async function EditSportResultPage({
   if (!row) notFound();
 
   const placements: number[] = row.placements ?? [];
-  const slotDefault = (i: number) =>
-    String(placements[i] ?? i + 1);
+  const slotDefault = (i: number) => String(placements[i] ?? i + 1);
 
   return (
     <>
@@ -46,7 +45,7 @@ export default async function EditSportResultPage({
         actions={
           <Link
             href="/admin/sport"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -54,11 +53,14 @@ export default async function EditSportResultPage({
       />
       <Card>
         <CardTitle th="รายละเอียดผลการแข่งขัน" en="Result details" />
-        <form action={updateSportResult} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={updateSportResult}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <input type="hidden" name="id" value={row.id} />
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Thai title · ชื่อภาษาไทย (required)
             </span>
             <input
@@ -67,12 +69,12 @@ export default async function EditSportResultPage({
               required
               maxLength={120}
               defaultValue={row.title_th}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               English title (optional)
             </span>
             <input
@@ -80,19 +82,19 @@ export default async function EditSportResultPage({
               type="text"
               maxLength={120}
               defaultValue={row.title_en ?? ""}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Category
             </span>
             <select
               name="category"
               required
               defaultValue={row.category}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
               {CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>
@@ -103,7 +105,7 @@ export default async function EditSportResultPage({
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Time / score label · เวลา (optional)
             </span>
             <input
@@ -112,20 +114,20 @@ export default async function EditSportResultPage({
               maxLength={40}
               defaultValue={row.time_label ?? ""}
               placeholder="e.g. 11.42s"
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
 
           {(["p1", "p2", "p3", "p4"] as const).map((slot, i) => (
             <label key={slot} className="block">
-              <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+              <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
                 {PLACEMENT_LABELS[i]}
               </span>
               <select
                 name={slot}
                 required
                 defaultValue={slotDefault(i)}
-                className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+                className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
               >
                 {HOUSES.map((h) => (
                   <option key={h.value} value={h.value}>
@@ -137,11 +139,13 @@ export default async function EditSportResultPage({
           ))}
 
           <div className="flex items-center gap-3 md:col-span-2">
-            <Btn type="submit" variant="primary">Save result →</Btn>
+            <Btn type="submit" variant="primary">
+              Save result →
+            </Btn>
             <button
               type="submit"
               formAction={deleteSportResult}
-              className="font-mono text-[11px] uppercase tracking-[0.14em] text-red-600 hover:text-red-700"
+              className="font-mono text-[11px] tracking-[0.14em] text-red-600 uppercase hover:text-red-700"
             >
               Delete result
             </button>

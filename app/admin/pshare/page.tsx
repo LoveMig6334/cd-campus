@@ -20,7 +20,7 @@ export default async function AdminPshareList() {
         actions={
           <Link
             href="/admin/pshare/new"
-            className="inline-block border-[1.5px] border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-all bg-blue text-white [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep"
+            className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"
           >
             + New post
           </Link>
@@ -32,14 +32,16 @@ export default async function AdminPshareList() {
         <table className="w-full border-collapse text-[13px]">
           <thead>
             <tr>
-              {["#", "Title · ชื่อโพสต์", "Author", "Status", ""].map((h, i) => (
-                <th
-                  key={i}
-                  className="border-b-[1.5px] border-ink bg-cream px-2.5 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
-                >
-                  {h}
-                </th>
-              ))}
+              {["#", "Title · ชื่อโพสต์", "Author", "Status", ""].map(
+                (h, i) => (
+                  <th
+                    key={i}
+                    className="border-ink bg-cream text-mute-700 border-b-[1.5px] px-2.5 py-2 text-left font-mono text-[10px] tracking-[0.14em] uppercase"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody>
@@ -51,16 +53,18 @@ export default async function AdminPshareList() {
               return (
                 <tr
                   key={p.id}
-                  className="transition-colors hover:bg-cream [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
+                  className="hover:bg-cream transition-colors [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
                 >
                   <td className={td}>
-                    <span className="font-display italic text-[15px]">
+                    <span className="font-display text-[15px] italic">
                       {p.num || "–"}
                     </span>
                   </td>
                   <td className={td}>
-                    <span className="font-display italic text-[15px]">{p.title}</span>
-                    <small className="mt-px block font-mono text-[10px] text-mute-500">
+                    <span className="font-display text-[15px] italic">
+                      {p.title}
+                    </span>
+                    <small className="text-mute-500 mt-px block font-mono text-[10px]">
                       {p.slug}
                     </small>
                   </td>
@@ -75,7 +79,7 @@ export default async function AdminPshareList() {
                   <td className={td}>
                     <Link
                       href={`/admin/pshare/${p.id}/edit`}
-                      className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                      className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
                     >
                       Edit
                     </Link>

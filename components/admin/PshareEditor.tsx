@@ -32,7 +32,7 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
         {d.id && <input type="hidden" name="id" value={d.id} />}
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Slug (lowercase, hyphens)
           </span>
           <input
@@ -42,12 +42,12 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             pattern="[a-z0-9-]+"
             maxLength={80}
             defaultValue={d.slug ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
           />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Num label (e.g. &quot;01&quot;)
           </span>
           <input
@@ -55,12 +55,12 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             type="text"
             maxLength={6}
             defaultValue={d.num_label ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-display italic text-[20px] text-ink"
+            className="border-line bg-paper font-display text-ink mt-1 w-full border-[1.5px] px-3 py-2 text-[20px] italic"
           />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Title
           </span>
           <input
@@ -69,12 +69,12 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             required
             maxLength={120}
             defaultValue={d.title ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[15px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[15px]"
           />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Snippet
           </span>
           <input
@@ -82,24 +82,24 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             type="text"
             maxLength={240}
             defaultValue={d.snippet ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
           />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Body (Markdown)
           </span>
           <textarea
             name="body_md"
             rows={12}
             defaultValue={d.body_md ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
           />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Author alias
           </span>
           <input
@@ -107,25 +107,29 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             type="text"
             maxLength={80}
             defaultValue={d.author_alias ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
           />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Halftone variant
           </span>
           <select
             name="art_halftone"
             defaultValue={d.art_halftone ?? "halftone-bl"}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
           >
-            {HALFTONES.map((h) => <option key={h} value={h}>{h}</option>)}
+            {HALFTONES.map((h) => (
+              <option key={h} value={h}>
+                {h}
+              </option>
+            ))}
           </select>
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Art background (CSS color, optional)
           </span>
           <input
@@ -134,12 +138,12 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             maxLength={40}
             placeholder="var(--color-cream)"
             defaultValue={d.art_bg ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
           />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Num color (CSS color, optional)
           </span>
           <input
@@ -148,27 +152,35 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             maxLength={40}
             placeholder="var(--color-ink)"
             defaultValue={d.art_num_color ?? ""}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
           />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Tags (comma-separated, e.g. &quot;#math-olympiad, #tmo&quot;)
           </span>
           <input
             name="tags"
             type="text"
             defaultValue={(d.tags ?? []).join(", ")}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
           />
         </label>
 
-        <div className="md:col-span-2 flex gap-2">
-          <button type="submit" formAction={saveDraft} className={SECONDARY_BTN}>
+        <div className="flex gap-2 md:col-span-2">
+          <button
+            type="submit"
+            formAction={saveDraft}
+            className={SECONDARY_BTN}
+          >
             Save draft
           </button>
-          <button type="submit" formAction={publishPost} className={PRIMARY_BTN}>
+          <button
+            type="submit"
+            formAction={publishPost}
+            className={PRIMARY_BTN}
+          >
             Publish →
           </button>
         </div>

@@ -17,10 +17,10 @@ The static HTML mockup at `prototype/cd-smart-campus.html` was progressively mig
 
 ## Two role views
 
-| View | URL | Shape |
-| ---- | --- | ----- |
-| **Student** | `/student` | Mobile phone mockup with sticky header, 4-tab bottom nav (Home / Calendar / Booking / Sport) |
-| **Admin** | `/admin` | Desktop with sticky sidebar (Overview / Calendar / Sport / Bookings / Portfolios / P'share Studio / Carelin Desk) |
+| View        | URL        | Shape                                                                                                             |
+| ----------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Student** | `/student` | Mobile phone mockup with sticky header, 4-tab bottom nav (Home / Calendar / Booking / Sport)                      |
+| **Admin**   | `/admin`   | Desktop with sticky sidebar (Overview / Calendar / Sport / Bookings / Portfolios / P'share Studio / Carelin Desk) |
 
 Landing at `/` offers a toggle to either view.
 
@@ -80,12 +80,12 @@ npm run gen:types   # regenerate lib/supabase/database.types.ts from the linked 
 
 ### Env vars
 
-| Variable | Where it lives |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | `.env.local` + Vercel |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `.env.local` + Vercel |
-| `SUPABASE_SERVICE_ROLE_KEY` | `.env.local` + Vercel (server-only — never `NEXT_PUBLIC_`) |
-| `SUPABASE_ALLOW_SEED` | `.env.local` only — **never on Vercel** (prevents accidental prod reseed) |
+| Variable                        | Where it lives                                                            |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | `.env.local` + Vercel                                                     |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `.env.local` + Vercel                                                     |
+| `SUPABASE_SERVICE_ROLE_KEY`     | `.env.local` + Vercel (server-only — never `NEXT_PUBLIC_`)                |
+| `SUPABASE_ALLOW_SEED`           | `.env.local` only — **never on Vercel** (prevents accidental prod reseed) |
 
 ## Design language
 

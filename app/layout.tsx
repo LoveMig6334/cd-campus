@@ -23,7 +23,7 @@ export default function RootLayout({
         "h-full antialiased",
       )}
     >
-      <body className="font-sans bg-cream text-ink min-h-full">{children}</body>
+      <body className="bg-cream text-ink min-h-full font-sans">{children}</body>
     </html>
   );
 }

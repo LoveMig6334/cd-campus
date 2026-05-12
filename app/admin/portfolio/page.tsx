@@ -7,10 +7,7 @@ import { PortfolioAdminTable } from "@/components/admin/PortfolioAdminTable";
 import { TabBar } from "@/components/admin/TabBar";
 import { getAdminPortfolioRows } from "@/lib/queries/projects";
 import { getPortfolioKpis } from "@/lib/queries/siteConfig";
-import {
-  PORTFOLIO_ACTIVE_TAB,
-  PORTFOLIO_TABS,
-} from "@/lib/ui/portfolio";
+import { PORTFOLIO_ACTIVE_TAB, PORTFOLIO_TABS } from "@/lib/ui/portfolio";
 
 export default async function AdminPortfolio() {
   const [kpis, rows] = await Promise.all([

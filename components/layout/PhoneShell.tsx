@@ -10,21 +10,21 @@ export function PhoneShell({ header, footer, children }: PhoneShellProps) {
   return (
     <div className="flex justify-center px-4 py-10 sm:py-16">
       <div
-        className="relative flex flex-col w-[390px] h-[800px] overflow-hidden rounded-[44px] bg-cream border-2 border-line"
+        className="bg-cream border-line relative flex h-[800px] w-[390px] flex-col overflow-hidden rounded-[44px] border-2"
         style={{
           boxShadow:
             "0 0 0 6px var(--color-ink), 14px 14px 0 var(--color-blue), 14px 14px 0 8px var(--color-ink)",
         }}
       >
-        <div className="flex h-[30px] shrink-0 items-center justify-between bg-ink px-7 font-mono text-[11px] text-cream">
+        <div className="bg-ink text-cream flex h-[30px] shrink-0 items-center justify-between px-7 font-mono text-[11px]">
           <span className="font-semibold">8:42</span>
           <div className="flex items-center gap-1">
-            <span className="inline-block h-1 w-1 rounded-full bg-cream" />
-            <span className="inline-block h-1 w-1 rounded-full bg-cream" />
-            <span className="inline-block h-1 w-1 rounded-full bg-cream" />
+            <span className="bg-cream inline-block h-1 w-1 rounded-full" />
+            <span className="bg-cream inline-block h-1 w-1 rounded-full" />
+            <span className="bg-cream inline-block h-1 w-1 rounded-full" />
             <span className="ml-1.5">5G</span>
-            <span className="relative ml-1.5 inline-block h-[9px] w-[22px] rounded-[2px] border border-cream">
-              <span className="absolute inset-[1px] w-[14px] bg-cream" />
+            <span className="border-cream relative ml-1.5 inline-block h-[9px] w-[22px] rounded-[2px] border">
+              <span className="bg-cream absolute inset-[1px] w-[14px]" />
             </span>
           </div>
         </div>

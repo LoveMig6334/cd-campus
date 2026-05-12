@@ -16,7 +16,11 @@ const ADMINS_NAV: NavItem = {
   ),
 };
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const admin = await requireAdmin();
   const extraItems: NavItem[] = admin.tier === "root" ? [ADMINS_NAV] : [];
   return (

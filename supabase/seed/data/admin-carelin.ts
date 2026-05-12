@@ -1,7 +1,4 @@
-import type {
-  AdminKpi,
-  CarelinDeskRow,
-} from "@/lib/types";
+import type { AdminKpi, CarelinDeskRow } from "@/lib/types";
 
 export const CARELIN_DESK_KPIS: AdminKpi[] = [
   {

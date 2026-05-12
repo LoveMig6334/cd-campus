@@ -1,9 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../lib/supabase/database.types";
-import {
-  ADMIN_TODAY_BOOKINGS,
-  GANTT_ROOMS,
-} from "./data/admin-bookings";
+import { ADMIN_TODAY_BOOKINGS, GANTT_ROOMS } from "./data/admin-bookings";
 import { logStep } from "./util";
 
 type Insert = Database["public"]["Tables"]["bookings"]["Insert"];
@@ -33,16 +30,18 @@ export async function seedBookings(
   const rows: Insert[] = ADMIN_TODAY_BOOKINGS.flatMap((b) => {
     const roomId = roomIdByName.get(b.room);
     if (!roomId) return [];
-    return [{
-      room_id: roomId,
-      user_label: b.user,
-      purpose: b.purpose,
-      starts_at: at(b.start),
-      ends_at: at(b.end),
-      status: b.status,
-      bar_variant: variantFor(b.room, b.user),
-      created_by_admin_id: adminId,
-    }];
+    return [
+      {
+        room_id: roomId,
+        user_label: b.user,
+        purpose: b.purpose,
+        starts_at: at(b.start),
+        ends_at: at(b.end),
+        status: b.status,
+        bar_variant: variantFor(b.room, b.user),
+        created_by_admin_id: adminId,
+      },
+    ];
   });
 
   const { error: delErr } = await db

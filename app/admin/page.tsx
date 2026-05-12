@@ -16,13 +16,14 @@ import {
 } from "@/lib/queries/siteConfig";
 
 export default async function AdminOverview() {
-  const [greeting, kpis, trend, todayEvents, recentBookings] = await Promise.all([
-    getAdminGreeting(),
-    getOverviewKpis(),
-    getTrendChart(),
-    getAdminTodayEvents(),
-    getRecentBookings(),
-  ]);
+  const [greeting, kpis, trend, todayEvents, recentBookings] =
+    await Promise.all([
+      getAdminGreeting(),
+      getOverviewKpis(),
+      getTrendChart(),
+      getAdminTodayEvents(),
+      getRecentBookings(),
+    ]);
   return (
     <>
       <AdminTopbar
@@ -47,7 +48,11 @@ export default async function AdminOverview() {
 
       <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-[2fr_1fr]">
         <Card accent>
-          <CardTitle th="กิจกรรม 12 เดือน" en="12-month trend" menu="↗ View report" />
+          <CardTitle
+            th="กิจกรรม 12 เดือน"
+            en="12-month trend"
+            menu="↗ View report"
+          />
           <TrendChart data={trend} />
         </Card>
         <TodayEventsCard events={todayEvents} />

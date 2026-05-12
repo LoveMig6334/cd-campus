@@ -1,0 +1,25 @@
+# dependencies
+node_modules
+
+# next.js
+.next
+out
+build
+
+# generated
+next-env.d.ts
+*.tsbuildinfo
+lib/supabase/database.types.ts
+
+# lockfiles
+package-lock.json
+
+# supabase scratch
+supabase/.temp
+supabase/.branches
+
+# visual source-of-truth prototype — keep as-authored
+prototype
+
+# misc
+.DS_Store

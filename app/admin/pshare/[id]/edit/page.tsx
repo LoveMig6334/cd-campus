@@ -30,7 +30,7 @@ export default async function EditPsharePost({
         actions={
           <Link
             href="/admin/pshare"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -51,13 +51,13 @@ export default async function EditPsharePost({
           tags: data.tags ?? [],
         }}
       />
-      <Card className="mt-[18px] border-house-pink">
+      <Card className="border-house-pink mt-[18px]">
         <CardTitle th="ลบโพสต์" en="Delete post" />
         <form action={deletePost}>
           <input type="hidden" name="id" value={data.id} />
           <button
             type="submit"
-            className="inline-block border-[1.5px] border-line bg-paper px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-house-pink transition-all [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-house-pink hover:text-white"
+            className="border-line bg-paper text-house-pink hover:bg-house-pink inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:text-white hover:[box-shadow:4px_4px_0_var(--color-ink)]"
           >
             Delete permanently
           </button>

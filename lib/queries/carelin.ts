@@ -26,13 +26,14 @@ export async function getCarelinRequests(): Promise<CarelinRequest[]> {
     .order("created_at", { ascending: false });
   if (error) throw new Error(`getCarelinRequests: ${error.message}`);
   return (data ?? []).map<CarelinRequest>((r) => {
-    const replies = (r.carelin_replies as unknown as Array<{
-      teacher_name: string | null;
-      role_label: string | null;
-      body: string;
-      avatar_letter: string | null;
-      created_at: string;
-    }>) ?? [];
+    const replies =
+      (r.carelin_replies as unknown as Array<{
+        teacher_name: string | null;
+        role_label: string | null;
+        body: string;
+        avatar_letter: string | null;
+        created_at: string;
+      }>) ?? [];
     const reply = replies[0];
     return {
       title: r.title,
@@ -58,7 +59,9 @@ export async function getCarelinDeskRows(): Promise<CarelinDeskRow[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("carelin_requests")
-    .select("id, title, body, who_name, student_id_4, klass, status, created_at")
+    .select(
+      "id, title, body, who_name, student_id_4, klass, status, created_at",
+    )
     .order("created_at", { ascending: false });
   if (error) throw new Error(`getCarelinDeskRows: ${error.message}`);
   return (data ?? []).map<CarelinDeskRow>((r) => ({
@@ -93,7 +96,9 @@ export type CarelinDetail = {
   }>;
 };
 
-export async function getCarelinDetail(id: string): Promise<CarelinDetail | null> {
+export async function getCarelinDetail(
+  id: string,
+): Promise<CarelinDetail | null> {
   const db = await createClient();
   const { data, error } = await db
     .from("carelin_requests")
@@ -103,13 +108,14 @@ export async function getCarelinDetail(id: string): Promise<CarelinDetail | null
     .eq("id", id)
     .single();
   if (error || !data) return null;
-  const replies = (data.carelin_replies as unknown as Array<{
-    teacher_name: string | null;
-    role_label: string | null;
-    body: string;
-    avatar_letter: string | null;
-    created_at: string;
-  }>) ?? [];
+  const replies =
+    (data.carelin_replies as unknown as Array<{
+      teacher_name: string | null;
+      role_label: string | null;
+      body: string;
+      avatar_letter: string | null;
+      created_at: string;
+    }>) ?? [];
   return {
     id: data.id,
     title: data.title,
@@ -137,9 +143,7 @@ export async function getCarelinTabCounts(): Promise<{
   answered: number;
 }> {
   const db = await createClient();
-  const { data, error } = await db
-    .from("carelin_requests")
-    .select("status");
+  const { data, error } = await db.from("carelin_requests").select("status");
   if (error) throw new Error(`getCarelinTabCounts: ${error.message}`);
   const rows = (data ?? []) as Array<{ status: "open" | "answered" }>;
   return {

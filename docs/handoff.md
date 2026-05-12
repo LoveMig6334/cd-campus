@@ -28,9 +28,11 @@ You're picking up the **CD Smart Campus** project — a Next.js 16 + React 19 + 
 ## Already shipped (everything you can stand on)
 
 ### Phases 0–2 — Static prototype port
+
 14 child routes (7 student + 7 admin) rendering prototype-faithful markup from typed arrays. All Server Components.
 
 ### Phase 3a — Supabase auth foundation
+
 - `@supabase/supabase-js`, `@supabase/ssr`, `server-only` installed.
 - `.env.example` documents the four env vars.
 - `lib/supabase/{server,client,serviceRole}.ts` clients.
@@ -39,18 +41,21 @@ You're picking up the **CD Smart Campus** project — a Next.js 16 + React 19 + 
 - Real Supabase project + root admin invited via dashboard.
 
 ### Phase 3b — Supabase schema
+
 - `supabase/migrations/0001_init.sql` (9 enums + 11 tables) + `0002_rls.sql` (helper functions + per-table policies).
 - `supabase/seed.sql` — root admin bootstrap.
 - `lib/supabase/database.types.ts` — generated (`npm run gen:types`).
 - `supabase/seed/*.ts` — idempotent TS seed (`npm run seed`, gated on `SUPABASE_ALLOW_SEED=1`).
 
 ### Phase 3c — Read swap
+
 - `data/*.ts` moved to `supabase/seed/data/*.ts`; shared types in `lib/types.ts`.
 - Static UI config in `lib/ui/{calendar,booking,pshare,portfolio,carelin,sport,admin}.ts`.
 - 10 query helpers in `lib/queries/`.
 - All 13 active pages swapped to Supabase queries.
 
 ### Phase 3d — Minimum write set
+
 - `lib/auth.ts` — `requireAdmin()` / `requireRootAdmin()` server helpers (throw on failure).
 - `lib/actions.ts` — shared `ActionResult` type.
 - New routes: `/admin/admins`, `/admin/calendar/new`, `/admin/carelin/[id]`, `/admin/pshare/new`, `/admin/pshare/[id]/edit`, `/admin/sport/edit`, `/student/carelin/new`.
@@ -59,6 +64,7 @@ You're picking up the **CD Smart Campus** project — a Next.js 16 + React 19 + 
 - `AdminSidebar` gained an `extraItems` prop; `app/admin/layout.tsx` is now async and fetches the admin to gate the root-only "Admins" sidebar entry.
 
 ### Phase 4 — Full write surface
+
 13 commits on `main` (9 task + 4 review-fix). Every remaining inert prototype button now has a wired Server Action; only `+ Add Project` on `/admin/portfolio` stays deferred (needs student submission flow design).
 
 - **Migration:** `supabase/migrations/0003_phase4_anon_bookings.sql` — adds anon INSERT policy to `bookings` plus `student_id_4` (DB-checked `^[0-9]{4}$` regex) and `klass` columns. `lib/supabase/database.types.ts` regenerated. Carelin and bookings are now the only anon-write surfaces.
@@ -71,7 +77,7 @@ You're picking up the **CD Smart Campus** project — a Next.js 16 + React 19 + 
 - **Selection state on `/student/booking`** moved entirely to URL params (`?date=...&period=...&room=...&tab=...`). Pickers render as `<Link>` decorations; no whole-page client wrapper. `BookingConfirmForm` is the only client leaf.
 - **Type extensions in `lib/types.ts`:** `id: string` added to `Room`, `AdminTodayBookingRow`, `PortfolioAdminRow`; `id?: string` added to `SportResultRow`. Optional `href?: string` added to `CalendarDay`, `BookingTab`, `BookingPeriod`, `Room`. Optional `selected?: boolean` on `Room`. `BookingPeriod.id?` for the period URL state. New row-shape aliases: `BookingFull`, `ProjectFull`, `SportResultRowFull`, `PsharePostFull`, `AdminCalendarRow`.
 - **Seed-fixture knock-ons:** `supabase/seed/data/admin-portfolio.ts` introduces a local `PortfolioSeedRow = Omit<PortfolioAdminRow, "id">`. `supabase/seed/data/admin-bookings.ts` adds stub `id: "seed-N"` values. Both type-only; live INSERTs let the DB generate UUIDs.
-- **Calendar UX:** click-event-chip-on-BigCal was *rejected* in brainstorming. BigCal cells stay non-interactive; a server-rendered side rail right of the grid (`AdminCalendarEventList`) lists this month's events with per-row Edit / Delete.
+- **Calendar UX:** click-event-chip-on-BigCal was _rejected_ in brainstorming. BigCal cells stay non-interactive; a server-rendered side rail right of the grid (`AdminCalendarEventList`) lists this month's events with per-row Edit / Delete.
 - **Site_config editor topology:** structured forms per key — six routes under `/admin/config/[key]/edit`. `admin_greeting` is hidden (computed from `admins.display_name`). `trend_chart` editor takes 13 point pairs; server derives the SVG path string at write time.
 
 ## Your task — Phase 5 (Polish + Realtime + Storage)
@@ -80,22 +86,22 @@ Phase 4 is shipped. Phase 5 scope is **open** — the user should pick which of 
 
 ### Phase 5 candidates (pick a subset; not all are required)
 
-| # | Candidate | Surface area | Notes |
-|---|---|---|---|
-| 1 | **Supabase Realtime** | sport scoreboard, Carelin desk, admin bookings Gantt | The most visible "live" affordance. Wire `supabase.channel().on('postgres_changes', ...)` in a `'use client'` leaf per affected page. Will require lifting some RSC reads to props. |
-| 2 | **Supabase Storage** | P'share post art, profile photos, project thumbs | Add an `art_image_path` column to `pshare_posts` (or `projects`); upload via the admin editor; `getPublicUrl()` in the reader. RLS on the storage bucket + admin-only writes. |
-| 3 | **Rate limiting on anon writes** | `bookRoom`, `postCarelinRequest` | Two anon-write surfaces, no throttling today. Simplest path: IP-based bucket in `proxy.ts` keyed by `request.ip`. Or Supabase Edge Function with a Redis upstash. |
-| 4 | **`admin_greeting` site_config cleanup** | `lib/queries/siteConfig.ts`, seed | Dead-code-ish: still queried via `getAdminGreeting`, but the live greeting is derived from `admins.display_name`. Drop the row + helper. |
-| 5 | **Portfolio create-new flow** | new route + action | The only intentionally-deferred button in the app. Open question: student submission (anon, like Carelin) or admin-typed proxy form? Decide first; then ship. |
-| 6 | **`Btn type="button"` backfill on 3d forms** | `app/admin/calendar/new/page.tsx`, `app/admin/admins/page.tsx`, `components/admin/PshareEditor.tsx` | `Btn` defaults to `type="button"` — its `{...rest}` spread allows `type="submit"` override. 3d's Save buttons don't pass `type="submit"`, so clicking Save is functionally inert (Enter-in-input still submits). Phase 4 forms fixed this; 3d forms may need the same. Confirm with manual test on each before shipping. |
-| 7 | **Pshare tags + Portfolio tags editing** | `/admin/portfolio/[id]/edit`, `/admin/pshare/[id]/edit` | Portfolio tags (`PortfolioTagPill[]` JSONB of `{label, background, textColor?}`) are deliberately untouched by `updateProject` — Phase 4 preserves them. P'share tags are flat `text[]` and ARE edited via the comma-separated input in the existing editor. Phase 5 should add a structured tag editor for portfolio. |
-| 8 | **Anon `bookings` policy hardening** | `supabase/migrations/0004_*.sql` | The Task 3 `bookings_anon_insert` policy doesn't constrain `created_by_admin_id` — an anon client could theoretically pass a value. Hardening: add `and created_by_admin_id is null` to the policy's WITH CHECK. Theoretical for prototype; small migration. |
-| 9 | **Conflict pre-check race window** | `findConflictingBooking` | Server-side SELECT-then-INSERT has a race window. For high-confidence multi-tenant load, add a Postgres `EXCLUDE USING gist (room_id WITH =, tstzrange(starts_at, ends_at) WITH &&)` constraint. Needs `btree_gist` extension; another migration. Likely unnecessary for prototype. |
-| 10 | **Unify anon success UX paradigm** | `postCarelinRequest` vs `bookRoom` | The two anon `useActionState` actions diverge: `postCarelinRequest` uses `redirect()` after the INSERT; `bookRoom` returns `{ok:true}` and the client form `router.replace('?ok=1')`. Two paradigms is a footgun. Pick one — most likely `redirect()` is simpler. |
-| 11 | **Dead exports in `lib/ui/booking.ts`** | `BOOKING_ACTIVE_TAB`, `BOOKING_CONFIRM_EYEBROW` | Both unused after Phase 4 (URL-derived now). Remove. |
-| 12 | **Constants consolidation** | `lib/ui/sport.ts`, `lib/ui/portfolio.ts`, new `lib/ui/siteConfig.ts` | A handful of constants are inline-duplicated across pages: `HOUSES` (sport new + edit), `STATUS_OPTIONS`/`STATUS_LABEL` (portfolio table + edit), `KEYS`/`EDITABLE_KEYS`/`VALID` (config index + edit + action). Consolidating to `lib/ui/<topic>.ts` is a small cleanup task. |
-| 13 | **A11y + responsive polish** | broad | Bilingual content, decorative bg-blue contrast against text-yellow on the mobile shell, focus rings on row controls. The "Delete" buttons across admin tables are bare red text with no visible focus ring. |
-| 14 | **Seed cleanup** | `supabase/seed/data/admin-portfolio.ts`, `admin-bookings.ts` | The `PortfolioSeedRow = Omit<...>` alias and stub `id: "seed-N"` strings are type-only workarounds added in Phase 4. Cleaner long-term: drop the `id` requirement from the seed-side types or delete the dead arrays. |
+| #   | Candidate                                    | Surface area                                                                                        | Notes                                                                                                                                                                                                                                                                                                                    |
+| --- | -------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **Supabase Realtime**                        | sport scoreboard, Carelin desk, admin bookings Gantt                                                | The most visible "live" affordance. Wire `supabase.channel().on('postgres_changes', ...)` in a `'use client'` leaf per affected page. Will require lifting some RSC reads to props.                                                                                                                                      |
+| 2   | **Supabase Storage**                         | P'share post art, profile photos, project thumbs                                                    | Add an `art_image_path` column to `pshare_posts` (or `projects`); upload via the admin editor; `getPublicUrl()` in the reader. RLS on the storage bucket + admin-only writes.                                                                                                                                            |
+| 3   | **Rate limiting on anon writes**             | `bookRoom`, `postCarelinRequest`                                                                    | Two anon-write surfaces, no throttling today. Simplest path: IP-based bucket in `proxy.ts` keyed by `request.ip`. Or Supabase Edge Function with a Redis upstash.                                                                                                                                                        |
+| 4   | **`admin_greeting` site_config cleanup**     | `lib/queries/siteConfig.ts`, seed                                                                   | Dead-code-ish: still queried via `getAdminGreeting`, but the live greeting is derived from `admins.display_name`. Drop the row + helper.                                                                                                                                                                                 |
+| 5   | **Portfolio create-new flow**                | new route + action                                                                                  | The only intentionally-deferred button in the app. Open question: student submission (anon, like Carelin) or admin-typed proxy form? Decide first; then ship.                                                                                                                                                            |
+| 6   | **`Btn type="button"` backfill on 3d forms** | `app/admin/calendar/new/page.tsx`, `app/admin/admins/page.tsx`, `components/admin/PshareEditor.tsx` | `Btn` defaults to `type="button"` — its `{...rest}` spread allows `type="submit"` override. 3d's Save buttons don't pass `type="submit"`, so clicking Save is functionally inert (Enter-in-input still submits). Phase 4 forms fixed this; 3d forms may need the same. Confirm with manual test on each before shipping. |
+| 7   | **Pshare tags + Portfolio tags editing**     | `/admin/portfolio/[id]/edit`, `/admin/pshare/[id]/edit`                                             | Portfolio tags (`PortfolioTagPill[]` JSONB of `{label, background, textColor?}`) are deliberately untouched by `updateProject` — Phase 4 preserves them. P'share tags are flat `text[]` and ARE edited via the comma-separated input in the existing editor. Phase 5 should add a structured tag editor for portfolio.   |
+| 8   | **Anon `bookings` policy hardening**         | `supabase/migrations/0004_*.sql`                                                                    | The Task 3 `bookings_anon_insert` policy doesn't constrain `created_by_admin_id` — an anon client could theoretically pass a value. Hardening: add `and created_by_admin_id is null` to the policy's WITH CHECK. Theoretical for prototype; small migration.                                                             |
+| 9   | **Conflict pre-check race window**           | `findConflictingBooking`                                                                            | Server-side SELECT-then-INSERT has a race window. For high-confidence multi-tenant load, add a Postgres `EXCLUDE USING gist (room_id WITH =, tstzrange(starts_at, ends_at) WITH &&)` constraint. Needs `btree_gist` extension; another migration. Likely unnecessary for prototype.                                      |
+| 10  | **Unify anon success UX paradigm**           | `postCarelinRequest` vs `bookRoom`                                                                  | The two anon `useActionState` actions diverge: `postCarelinRequest` uses `redirect()` after the INSERT; `bookRoom` returns `{ok:true}` and the client form `router.replace('?ok=1')`. Two paradigms is a footgun. Pick one — most likely `redirect()` is simpler.                                                        |
+| 11  | **Dead exports in `lib/ui/booking.ts`**      | `BOOKING_ACTIVE_TAB`, `BOOKING_CONFIRM_EYEBROW`                                                     | Both unused after Phase 4 (URL-derived now). Remove.                                                                                                                                                                                                                                                                     |
+| 12  | **Constants consolidation**                  | `lib/ui/sport.ts`, `lib/ui/portfolio.ts`, new `lib/ui/siteConfig.ts`                                | A handful of constants are inline-duplicated across pages: `HOUSES` (sport new + edit), `STATUS_OPTIONS`/`STATUS_LABEL` (portfolio table + edit), `KEYS`/`EDITABLE_KEYS`/`VALID` (config index + edit + action). Consolidating to `lib/ui/<topic>.ts` is a small cleanup task.                                           |
+| 13  | **A11y + responsive polish**                 | broad                                                                                               | Bilingual content, decorative bg-blue contrast against text-yellow on the mobile shell, focus rings on row controls. The "Delete" buttons across admin tables are bare red text with no visible focus ring.                                                                                                              |
+| 14  | **Seed cleanup**                             | `supabase/seed/data/admin-portfolio.ts`, `admin-bookings.ts`                                        | The `PortfolioSeedRow = Omit<...>` alias and stub `id: "seed-N"` strings are type-only workarounds added in Phase 4. Cleaner long-term: drop the `id` requirement from the seed-side types or delete the dead arrays.                                                                                                    |
 
 ### Suggested execution mode
 

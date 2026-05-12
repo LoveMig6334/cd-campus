@@ -9,18 +9,18 @@ const DELTA_CLASS: Record<AdminKpi["delta"]["kind"], string> = {
 
 export function KpiCard({ kpi }: { kpi: AdminKpi }) {
   return (
-    <div className="relative overflow-hidden border-[1.5px] border-line bg-paper p-4">
+    <div className="border-line bg-paper relative overflow-hidden border-[1.5px] p-4">
       <span
         aria-hidden
         className="halftone-bl pointer-events-none absolute -top-5 -right-5 h-20 w-20 opacity-40"
       />
-      <div className="relative font-mono text-[10px] uppercase tracking-[0.16em] text-mute-500">
+      <div className="text-mute-500 relative font-mono text-[10px] tracking-[0.16em] uppercase">
         {kpi.label}
       </div>
-      <div className="relative mt-0.5 font-display italic text-[12px] text-mute-500">
+      <div className="font-display text-mute-500 relative mt-0.5 text-[12px] italic">
         {kpi.th}
       </div>
-      <div className="relative my-2.5 font-display italic text-[44px] leading-none">
+      <div className="font-display relative my-2.5 text-[44px] leading-none italic">
         {kpi.num}
       </div>
       <span

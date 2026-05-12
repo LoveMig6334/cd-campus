@@ -48,7 +48,9 @@ export type AdminRow = Database["public"]["Tables"]["admins"]["Row"];
 
 export async function requireAdmin(): Promise<AdminRow> {
   const db = await createClient();
-  const { data: { user } } = await db.auth.getUser();
+  const {
+    data: { user },
+  } = await db.auth.getUser();
   if (!user) throw new Error("Not authenticated");
   const { data, error } = await db
     .from("admins")
@@ -77,15 +79,15 @@ The `admins_select_self` RLS policy on the `admins` table lets the authenticated
 
 Reference table: which `revalidatePath` calls follow each write. Use this when implementing each action below.
 
-| Write | revalidatePath calls |
-|---|---|
-| `createAdmin` / `disableAdmin` | `/admin/admins` |
-| `postCarelinRequest` | `/student/carelin`, `/admin/carelin` |
-| `replyToCarelin` | `/admin/carelin`, `/admin/carelin/[id]` (use literal of the id), `/student/carelin` |
-| `markAnswered` | `/admin/carelin`, `/admin/carelin/[id]`, `/student/carelin` |
-| `editScoreboard` | `/admin/sport`, `/student/sport`, `/student`, `/admin` |
-| `addEvent` | `/admin/calendar`, `/student/calendar`, `/admin`, `/student` |
-| `saveDraft` / `publishPost` / `deletePost` | `/admin/pshare`, `/student/pshare` |
+| Write                                      | revalidatePath calls                                                                |
+| ------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `createAdmin` / `disableAdmin`             | `/admin/admins`                                                                     |
+| `postCarelinRequest`                       | `/student/carelin`, `/admin/carelin`                                                |
+| `replyToCarelin`                           | `/admin/carelin`, `/admin/carelin/[id]` (use literal of the id), `/student/carelin` |
+| `markAnswered`                             | `/admin/carelin`, `/admin/carelin/[id]`, `/student/carelin`                         |
+| `editScoreboard`                           | `/admin/sport`, `/student/sport`, `/student`, `/admin`                              |
+| `addEvent`                                 | `/admin/calendar`, `/student/calendar`, `/admin`, `/student`                        |
+| `saveDraft` / `publishPost` / `deletePost` | `/admin/pshare`, `/student/pshare`                                                  |
 
 ---
 
@@ -105,6 +107,7 @@ Reference table: which `revalidatePath` calls follow each write. Use this when i
 ### Task 1: Shared action contract + auth helpers
 
 **Files:**
+
 - Create: `lib/actions.ts`
 - Create: `lib/auth.ts`
 
@@ -169,6 +172,7 @@ EOF
 ### Task 2: Admins list page (read-only) + sidebar entry
 
 **Files:**
+
 - Create: `lib/queries/admins.ts`
 - Create: `app/admin/admins/page.tsx`
 - Modify: `app/admin/layout.tsx`
@@ -215,7 +219,9 @@ type NavItem = {
   icon: ReactNode;
 };
 
-const NAV: NavItem[] = [ /* unchanged */ ];
+const NAV: NavItem[] = [
+  /* unchanged */
+];
 
 export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
   const pathname = usePathname();
@@ -249,7 +255,11 @@ const ADMINS_NAV: NavItem = {
   ),
 };
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const admin = await requireAdmin();
   const extraItems: NavItem[] = admin.tier === "root" ? [ADMINS_NAV] : [];
   return (
@@ -279,10 +289,7 @@ export default async function AdminAdminsPage() {
   const admins = await getAdmins();
   return (
     <>
-      <AdminTopbar
-        titleTh="แอดมิน"
-        eyebrow="Admins · root-only"
-      />
+      <AdminTopbar titleTh="แอดมิน" eyebrow="Admins · root-only" />
 
       <Card>
         <CardTitle th="แอดมินทั้งหมด" en="All admins" />
@@ -292,7 +299,7 @@ export default async function AdminAdminsPage() {
               {["Display name", "Email", "Tier", "Status"].map((h, i) => (
                 <th
                   key={i}
-                  className="border-b-[1.5px] border-ink bg-cream px-2.5 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                  className="border-ink bg-cream text-mute-700 border-b-[1.5px] px-2.5 py-2 text-left font-mono text-[10px] tracking-[0.14em] uppercase"
                 >
                   {h}
                 </th>
@@ -311,7 +318,7 @@ export default async function AdminAdminsPage() {
                   className="hover:bg-cream [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
                 >
                   <td className={td}>
-                    <span className="font-display italic text-[15px]">
+                    <span className="font-display text-[15px] italic">
                       {a.display_name}
                     </span>
                   </td>
@@ -368,6 +375,7 @@ EOF
 ### Task 3: Admins write actions (createAdmin, disableAdmin) + form
 
 **Files:**
+
 - Create: `app/admin/admins/actions.ts`
 - Modify: `app/admin/admins/page.tsx`
 
@@ -386,13 +394,18 @@ import type { ActionResult } from "@/lib/actions";
 export async function createAdmin(formData: FormData): Promise<ActionResult> {
   await requireRootAdmin();
 
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const display_name = String(formData.get("display_name") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const tier = String(formData.get("tier") ?? "normal");
 
   if (!email || !display_name || !password) {
-    return { ok: false, error: "Email, display name, and password are required." };
+    return {
+      ok: false,
+      error: "Email, display name, and password are required.",
+    };
   }
   if (password.length < 12) {
     return { ok: false, error: "Password must be at least 12 characters." };
@@ -409,7 +422,10 @@ export async function createAdmin(formData: FormData): Promise<ActionResult> {
     email_confirm: true,
   });
   if (created.error || !created.data.user) {
-    return { ok: false, error: created.error?.message ?? "Failed to create auth user." };
+    return {
+      ok: false,
+      error: created.error?.message ?? "Failed to create auth user.",
+    };
   }
 
   const { error: insertError } = await svc.from("admins").insert({
@@ -469,40 +485,40 @@ const admins = await getAdmins();
 <Card className="mb-[18px]">
   <CardTitle th="เพิ่มแอดมิน" en="New admin" />
   <form action={createAdmin} className="grid grid-cols-1 gap-3 md:grid-cols-2">
-    <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+    <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
       Email
       <input
         name="email"
         type="email"
         required
-        className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+        className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
       />
     </label>
-    <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+    <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
       Display name · ชื่อแสดง
       <input
         name="display_name"
         type="text"
         required
-        className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+        className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
       />
     </label>
-    <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+    <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
       Password (≥ 12 chars)
       <input
         name="password"
         type="password"
         required
         minLength={12}
-        className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+        className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
       />
     </label>
-    <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+    <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
       Tier
       <select
         name="tier"
         defaultValue="normal"
-        className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+        className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
       >
         <option value="normal">normal</option>
         <option value="root">root</option>
@@ -512,7 +528,7 @@ const admins = await getAdmins();
       <Btn variant="primary">Create admin →</Btn>
     </div>
   </form>
-</Card>
+</Card>;
 ```
 
 For the disable column, change the table header row to include a trailing empty `""` cell (already five columns now), and inside the row map:
@@ -538,6 +554,7 @@ npm run dev
 ```
 
 In the browser, signed in as root:
+
 1. Submit the form with an arbitrary new email + 12-char password + `display_name=Test Admin` + `tier=normal`.
 2. The new admin appears on the list with status **active**.
 3. Sign out, sign in as `test@…` with the password — `/admin` should load (no Admins entry in the sidebar because tier=normal).
@@ -561,6 +578,7 @@ EOF
 ### Task 4: Student Carelin form + `postCarelinRequest`
 
 **Files:**
+
 - Create: `app/student/carelin/actions.ts`
 - Create: `app/student/carelin/new/page.tsx`
 - Create: `components/student/CarelinForm.tsx`
@@ -630,7 +648,7 @@ export function CarelinForm() {
   return (
     <form action={action} className="space-y-3.5">
       <label className="block">
-        <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+        <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
           Title · เรื่อง
         </span>
         <input
@@ -638,25 +656,25 @@ export function CarelinForm() {
           type="text"
           required
           maxLength={120}
-          className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+          className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
         />
       </label>
 
       <label className="block">
-        <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+        <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
           Body · รายละเอียด
         </span>
         <textarea
           name="body"
           required
           rows={5}
-          className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+          className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
         />
       </label>
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Name · ชื่อ
           </span>
           <input
@@ -664,12 +682,12 @@ export function CarelinForm() {
             type="text"
             required
             maxLength={60}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
           />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Student ID · รหัส (4 หลัก)
           </span>
           <input
@@ -679,13 +697,13 @@ export function CarelinForm() {
             inputMode="numeric"
             pattern="[0-9]{4}"
             maxLength={4}
-            className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
           />
         </label>
       </div>
 
       <label className="block">
-        <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+        <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
           Class · ชั้น (optional)
         </span>
         <input
@@ -693,12 +711,12 @@ export function CarelinForm() {
           type="text"
           maxLength={20}
           placeholder="ม.5/2"
-          className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink"
+          className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
         />
       </label>
 
       {!state.ok && (
-        <p className="border-[1.5px] border-house-pink bg-house-pink/10 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.1em] text-house-pink">
+        <p className="border-house-pink bg-house-pink/10 text-house-pink border-[1.5px] px-3 py-2 font-mono text-[11px] tracking-[0.1em] uppercase">
           {state.error}
         </p>
       )}
@@ -706,7 +724,7 @@ export function CarelinForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full border-[1.5px] border-line bg-blue px-4 py-3 font-display italic text-[18px] text-yellow [box-shadow:4px_4px_0_var(--color-ink)] disabled:opacity-60"
+        className="border-line bg-blue font-display text-yellow w-full border-[1.5px] px-4 py-3 text-[18px] italic [box-shadow:4px_4px_0_var(--color-ink)] disabled:opacity-60"
       >
         {pending ? "Posting…" : "Post request → ส่งคำขอ"}
       </button>
@@ -735,7 +753,7 @@ export default function NewCarelinRequest() {
         action={
           <Link
             href="/student/carelin"
-            className="border-[1.5px] border-line bg-paper px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 border-[1.5px] px-2.5 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -763,7 +781,7 @@ export function CarelinCta() {
   return (
     <Link
       href="/student/carelin/new"
-      className="flex w-full items-center gap-3 border-[1.5px] border-line bg-house-pink px-4 py-3.5 text-left text-white transition-transform [box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:[box-shadow:6px_6px_0_var(--color-ink)]"
+      className="border-line bg-house-pink flex w-full items-center gap-3 border-[1.5px] px-4 py-3.5 text-left text-white [box-shadow:4px_4px_0_var(--color-ink)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:[box-shadow:6px_6px_0_var(--color-ink)]"
     >
       {/* identical inner markup as before */}
     </Link>
@@ -779,6 +797,7 @@ npm run dev
 ```
 
 In the browser (no session needed — public route):
+
 1. Visit `/student/carelin`. Click the pink **โพสต์ขอความช่วยเหลือ** card → lands on `/student/carelin/new`.
 2. Submit with `student_id_4=abc` → inline error `Student ID must be exactly 4 digits.` appears.
 3. Submit valid data → redirected to `/student/carelin`; the new request appears at the top of the Public Board.
@@ -799,6 +818,7 @@ EOF
 ### Task 5: Admin Carelin detail + `replyToCarelin` + `markAnswered` + dynamic tab counts
 
 **Files:**
+
 - Create: `app/admin/carelin/actions.ts`
 - Create: `app/admin/carelin/[id]/page.tsx`
 - Modify: `lib/queries/carelin.ts`
@@ -818,7 +838,9 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import type { ActionResult } from "@/lib/actions";
 
-export async function replyToCarelin(formData: FormData): Promise<ActionResult> {
+export async function replyToCarelin(
+  formData: FormData,
+): Promise<ActionResult> {
   const admin = await requireAdmin();
   const request_id = String(formData.get("request_id") ?? "");
   const body = String(formData.get("body") ?? "").trim();
@@ -904,7 +926,9 @@ export type CarelinDetail = {
   }>;
 };
 
-export async function getCarelinDetail(id: string): Promise<CarelinDetail | null> {
+export async function getCarelinDetail(
+  id: string,
+): Promise<CarelinDetail | null> {
   const db = await createClient();
   const { data, error } = await db
     .from("carelin_requests")
@@ -914,13 +938,14 @@ export async function getCarelinDetail(id: string): Promise<CarelinDetail | null
     .eq("id", id)
     .single();
   if (error || !data) return null;
-  const replies = (data.carelin_replies as unknown as Array<{
-    teacher_name: string | null;
-    role_label: string | null;
-    body: string;
-    avatar_letter: string | null;
-    created_at: string;
-  }>) ?? [];
+  const replies =
+    (data.carelin_replies as unknown as Array<{
+      teacher_name: string | null;
+      role_label: string | null;
+      body: string;
+      avatar_letter: string | null;
+      created_at: string;
+    }>) ?? [];
   return {
     id: data.id,
     title: data.title,
@@ -948,9 +973,7 @@ export async function getCarelinTabCounts(): Promise<{
   answered: number;
 }> {
   const db = await createClient();
-  const { data, error } = await db
-    .from("carelin_requests")
-    .select("status");
+  const { data, error } = await db.from("carelin_requests").select("status");
   if (error) throw new Error(`getCarelinTabCounts: ${error.message}`);
   const rows = (data ?? []) as Array<{ status: "open" | "answered" }>;
   return {
@@ -973,13 +996,13 @@ import Link from "next/link";
     href={`/admin/carelin/${row.id}`}
     className={
       row.status === "Open"
-        ? "inline-block border-[1.5px] border-line bg-blue px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow"
-        : "inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+        ? "border-line bg-blue text-yellow inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
+        : "border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
     }
   >
     {row.status === "Open" ? "Reply" : "View"}
   </Link>
-</td>
+</td>;
 ```
 
 (`Btn` is a `<button>` and cannot wrap `<Link>` semantically; mirror its styling inline.)
@@ -991,7 +1014,11 @@ Modify `lib/ui/carelin.ts`. Convert the constant export into a small factory:
 ```ts
 import type { AdminTabItem } from "@/lib/types";
 
-export function carelinDeskTabs(counts: { all: number; open: number; answered: number }): AdminTabItem[] {
+export function carelinDeskTabs(counts: {
+  all: number;
+  open: number;
+  answered: number;
+}): AdminTabItem[] {
   return [
     { id: "all", label: "All", count: counts.all },
     { id: "open", label: "Open", count: counts.open },
@@ -1014,7 +1041,7 @@ const [kpis, rows, counts] = await Promise.all([
   getCarelinTabCounts(),
 ]);
 // …
-<TabBar tabs={carelinDeskTabs(counts)} activeId={CARELIN_DESK_ACTIVE_TAB} />
+<TabBar tabs={carelinDeskTabs(counts)} activeId={CARELIN_DESK_ACTIVE_TAB} />;
 ```
 
 - [ ] **Step 5: Create the detail page**
@@ -1048,7 +1075,7 @@ export default async function CarelinDetailPage({
         actions={
           <Link
             href="/admin/carelin"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -1057,14 +1084,17 @@ export default async function CarelinDetailPage({
 
       <Card>
         <div className="mb-3 flex items-start justify-between gap-3">
-          <CardTitle th={request.title} en={`From ${request.who} · #${request.studentId}${request.klass ? ` · ${request.klass}` : ""}`} />
+          <CardTitle
+            th={request.title}
+            en={`From ${request.who} · #${request.studentId}${request.klass ? ` · ${request.klass}` : ""}`}
+          />
           {request.status === "open" ? (
             <Pill variant="pend">Open</Pill>
           ) : (
             <Pill variant="ok">Answered</Pill>
           )}
         </div>
-        <p className="whitespace-pre-line text-[14px] leading-[1.55] text-ink">
+        <p className="text-ink text-[14px] leading-[1.55] whitespace-pre-line">
           {request.body}
         </p>
       </Card>
@@ -1072,19 +1102,26 @@ export default async function CarelinDetailPage({
       <Card className="mt-[18px]">
         <CardTitle th="คำตอบ" en="Replies" />
         {request.replies.length === 0 ? (
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-mute-500">
+          <p className="text-mute-500 font-mono text-[11px] tracking-[0.14em] uppercase">
             No replies yet.
           </p>
         ) : (
           <ul className="space-y-3">
             {request.replies.map((r, i) => (
-              <li key={i} className="border-[1.5px] border-dashed border-ink bg-cream px-3 py-2.5">
-                <div className="mb-1 font-display italic text-[14px]">
+              <li
+                key={i}
+                className="border-ink bg-cream border-[1.5px] border-dashed px-3 py-2.5"
+              >
+                <div className="font-display mb-1 text-[14px] italic">
                   {r.teacher}
                   {r.role ? ` · ${r.role}` : ""}
-                  <span className="ml-2 font-mono text-[10px] not-italic text-mute-500">{r.when}</span>
+                  <span className="text-mute-500 ml-2 font-mono text-[10px] not-italic">
+                    {r.when}
+                  </span>
                 </div>
-                <p className="whitespace-pre-line text-[13.5px] leading-[1.5] text-ink">{r.body}</p>
+                <p className="text-ink text-[13.5px] leading-[1.5] whitespace-pre-line">
+                  {r.body}
+                </p>
               </li>
             ))}
           </ul>
@@ -1096,25 +1133,25 @@ export default async function CarelinDetailPage({
         <form action={replyToCarelin} className="space-y-3">
           <input type="hidden" name="request_id" value={request.id} />
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.14em] uppercase">
               Role label (optional, e.g. Physics / ดนตรี)
             </span>
             <input
               name="role_label"
               type="text"
               maxLength={40}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[13px]"
             />
           </label>
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.14em] uppercase">
               Reply body
             </span>
             <textarea
               name="body"
               required
               rows={5}
-              className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13.5px] text-ink"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[13.5px]"
             />
           </label>
           <Btn variant="primary">Send reply →</Btn>
@@ -1142,6 +1179,7 @@ npm run dev
 ```
 
 Signed in as root:
+
 1. `/admin/carelin` tab counts now reflect real row totals (no longer 19 / 7 / 12).
 2. Click **Reply** on an open row → lands on `/admin/carelin/<uuid>`.
 3. Submit a reply → page refreshes, the reply appears in the **Replies** card.
@@ -1163,6 +1201,7 @@ EOF
 ### Task 6: Admin Sport scoreboard editor + `editScoreboard`
 
 **Files:**
+
 - Create: `app/admin/sport/actions.ts`
 - Create: `app/admin/sport/edit/page.tsx`
 - Modify: `components/admin/ScoreboardCard.tsx`
@@ -1180,7 +1219,9 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import type { ActionResult } from "@/lib/actions";
 
-export async function editScoreboard(formData: FormData): Promise<ActionResult> {
+export async function editScoreboard(
+  formData: FormData,
+): Promise<ActionResult> {
   await requireAdmin();
   const db = await createClient();
 
@@ -1189,7 +1230,10 @@ export async function editScoreboard(formData: FormData): Promise<ActionResult> 
     const raw = String(formData.get(`score_${id}`) ?? "");
     const n = Number(raw);
     if (!Number.isFinite(n) || n < 0 || n > 100000 || !Number.isInteger(n)) {
-      return { ok: false, error: `Score for house ${id} must be a non-negative integer.` };
+      return {
+        ok: false,
+        error: `Score for house ${id} must be a non-negative integer.`,
+      };
     }
     const { error } = await db
       .from("houses")
@@ -1230,7 +1274,7 @@ export default async function EditScoreboardPage() {
         actions={
           <Link
             href="/admin/sport"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -1238,12 +1282,15 @@ export default async function EditScoreboardPage() {
       />
       <Card>
         <CardTitle th="คะแนนบ้าน" en="House scores" />
-        <form action={editScoreboard} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={editScoreboard}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           {scoreboard.map((entry) => {
             const id = HOUSE_ID_BY_KEY[entry.house];
             return (
               <label key={entry.house} className="block">
-                <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+                <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
                   {entry.nameEn} · {entry.nameTh}
                 </span>
                 <input
@@ -1253,7 +1300,7 @@ export default async function EditScoreboardPage() {
                   step={1}
                   required
                   defaultValue={entry.score}
-                  className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-display italic text-[24px] text-ink"
+                  className="border-line bg-paper font-display text-ink mt-1 w-full border-[1.5px] px-3 py-2 text-[24px] italic"
                 />
               </label>
             );
@@ -1277,10 +1324,10 @@ import Link from "next/link";
 // …
 <Link
   href="/admin/sport/edit"
-  className="mt-2.5 inline-block border border-blue px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-blue"
+  className="border-blue text-blue mt-2.5 inline-block border px-2 py-1 font-mono text-[10px] tracking-[0.12em] uppercase"
 >
   ✎ edit score
-</Link>
+</Link>;
 ```
 
 - [ ] **Step 4: Verify**
@@ -1291,6 +1338,7 @@ npm run dev
 ```
 
 Signed in as root or normal admin:
+
 1. `/admin/sport` → click any **✎ edit score** pill → lands on `/admin/sport/edit`.
 2. Change one score, submit → redirected to `/admin/sport`; the card reflects the new value.
 3. Visit `/student/sport` → leaderboard reflects the new value.
@@ -1311,6 +1359,7 @@ EOF
 ### Task 7: Admin Calendar Add Event + `addEvent`
 
 **Files:**
+
 - Create: `app/admin/calendar/actions.ts`
 - Create: `app/admin/calendar/new/page.tsx`
 - Modify: `app/admin/calendar/page.tsx`
@@ -1328,7 +1377,13 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import type { ActionResult } from "@/lib/actions";
 
-const CATEGORIES = ["sport", "tradition", "music", "admin", "academic"] as const;
+const CATEGORIES = [
+  "sport",
+  "tradition",
+  "music",
+  "admin",
+  "academic",
+] as const;
 type Category = (typeof CATEGORIES)[number];
 
 function isCategory(v: string): v is Category {
@@ -1348,7 +1403,8 @@ export async function addEvent(formData: FormData): Promise<ActionResult> {
 
   if (!title_th) return { ok: false, error: "Thai title is required." };
   if (!isCategory(category)) return { ok: false, error: "Invalid category." };
-  if (!starts_at_local) return { ok: false, error: "Start datetime is required." };
+  if (!starts_at_local)
+    return { ok: false, error: "Start datetime is required." };
 
   // <input type="datetime-local"> produces e.g. "2026-05-12T15:30".
   // Anchor to Asia/Bangkok (+07:00) per project convention.
@@ -1406,7 +1462,7 @@ export default function NewEventPage() {
         actions={
           <Link
             href="/admin/calendar"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -1414,54 +1470,93 @@ export default function NewEventPage() {
       />
       <Card>
         <CardTitle th="รายละเอียดกิจกรรม" en="Event details" />
-        <form action={addEvent} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <form
+          action={addEvent}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Thai title · ชื่อภาษาไทย (required)
             </span>
-            <input name="title_th" type="text" required maxLength={120} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="title_th"
+              type="text"
+              required
+              maxLength={120}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block md:col-span-2">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               English title (optional)
             </span>
-            <input name="title_en" type="text" maxLength={120} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="title_en"
+              type="text"
+              maxLength={120}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Category
             </span>
-            <select name="category" required defaultValue="academic" className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink">
-              {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+            <select
+              name="category"
+              required
+              defaultValue="academic"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
             </select>
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Tag · e.g. "Sport · ลานกีฬากลาง" (optional)
             </span>
-            <input name="tag" type="text" maxLength={80} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="tag"
+              type="text"
+              maxLength={80}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Starts at (Asia/Bangkok)
             </span>
-            <input name="starts_at" type="datetime-local" required defaultValue="2026-05-12T09:00" className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="starts_at"
+              type="datetime-local"
+              required
+              defaultValue="2026-05-12T09:00"
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="block">
-            <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+            <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Location (optional)
             </span>
-            <input name="location" type="text" maxLength={120} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+            <input
+              name="location"
+              type="text"
+              maxLength={120}
+              className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+            />
           </label>
 
           <label className="flex items-center gap-2 md:col-span-2">
             <input name="highlight" type="checkbox" />
-            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-mute-700">
+            <span className="text-mute-700 font-mono text-[11px] tracking-[0.14em] uppercase">
               Highlight (yellow briefing chip)
             </span>
           </label>
@@ -1485,10 +1580,10 @@ import Link from "next/link";
 // …
 <Link
   href="/admin/calendar/new"
-  className="inline-block border-[1.5px] border-line bg-blue px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow"
+  className="border-line bg-blue text-yellow inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
 >
   + Add Event
-</Link>
+</Link>;
 ```
 
 (Match `Btn variant="primary"` styling by reading `components/admin/Btn.tsx` first; copy its primary classes if the snippet above doesn't match.)
@@ -1501,6 +1596,7 @@ npm run dev
 ```
 
 Signed in as admin:
+
 1. `/admin/calendar` → click **+ Add Event** → lands on `/admin/calendar/new`.
 2. Fill title_th + pick a date in May 2026 + category → submit.
 3. Redirected to `/admin/calendar`. With `tag=null` the event will appear in the BigCal grid (which filters `is.null` on tag). Pick `2026-05-15T10:00` and it should land on day 15.
@@ -1522,6 +1618,7 @@ EOF
 ### Task 8: P'share Studio list + admin query
 
 **Files:**
+
 - Modify: `lib/queries/pshare.ts`
 - Modify: `app/admin/pshare/page.tsx`
 
@@ -1545,7 +1642,9 @@ export async function getAllPsharePosts(): Promise<PshareAdminRow[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("pshare_posts")
-    .select("id, slug, title, status, author_alias, num_label, published_at, updated_at")
+    .select(
+      "id, slug, title, status, author_alias, num_label, published_at, updated_at",
+    )
     .order("updated_at", { ascending: false });
   if (error) throw new Error(`getAllPsharePosts: ${error.message}`);
   return (data ?? []).map<PshareAdminRow>((p) => ({
@@ -1588,7 +1687,7 @@ export default async function AdminPshareList() {
         actions={
           <Link
             href="/admin/pshare/new"
-            className="inline-block border-[1.5px] border-line bg-blue px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow"
+            className="border-line bg-blue text-yellow inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             + New post
           </Link>
@@ -1600,27 +1699,41 @@ export default async function AdminPshareList() {
         <table className="w-full border-collapse text-[13px]">
           <thead>
             <tr>
-              {["#", "Title · ชื่อโพสต์", "Author", "Status", ""].map((h, i) => (
-                <th
-                  key={i}
-                  className="border-b-[1.5px] border-ink bg-cream px-2.5 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
-                >
-                  {h}
-                </th>
-              ))}
+              {["#", "Title · ชื่อโพสต์", "Author", "Status", ""].map(
+                (h, i) => (
+                  <th
+                    key={i}
+                    className="border-ink bg-cream text-mute-700 border-b-[1.5px] px-2.5 py-2 text-left font-mono text-[10px] tracking-[0.14em] uppercase"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody>
             {posts.map((p, i) => {
-              const td = i < posts.length - 1 ? "border-b border-dashed border-mute-200" : "";
+              const td =
+                i < posts.length - 1
+                  ? "border-b border-dashed border-mute-200"
+                  : "";
               return (
-                <tr key={p.id} className="hover:bg-cream [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle">
+                <tr
+                  key={p.id}
+                  className="hover:bg-cream [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
+                >
                   <td className={td}>
-                    <span className="font-display italic text-[15px]">{p.num || "–"}</span>
+                    <span className="font-display text-[15px] italic">
+                      {p.num || "–"}
+                    </span>
                   </td>
                   <td className={td}>
-                    <span className="font-display italic text-[15px]">{p.title}</span>
-                    <small className="mt-px block font-mono text-[10px] text-mute-500">{p.slug}</small>
+                    <span className="font-display text-[15px] italic">
+                      {p.title}
+                    </span>
+                    <small className="text-mute-500 mt-px block font-mono text-[10px]">
+                      {p.slug}
+                    </small>
                   </td>
                   <td className={td}>{p.author}</td>
                   <td className={td}>
@@ -1633,7 +1746,7 @@ export default async function AdminPshareList() {
                   <td className={td}>
                     <Link
                       href={`/admin/pshare/${p.id}/edit`}
-                      className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                      className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
                     >
                       Edit
                     </Link>
@@ -1657,6 +1770,7 @@ npm run dev
 ```
 
 Signed in as admin:
+
 1. `/admin/pshare` now lists every seeded post with status pills. `+ New post` and per-row `Edit` links are placeholders that 404 — that lands in Task 9.
 
 - [ ] **Step 4: Commit**
@@ -1674,6 +1788,7 @@ EOF
 ### Task 9: P'share editor + `saveDraft` + `publishPost`
 
 **Files:**
+
 - Create: `app/admin/pshare/actions.ts`
 - Create: `components/admin/PshareEditor.tsx`
 - Create: `app/admin/pshare/new/page.tsx`
@@ -1705,29 +1820,52 @@ type DraftFields = {
   tags: string[];
 };
 
-function parseDraft(formData: FormData): { ok: true; data: DraftFields } | { ok: false; error: string } {
+function parseDraft(
+  formData: FormData,
+): { ok: true; data: DraftFields } | { ok: false; error: string } {
   const slug = String(formData.get("slug") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   if (!slug || !/^[a-z0-9-]+$/.test(slug)) {
-    return { ok: false, error: "Slug must be lowercase letters, digits, or hyphens." };
+    return {
+      ok: false,
+      error: "Slug must be lowercase letters, digits, or hyphens.",
+    };
   }
   if (!title) return { ok: false, error: "Title is required." };
 
   const num_label = String(formData.get("num_label") ?? "").trim() || null;
   const snippet = String(formData.get("snippet") ?? "").trim() || null;
   const body_md = String(formData.get("body_md") ?? "") || null;
-  const author_alias = String(formData.get("author_alias") ?? "").trim() || null;
-  const art_halftone = String(formData.get("art_halftone") ?? "").trim() || null;
+  const author_alias =
+    String(formData.get("author_alias") ?? "").trim() || null;
+  const art_halftone =
+    String(formData.get("art_halftone") ?? "").trim() || null;
   const art_bg = String(formData.get("art_bg") ?? "").trim() || null;
-  const art_num_color = String(formData.get("art_num_color") ?? "").trim() || null;
+  const art_num_color =
+    String(formData.get("art_num_color") ?? "").trim() || null;
   const tagsRaw = String(formData.get("tags") ?? "").trim();
-  const tags = tagsRaw === ""
-    ? []
-    : tagsRaw.split(",").map((t) => t.trim()).filter(Boolean);
+  const tags =
+    tagsRaw === ""
+      ? []
+      : tagsRaw
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean);
 
   return {
     ok: true,
-    data: { slug, title, num_label, snippet, body_md, author_alias, art_halftone, art_bg, art_num_color, tags },
+    data: {
+      slug,
+      title,
+      num_label,
+      snippet,
+      body_md,
+      author_alias,
+      art_halftone,
+      art_bg,
+      art_num_color,
+      tags,
+    },
   };
 }
 
@@ -1746,9 +1884,11 @@ export async function saveDraft(formData: FormData): Promise<ActionResult> {
       .eq("id", id);
     if (error) return { ok: false, error: error.message };
   } else {
-    const { error } = await db
-      .from("pshare_posts")
-      .insert({ ...parsed.data, status: "draft", created_by_admin_id: admin.id });
+    const { error } = await db.from("pshare_posts").insert({
+      ...parsed.data,
+      status: "draft",
+      created_by_admin_id: admin.id,
+    });
     if (error) return { ok: false, error: error.message };
   }
 
@@ -1776,14 +1916,12 @@ export async function publishPost(formData: FormData): Promise<ActionResult> {
       .eq("id", id);
     if (error) return { ok: false, error: error.message };
   } else {
-    const { error } = await db
-      .from("pshare_posts")
-      .insert({
-        ...parsed.data,
-        status: "published",
-        published_at: new Date().toISOString(),
-        created_by_admin_id: admin.id,
-      });
+    const { error } = await db.from("pshare_posts").insert({
+      ...parsed.data,
+      status: "published",
+      published_at: new Date().toISOString(),
+      created_by_admin_id: admin.id,
+    });
     if (error) return { ok: false, error: error.message };
   }
 
@@ -1830,80 +1968,147 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
         {d.id && <input type="hidden" name="id" value={d.id} />}
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Slug (lowercase, hyphens)
           </span>
-          <input name="slug" type="text" required pattern="[a-z0-9-]+" maxLength={80} defaultValue={d.slug ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink" />
+          <input
+            name="slug"
+            type="text"
+            required
+            pattern="[a-z0-9-]+"
+            maxLength={80}
+            defaultValue={d.slug ?? ""}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
+          />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Num label (e.g. "01")
           </span>
-          <input name="num_label" type="text" maxLength={6} defaultValue={d.num_label ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-display italic text-[20px] text-ink" />
+          <input
+            name="num_label"
+            type="text"
+            maxLength={6}
+            defaultValue={d.num_label ?? ""}
+            className="border-line bg-paper font-display text-ink mt-1 w-full border-[1.5px] px-3 py-2 text-[20px] italic"
+          />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Title
           </span>
-          <input name="title" type="text" required maxLength={120} defaultValue={d.title ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[15px] text-ink" />
+          <input
+            name="title"
+            type="text"
+            required
+            maxLength={120}
+            defaultValue={d.title ?? ""}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[15px]"
+          />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Snippet
           </span>
-          <input name="snippet" type="text" maxLength={240} defaultValue={d.snippet ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+          <input
+            name="snippet"
+            type="text"
+            maxLength={240}
+            defaultValue={d.snippet ?? ""}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+          />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Body (Markdown)
           </span>
-          <textarea name="body_md" rows={12} defaultValue={d.body_md ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink" />
+          <textarea
+            name="body_md"
+            rows={12}
+            defaultValue={d.body_md ?? ""}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
+          />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Author alias
           </span>
-          <input name="author_alias" type="text" maxLength={80} defaultValue={d.author_alias ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink" />
+          <input
+            name="author_alias"
+            type="text"
+            maxLength={80}
+            defaultValue={d.author_alias ?? ""}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
+          />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Halftone variant
           </span>
-          <select name="art_halftone" defaultValue={d.art_halftone ?? "halftone-bl"} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink">
-            {HALFTONES.map((h) => <option key={h} value={h}>{h}</option>)}
+          <select
+            name="art_halftone"
+            defaultValue={d.art_halftone ?? "halftone-bl"}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
+          >
+            {HALFTONES.map((h) => (
+              <option key={h} value={h}>
+                {h}
+              </option>
+            ))}
           </select>
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Art background (CSS color, optional)
           </span>
-          <input name="art_bg" type="text" maxLength={40} placeholder="var(--color-cream)" defaultValue={d.art_bg ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink" />
+          <input
+            name="art_bg"
+            type="text"
+            maxLength={40}
+            placeholder="var(--color-cream)"
+            defaultValue={d.art_bg ?? ""}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
+          />
         </label>
 
         <label className="block">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Num color (CSS color, optional)
           </span>
-          <input name="art_num_color" type="text" maxLength={40} placeholder="var(--color-ink)" defaultValue={d.art_num_color ?? ""} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink" />
+          <input
+            name="art_num_color"
+            type="text"
+            maxLength={40}
+            placeholder="var(--color-ink)"
+            defaultValue={d.art_num_color ?? ""}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
+          />
         </label>
 
         <label className="block md:col-span-2">
-          <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
             Tags (comma-separated, e.g. "#math-olympiad, #tmo")
           </span>
-          <input name="tags" type="text" defaultValue={(d.tags ?? []).join(", ")} className="mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-mono text-[13px] text-ink" />
+          <input
+            name="tags"
+            type="text"
+            defaultValue={(d.tags ?? []).join(", ")}
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
+          />
         </label>
 
-        <div className="md:col-span-2 flex gap-2">
+        <div className="flex gap-2 md:col-span-2">
           <Btn formAction={saveDraft}>Save draft</Btn>
-          <Btn formAction={publishPost} variant="primary">Publish →</Btn>
+          <Btn formAction={publishPost} variant="primary">
+            Publish →
+          </Btn>
         </div>
       </form>
     </Card>
@@ -1933,7 +2138,7 @@ export default function NewPsharePost() {
         actions={
           <Link
             href="/admin/pshare"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -1965,7 +2170,9 @@ export default async function EditPsharePost({
   const db = await createClient();
   const { data, error } = await db
     .from("pshare_posts")
-    .select("id, slug, title, num_label, snippet, body_md, author_alias, art_halftone, art_bg, art_num_color, tags")
+    .select(
+      "id, slug, title, num_label, snippet, body_md, author_alias, art_halftone, art_bg, art_num_color, tags",
+    )
     .eq("id", id)
     .single();
   if (error || !data) notFound();
@@ -1978,7 +2185,7 @@ export default async function EditPsharePost({
         actions={
           <Link
             href="/admin/pshare"
-            className="inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
           >
             ← Back
           </Link>
@@ -2012,6 +2219,7 @@ npm run dev
 ```
 
 Signed in as admin:
+
 1. `/admin/pshare` → click **+ New post** → fill slug=`test-001`, title=`Test`, body=`# Hi`, snippet=`hello`, author=`พี่ทอม`, halftone=`halftone-bl`, tags=`#test, #wip` → click **Save draft**. Redirected to `/admin/pshare`, new row appears with status pill **Draft**.
 2. Edit that row → change title → click **Publish**. Redirected back; status now **Published**.
 3. Visit `/student/pshare` → the post appears in the public feed.
@@ -2032,6 +2240,7 @@ EOF
 ### Task 10: P'share delete
 
 **Files:**
+
 - Modify: `app/admin/pshare/actions.ts`
 - Modify: `app/admin/pshare/[id]/edit/page.tsx`
 
@@ -2064,13 +2273,13 @@ import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { deletePost } from "../../actions";
 // …
-<Card className="mt-[18px] border-house-pink">
+<Card className="border-house-pink mt-[18px]">
   <CardTitle th="ลบโพสต์" en="Delete post" />
   <form action={deletePost}>
     <input type="hidden" name="id" value={data.id} />
     <Btn>Delete permanently</Btn>
   </form>
-</Card>
+</Card>;
 ```
 
 (Phase 3d skips a confirm prompt; admin acceptance of the prototype's no-frills delete is fine.)
@@ -2083,6 +2292,7 @@ npm run dev
 ```
 
 Signed in as admin:
+
 1. Open any post's edit page → click **Delete permanently** → row vanishes from `/admin/pshare`; published posts also vanish from `/student/pshare`.
 
 - [ ] **Step 4: Commit**

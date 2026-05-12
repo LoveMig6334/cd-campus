@@ -7,7 +7,9 @@ import { getSupabaseServiceRole } from "@/lib/supabase/serviceRole";
 export async function createAdmin(formData: FormData): Promise<void> {
   await requireRootAdmin();
 
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const display_name = String(formData.get("display_name") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const tier = String(formData.get("tier") ?? "normal");

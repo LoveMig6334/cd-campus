@@ -18,9 +18,9 @@ type DraftFields = {
   tags: string[];
 };
 
-function parseDraft(formData: FormData):
-  | { ok: true; data: DraftFields }
-  | { ok: false } {
+function parseDraft(
+  formData: FormData,
+): { ok: true; data: DraftFields } | { ok: false } {
   const slug = String(formData.get("slug") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   if (!slug || !/^[a-z0-9-]+$/.test(slug)) return { ok: false };
@@ -29,18 +29,36 @@ function parseDraft(formData: FormData):
   const num_label = String(formData.get("num_label") ?? "").trim() || null;
   const snippet = String(formData.get("snippet") ?? "").trim() || null;
   const body_md = String(formData.get("body_md") ?? "") || null;
-  const author_alias = String(formData.get("author_alias") ?? "").trim() || null;
-  const art_halftone = String(formData.get("art_halftone") ?? "").trim() || null;
+  const author_alias =
+    String(formData.get("author_alias") ?? "").trim() || null;
+  const art_halftone =
+    String(formData.get("art_halftone") ?? "").trim() || null;
   const art_bg = String(formData.get("art_bg") ?? "").trim() || null;
-  const art_num_color = String(formData.get("art_num_color") ?? "").trim() || null;
+  const art_num_color =
+    String(formData.get("art_num_color") ?? "").trim() || null;
   const tagsRaw = String(formData.get("tags") ?? "").trim();
-  const tags = tagsRaw === ""
-    ? []
-    : tagsRaw.split(",").map((t) => t.trim()).filter(Boolean);
+  const tags =
+    tagsRaw === ""
+      ? []
+      : tagsRaw
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean);
 
   return {
     ok: true,
-    data: { slug, title, num_label, snippet, body_md, author_alias, art_halftone, art_bg, art_num_color, tags },
+    data: {
+      slug,
+      title,
+      num_label,
+      snippet,
+      body_md,
+      author_alias,
+      art_halftone,
+      art_bg,
+      art_num_color,
+      tags,
+    },
   };
 }
 
@@ -59,9 +77,11 @@ export async function saveDraft(formData: FormData): Promise<void> {
       .eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await db
-      .from("pshare_posts")
-      .insert({ ...parsed.data, status: "draft", created_by_admin_id: admin.id });
+    const { error } = await db.from("pshare_posts").insert({
+      ...parsed.data,
+      status: "draft",
+      created_by_admin_id: admin.id,
+    });
     if (error) throw new Error(error.message);
   }
 
@@ -90,14 +110,12 @@ export async function publishPost(formData: FormData): Promise<void> {
       .eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await db
-      .from("pshare_posts")
-      .insert({
-        ...parsed.data,
-        status: "published",
-        published_at: publishedAt,
-        created_by_admin_id: admin.id,
-      });
+    const { error } = await db.from("pshare_posts").insert({
+      ...parsed.data,
+      status: "published",
+      published_at: publishedAt,
+      created_by_admin_id: admin.id,
+    });
     if (error) throw new Error(error.message);
   }
 

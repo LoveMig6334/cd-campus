@@ -70,9 +70,9 @@ Three week-nav buttons replace the three day-nav buttons:
 type WeekChip = { id: string; startHHMM: string; variant: GanttBarVariant };
 
 type BookingsWeekGridProps = {
-  weekDays: string[];           // 7 ISO dates Mon→Sun
-  selectedDate: string;         // one of weekDays
-  today: string;                // YYYY-MM-DD; drives the "· today" marker
+  weekDays: string[]; // 7 ISO dates Mon→Sun
+  selectedDate: string; // one of weekDays
+  today: string; // YYYY-MM-DD; drives the "· today" marker
   rooms: { id: string; nameEn: string; nameTh: string }[];
   // bookingsByRoomDay[roomId]?.[dayISO] = chips for that cell, sorted by start.
   bookingsByRoomDay: Record<string, Record<string, WeekChip[]>>;
@@ -118,8 +118,8 @@ type BookingsWeekGridProps = {
 
    ```ts
    export async function getWeekBookings(
-     weekStart: string,  // YYYY-MM-DD (Monday)
-     weekEnd: string,    // YYYY-MM-DD (Sunday)
+     weekStart: string, // YYYY-MM-DD (Monday)
+     weekEnd: string, // YYYY-MM-DD (Sunday)
    ): Promise<{
      rooms: { id: string; nameEn: string; nameTh: string }[];
      bookingsByRoomDay: Record<string, Record<string, WeekChip[]>>;
@@ -170,4 +170,4 @@ No new dependencies. No schema migration. No RLS change.
 
 ## Open questions
 
-None blocking. (`useDate()` / SWR-style client state is explicitly *not* needed; the URL is the state.)
+None blocking. (`useDate()` / SWR-style client state is explicitly _not_ needed; the URL is the state.)

@@ -6,14 +6,14 @@ Move the editorial-zine prototype at `prototype/cd-smart-campus.html` into the N
 
 ## Status (as of 2026-05-13)
 
-| Phase | Status | Notes |
-|---|---|---|
-| Phase 0 — Foundation | ✅ shipped | |
-| Phase 1 — Shells | ✅ shipped | |
-| Phase 2 — Static page port | ✅ shipped (2a–2e) | |
-| Phase 3 — Interactivity | **superseded by the Supabase migration** | Sub-phases 3a (auth foundation) / 3b (schema + RLS + seed) / 3c (read swap) / 3d (minimum write set) all shipped. See [`docs/superpowers/specs/2026-05-12-supabase-migration-design.md`](./superpowers/specs/2026-05-12-supabase-migration-design.md) for the design + [`docs/superpowers/plans/2026-05-12-supabase-3d-writes.md`](./superpowers/plans/2026-05-12-supabase-3d-writes.md) for the most recent plan. |
-| Phase 4 — P'share dynamic routes | **rolled into the new Phase 4** | `/student/pshare/[slug]` reader is tracked alongside the full write surface. |
-| Phase 5 — Polish | **deferred** | Follows the full write surface. |
+| Phase                            | Status                                   | Notes                                                                                                                                                                                                                                                                                                                                                                                                              |
+| -------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Phase 0 — Foundation             | ✅ shipped                               |                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Phase 1 — Shells                 | ✅ shipped                               |                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Phase 2 — Static page port       | ✅ shipped (2a–2e)                       |                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Phase 3 — Interactivity          | **superseded by the Supabase migration** | Sub-phases 3a (auth foundation) / 3b (schema + RLS + seed) / 3c (read swap) / 3d (minimum write set) all shipped. See [`docs/superpowers/specs/2026-05-12-supabase-migration-design.md`](./superpowers/specs/2026-05-12-supabase-migration-design.md) for the design + [`docs/superpowers/plans/2026-05-12-supabase-3d-writes.md`](./superpowers/plans/2026-05-12-supabase-3d-writes.md) for the most recent plan. |
+| Phase 4 — P'share dynamic routes | **rolled into the new Phase 4**          | `/student/pshare/[slug]` reader is tracked alongside the full write surface.                                                                                                                                                                                                                                                                                                                                       |
+| Phase 5 — Polish                 | **deferred**                             | Follows the full write surface.                                                                                                                                                                                                                                                                                                                                                                                    |
 
 **Active phase:** Phase 4 — Full write surface. Wire every still-inert prototype button (bookings, portfolio CRUD, calendar edit/delete, sport-result recording, site_config editor, root-only carelin delete) to a Server Action. See [`docs/handoff.md`](./handoff.md) for the next-session briefing.
 
@@ -27,25 +27,25 @@ The original phased plan below remains as historical reference; the route map, d
 
 ## Stack already installed
 
-| Package | Version |
-| ------- | ------- |
-| next | 16.2.6 |
-| react | 19.2.4 |
-| react-dom | 19.2.4 |
-| tailwindcss | ^4 (CSS-first via `@import "tailwindcss"` + `@theme`) |
-| @tailwindcss/postcss | ^4 |
-| typescript | ^5 |
-| eslint | ^9 |
-| eslint-config-next | 16.2.6 |
+| Package              | Version                                               |
+| -------------------- | ----------------------------------------------------- |
+| next                 | 16.2.6                                                |
+| react                | 19.2.4                                                |
+| react-dom            | 19.2.4                                                |
+| tailwindcss          | ^4 (CSS-first via `@import "tailwindcss"` + `@theme`) |
+| @tailwindcss/postcss | ^4                                                    |
+| typescript           | ^5                                                    |
+| eslint               | ^9                                                    |
+| eslint-config-next   | 16.2.6                                                |
 
 ## Libraries to add
 
-| Package | Version target | Why |
-| ------- | -------------- | --- |
-| `react-markdown` | ^10.1 | Render P'share post bodies. Works in both Server and Client components in React 19 / Next 16. |
-| `remark-gfm` | ^4.0 | GitHub-flavored markdown extras (tables, strikethrough, task lists, autolinks) for P'share posts. |
-| `clsx` | ^2.1 | Conditional class composition. |
-| `tailwind-merge` | ^3.0 | Safe Tailwind class merging when components compose `className` props. Requires Tailwind 4. |
+| Package          | Version target | Why                                                                                               |
+| ---------------- | -------------- | ------------------------------------------------------------------------------------------------- |
+| `react-markdown` | ^10.1          | Render P'share post bodies. Works in both Server and Client components in React 19 / Next 16.     |
+| `remark-gfm`     | ^4.0           | GitHub-flavored markdown extras (tables, strikethrough, task lists, autolinks) for P'share posts. |
+| `clsx`           | ^2.1           | Conditional class composition.                                                                    |
+| `tailwind-merge` | ^3.0           | Safe Tailwind class merging when components compose `className` props. Requires Tailwind 4.       |
 
 Install:
 
@@ -54,6 +54,7 @@ npm install react-markdown@^10 remark-gfm@^4 clsx@^2 tailwind-merge@^3
 ```
 
 **Deferred** (not needed at the prototype-port stage; keep dependency surface small):
+
 - `zod`, `react-hook-form` — only one form in scope (Carelin), plain `useState` + a tiny validator covers it.
 - `date-fns`, `dayjs` — `Intl.DateTimeFormat` covers the bilingual date in the header.
 - `lucide-react` — inline SVGs match the zine aesthetic; revisit if the icon count grows.
@@ -64,24 +65,24 @@ npm install react-markdown@^10 remark-gfm@^4 clsx@^2 tailwind-merge@^3
 
 ### Route map
 
-| URL | Page |
-| --- | ---- |
-| `/` | Landing — view toggle to `/student` or `/admin` |
-| `/student` | Home (date header + 6-tile menu) |
-| `/student/calendar` | Mobile calendar |
-| `/student/sport` | Sport day live + leaderboard |
-| `/student/booking` | Room booking |
-| `/student/portfolio` | Senior portfolios |
-| `/student/pshare` | P'share post grid |
-| `/student/pshare/[slug]` | P'share post reader |
-| `/student/carelin` | CD Carelin public board |
-| `/admin` | Overview (KPIs + charts) |
-| `/admin/calendar` | Admin calendar |
-| `/admin/sport` | Sport day ops |
-| `/admin/bookings` | Bookings management |
-| `/admin/portfolio` | Portfolio review |
-| `/admin/pshare` | P'share Studio (markdown editor) |
-| `/admin/carelin` | Carelin Desk (request triage) |
+| URL                      | Page                                            |
+| ------------------------ | ----------------------------------------------- |
+| `/`                      | Landing — view toggle to `/student` or `/admin` |
+| `/student`               | Home (date header + 6-tile menu)                |
+| `/student/calendar`      | Mobile calendar                                 |
+| `/student/sport`         | Sport day live + leaderboard                    |
+| `/student/booking`       | Room booking                                    |
+| `/student/portfolio`     | Senior portfolios                               |
+| `/student/pshare`        | P'share post grid                               |
+| `/student/pshare/[slug]` | P'share post reader                             |
+| `/student/carelin`       | CD Carelin public board                         |
+| `/admin`                 | Overview (KPIs + charts)                        |
+| `/admin/calendar`        | Admin calendar                                  |
+| `/admin/sport`           | Sport day ops                                   |
+| `/admin/bookings`        | Bookings management                             |
+| `/admin/portfolio`       | Portfolio review                                |
+| `/admin/pshare`          | P'share Studio (markdown editor)                |
+| `/admin/carelin`         | Carelin Desk (request triage)                   |
 
 Each role gets its own root layout (phone shell vs sidebar shell). Using literal directory names (`student/`, `admin/`) rather than route groups so the URLs are explicit and the two shells don't collide on shared child paths like `/calendar`.
 
@@ -229,7 +230,11 @@ Then use Tailwind utilities like `bg-blue text-yellow font-display italic` direc
 Set up in `lib/fonts.ts` and apply in `app/layout.tsx`:
 
 ```ts
-import { Instrument_Serif, IBM_Plex_Sans_Thai, IBM_Plex_Mono } from "next/font/google";
+import {
+  Instrument_Serif,
+  IBM_Plex_Sans_Thai,
+  IBM_Plex_Mono,
+} from "next/font/google";
 
 export const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
