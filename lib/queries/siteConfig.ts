@@ -5,6 +5,10 @@ import type {
   PortfolioStats,
 } from "@/lib/types";
 
+export async function getConfigByKey<T>(key: string): Promise<T> {
+  return getValue<T>(key);
+}
+
 async function getValue<T>(key: string): Promise<T> {
   const db = await createClient();
   const { data, error } = await db
