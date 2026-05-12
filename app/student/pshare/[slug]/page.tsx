@@ -1,8 +1,10 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MobileBody } from "@/components/layout/MobileBody";
 import { PageHead } from "@/components/layout/PageHead";
 import { PshareReader } from "@/components/student/PshareReader";
 import { getPsharePostBySlug } from "@/lib/queries/pshare";
+import { getAssetUrl } from "@/lib/storage";
 import { cn } from "@/lib/cn";
 
 export default async function StudentPsharePost({
@@ -29,23 +31,34 @@ export default async function StudentPsharePost({
         backHref="/student/pshare"
       />
       <MobileBody className="space-y-3.5">
-        <div
-          className={cn(
-            halftoneClass,
-            "border-ink grid aspect-[5/3] place-items-center border-[1.5px]",
-          )}
-          style={{
-            background: post.art_bg ?? "var(--color-cream)",
-          }}
-        >
-          <span
-            className="font-display text-[64px] leading-none italic"
-            style={{ color: post.art_num_color ?? "var(--color-ink)" }}
+        {post.art_image_path ? (
+          <div className="border-ink relative aspect-[5/3] overflow-hidden border-[1.5px]">
+            <Image
+              src={getAssetUrl(post.art_image_path)}
+              alt={post.title}
+              fill
+              sizes="(max-width: 480px) 100vw, 480px"
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <div
+            className={cn(
+              halftoneClass,
+              "border-ink grid aspect-[5/3] place-items-center border-[1.5px]",
+            )}
+            style={{ background: post.art_bg ?? "var(--color-cream)" }}
           >
-            {post.num_label ?? "·"}
-          </span>
-        </div>
+            <span
+              className="font-display text-[64px] leading-none italic"
+              style={{ color: post.art_num_color ?? "var(--color-ink)" }}
+            >
+              {post.num_label ?? "·"}
+            </span>
+          </div>
+        )}
 
+        {/* header, body, tags — unchanged */}
         <header className="space-y-1.5">
           {post.author_alias && (
             <p className="text-mute-500 font-mono text-[10px] tracking-[0.18em] uppercase">
