@@ -24,5 +24,6 @@ export async function signIn(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect(next.startsWith("/admin") ? next : "/admin");
+  const safePath = new URL(next, "http://localhost").pathname;
+  redirect(safePath.startsWith("/admin") ? safePath : "/admin");
 }
