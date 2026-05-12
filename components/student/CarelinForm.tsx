@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
-import type { ActionResult } from "@/lib/actions";
 import { postCarelinRequest } from "@/app/student/carelin/actions";
+import type { ActionResult } from "@/lib/actions";
+import { useActionState } from "react";
 
 const INITIAL: ActionResult = { ok: true };
 
@@ -51,7 +51,7 @@ export function CarelinForm() {
 
         <label className="block">
           <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
-            Student ID · รหัส (4 หลัก)
+            Student ID 4 หลัก
           </span>
           <input
             name="student_id_4"
@@ -67,7 +67,7 @@ export function CarelinForm() {
 
       <label className="block">
         <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
-          Class · ชั้น (optional)
+          Class (optional)
         </span>
         <input
           name="klass"

@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { bookRoom } from "@/app/student/booking/actions";
 import type { ActionResult } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 
 const INPUT_CLS =
   "border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink";
@@ -46,7 +46,7 @@ export function BookingConfirmForm({ date, period, room, eyebrow }: Props) {
           <input name="name" type="text" required className={INPUT_CLS} />
         </label>
         <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
-          Student ID · รหัส (4 หลัก)
+          Student ID 4 หลัก
           <input
             name="student_id_4"
             type="text"
@@ -58,7 +58,7 @@ export function BookingConfirmForm({ date, period, room, eyebrow }: Props) {
           />
         </label>
         <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
-          Class · ชั้น (optional)
+          Class (optional)
           <input
             name="klass"
             type="text"
@@ -67,7 +67,7 @@ export function BookingConfirmForm({ date, period, room, eyebrow }: Props) {
           />
         </label>
         <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
-          Purpose · จุดประสงค์ (optional)
+          Purpose (optional)
           <input
             name="purpose"
             type="text"
