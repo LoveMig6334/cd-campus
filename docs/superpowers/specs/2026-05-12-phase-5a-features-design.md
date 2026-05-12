@@ -59,28 +59,23 @@ insert into storage.buckets (id, name, public)
 values ('assets', 'assets', true)
 on conflict (id) do nothing;
 
--- 3. Storage RLS.
+-- 3. Storage RLS — reuses public.is_admin() from 0002_rls.sql.
 create policy "assets_public_read"
   on storage.objects for select
   using (bucket_id = 'assets');
 
-create policy "assets_admin_write_insert"
-  on storage.objects for insert
-  with check (bucket_id = 'assets' and exists (
-    select 1 from admins where id = auth.uid() and is_active
-  ));
+create policy "assets_admin_insert"
+  on storage.objects for insert to authenticated
+  with check (bucket_id = 'assets' and public.is_admin());
 
-create policy "assets_admin_write_update"
-  on storage.objects for update
-  using (bucket_id = 'assets' and exists (
-    select 1 from admins where id = auth.uid() and is_active
-  ));
+create policy "assets_admin_update"
+  on storage.objects for update to authenticated
+  using      (bucket_id = 'assets' and public.is_admin())
+  with check (bucket_id = 'assets' and public.is_admin());
 
-create policy "assets_admin_write_delete"
-  on storage.objects for delete
-  using (bucket_id = 'assets' and exists (
-    select 1 from admins where id = auth.uid() and is_active
-  ));
+create policy "assets_admin_delete"
+  on storage.objects for delete to authenticated
+  using (bucket_id = 'assets' and public.is_admin());
 
 -- 4. Realtime publication.
 alter publication supabase_realtime add table sport_results;
@@ -90,7 +85,7 @@ alter publication supabase_realtime add table bookings;
 
 After the migration: `npm run gen:types` regenerates `lib/supabase/database.types.ts`. Committed in the same logical change as the migration.
 
-**Open verification at implementation time:** confirm `0002_rls.sql` exposes an `is_admin()` helper. If so, the storage policies use it (`is_admin()` instead of the inline `exists` clause). If not, inline is fine — same semantics.
+`0002_rls.sql` already exposes `public.is_admin()` (a `security definer` helper with `auth_user_id = auth.uid()` + `is_active`). Storage policies reuse it — no inline `exists` needed.
 
 ## Realtime
 
@@ -213,7 +208,7 @@ Forms with file inputs need `encType="multipart/form-data"`. Next/React handles 
 `app/admin/portfolio/new/page.tsx` (RSC) — mirrors `app/admin/portfolio/[id]/edit/page.tsx`:
 
 - `await requireAdmin()` at the top.
-- Fields: title, summary, status (proposed / in_progress / done), tags (via `PortfolioTagsField`), image (file input).
+- Fields mirror the existing edit form: `title_en` (required), `title_th`, `author_line`, `klass`, `desc_long`, `icon_key`, `thumb_bg`, `status` (`Published | Under Review | Draft`), `submitted_at`, tags (via `PortfolioTagsField`), image (file input).
 - Form `action={createProject}`. Single `<Btn type="submit" variant="primary">Create</Btn>`.
 
 ### Tag editor leaf
@@ -248,15 +243,15 @@ Consumed by the client leaf (rendering swatch buttons) and the server actions (v
 `createProject(formData: FormData): Promise<void>` in `app/admin/portfolio/actions.ts`:
 
 1. `await requireAdmin()`.
-2. Validate:
-   - `title` required, ≤ 200 chars.
-   - `summary` required, ≤ 2000 chars.
-   - `status` ∈ `{"proposed","in_progress","done"}`.
+2. Validate (mirrors existing `updateProject` field set, all reused via shared `parseProject` helper):
+   - `title_en` required, ≤ 120 chars.
+   - `status` ∈ `{"Published","Under Review","Draft"}`.
+   - `title_th`, `author_line`, `klass`, `desc_long`, `icon_key`, `thumb_bg`, `submitted_at` — optional, trimmed-or-null pattern (matches existing actions).
    - `tags` parsed from JSON, each entry validated against `TAG_SWATCHES.background`. Invalid entries dropped silently.
    - `image` (optional) — MIME + size validation.
 3. `INSERT INTO projects (...) RETURNING id`.
 4. If image: upload at `portfolio/<id>.<ext>`, then `UPDATE projects SET image_path = path`.
-5. `revalidatePath('/admin/portfolio')`, `redirect('/admin/portfolio')`.
+5. `revalidatePath('/admin/portfolio')`, `revalidatePath('/student/portfolio')`, `redirect('/admin/portfolio')`.
 
 ### Existing `updateProject` change
 
@@ -331,10 +326,9 @@ Estimated 10–14 task commits, similar shape and per-task cadence to Phase 4.
 
 ## Open verification items (handled at implementation time)
 
-1. Does `0002_rls.sql` expose an `is_admin()` helper? If yes, storage policies use it; otherwise inline `exists` clause is fine.
-2. Do SELECT RLS policies exist for admin reads of `carelin_requests` and `bookings`? Required for Realtime to deliver events to admin clients. (Almost certainly yes — those pages already render the rows.)
-3. Does `<form action={fn}>` with a file input automatically encode as multipart? Test once on `/admin/portfolio/new`; if not, set `encType="multipart/form-data"` on all four forms with file inputs.
-4. Does the existing `PshareEditor` lift to `'use client'`? Confirm — file input + image preview behavior may require client state if we render a thumbnail before submit (RSC can't show a freshly-picked file). May add a small `'use client'` preview leaf.
+1. Do SELECT RLS policies exist for admin reads of `carelin_requests` and `bookings`? Required for Realtime to deliver events to admin clients. (Almost certainly yes — those pages already render the rows.)
+2. Does `<form action={fn}>` with a file input automatically encode as multipart in React 19? Test once on `/admin/portfolio/new`; if not, set `encType="multipart/form-data"` on all four forms with file inputs.
+3. Does the existing `PshareEditor` need to lift to `'use client'`? It's already a plain function component imported from a server boundary, so it currently renders server-side. If we add a pre-submit file preview thumbnail, it gains client state — split into a small `'use client'` preview leaf rather than lifting the whole editor.
 
 ## Don'ts (re-statement of project conventions, scoped to 5a)
 
