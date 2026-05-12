@@ -22,7 +22,7 @@ export async function seedPshare(
     art_num_color: p.art.numColor ?? null,
     status: "published",
     tags: p.tags,
-    published_at: new Date().toISOString(),
+    published_at: "2026-05-12T00:00:00+07:00",
     created_by_admin_id: adminId,
   }));
   const { error } = await db
