@@ -1,0 +1,40 @@
+import { createClient } from "@/lib/supabase/server";
+import type { PsharePost } from "@/lib/types";
+
+const THAI_MONTHS = [
+  "ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.",
+  "ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.",
+];
+
+function thaiDate(ts: string | null): string {
+  if (!ts) return "";
+  const m = ts.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return "";
+  return `${parseInt(m[3], 10)} ${THAI_MONTHS[parseInt(m[2], 10) - 1]}`;
+}
+
+export async function getStudentPshareFeed(): Promise<PsharePost[]> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("pshare_posts")
+    .select(
+      "slug, num_label, title, snippet, author_alias, art_halftone, art_bg, art_num_color, tags, published_at",
+    )
+    .eq("status", "published")
+    .order("num_label", { ascending: true });
+  if (error) throw new Error(`getStudentPshareFeed: ${error.message}`);
+  return (data ?? []).map<PsharePost>((p) => ({
+    slug: p.slug,
+    num: p.num_label ?? "",
+    title: p.title,
+    snippet: p.snippet ?? "",
+    author: p.author_alias ?? "",
+    date: thaiDate(p.published_at),
+    tags: p.tags ?? [],
+    art: {
+      halftone: (p.art_halftone as PsharePost["art"]["halftone"]) ?? "halftone-bl",
+      bg: p.art_bg ?? undefined,
+      numColor: p.art_num_color ?? undefined,
+    },
+  }));
+}
