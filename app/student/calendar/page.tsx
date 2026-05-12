@@ -6,13 +6,16 @@ import { CalendarGrid } from "@/components/student/CalendarGrid";
 import { CalendarMonthRow } from "@/components/student/CalendarMonthRow";
 import { IconButton } from "@/components/ui/IconButton";
 import {
-  CALENDAR_CHIPS,
-  MAY_2026_DAYS,
-  SELECTED_DAY_EVENTS,
-  SELECTED_DAY_LABEL,
-} from "@/supabase/seed/data/calendar";
+  getStudentDayEvents,
+  getStudentMonth,
+} from "@/lib/queries/events";
+import { CALENDAR_CHIPS, SELECTED_DAY_LABEL } from "@/lib/ui/calendar";
 
-export default function StudentCalendar() {
+export default async function StudentCalendar() {
+  const [days, events] = await Promise.all([
+    getStudentMonth(2026, 5),
+    getStudentDayEvents(2026, 5, 13),
+  ]);
   return (
     <>
       <PageHead
@@ -38,14 +41,14 @@ export default function StudentCalendar() {
       <MobileBody className="space-y-3.5">
         <CalendarMonthRow titleTh="พฤษภาคม" subEn="May 2026" />
         <CalendarChipRow chips={CALENDAR_CHIPS} activeId="all" />
-        <CalendarGrid days={MAY_2026_DAYS} />
+        <CalendarGrid days={days} />
 
         <div className="flex items-center gap-2 pt-1 font-mono text-[10px] uppercase tracking-[0.18em]">
           <span>{SELECTED_DAY_LABEL}</span>
           <span aria-hidden className="h-px flex-1 bg-line" />
         </div>
         <div className="space-y-2">
-          {SELECTED_DAY_EVENTS.map((event, i) => (
+          {events.map((event, i) => (
             <CalendarEventCard key={i} event={event} />
           ))}
         </div>

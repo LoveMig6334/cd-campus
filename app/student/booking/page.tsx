@@ -8,16 +8,17 @@ import { RoomList } from "@/components/student/RoomList";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
+import { getMusicRooms } from "@/lib/queries/rooms";
 import {
   BOOKING_ACTIVE_TAB,
   BOOKING_CONFIRM_EYEBROW,
   BOOKING_MAY_DAYS,
   BOOKING_PERIODS,
-  BOOKING_ROOMS,
   BOOKING_TABS,
-} from "@/supabase/seed/data/bookings";
+} from "@/lib/ui/booking";
 
-export default function StudentBooking() {
+export default async function StudentBooking() {
+  const rooms = await getMusicRooms();
   return (
     <>
       <PageHead
@@ -51,7 +52,7 @@ export default function StudentBooking() {
         <PeriodPicker periods={BOOKING_PERIODS} />
 
         <SectionDivider>★ Choose room · เลือกห้อง ★</SectionDivider>
-        <RoomList rooms={BOOKING_ROOMS} />
+        <RoomList rooms={rooms} />
 
         <CtaButton eyebrow={BOOKING_CONFIRM_EYEBROW}>
           Confirm Booking →
