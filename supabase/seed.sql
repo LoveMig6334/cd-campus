@@ -10,7 +10,7 @@ insert into public.admins (auth_user_id, email, display_name, tier)
 values (
   '00000000-0000-0000-0000-000000000000', -- REPLACE with auth.users.id UUID
   'tom.tom.thanet@gmail.com',
-  'อ.อาทรง',
+  'Thatt',
   'root'
 )
 on conflict (auth_user_id) do nothing;
