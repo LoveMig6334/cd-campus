@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { BookingPeriod } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
@@ -18,15 +19,12 @@ export function PeriodPicker({ periods }: { periods: BookingPeriod[] }) {
     <div className="grid grid-cols-3 gap-1.5">
       {periods.map((p) => {
         const active = p.status === "selected";
-        return (
-          <button
-            key={p.label}
-            type="button"
-            className={cn(
-              "border-[1.5px] border-line px-2 py-2.5 text-center transition-colors",
-              active ? "bg-blue text-white" : "bg-paper",
-            )}
-          >
+        const cls = cn(
+          "block border-[1.5px] border-line px-2 py-2.5 text-center transition-colors",
+          active ? "bg-blue text-white" : "bg-paper",
+        );
+        const inner = (
+          <>
             <div className="font-display italic text-[16px] leading-none">
               {p.label}
             </div>
@@ -46,6 +44,20 @@ export function PeriodPicker({ periods }: { periods: BookingPeriod[] }) {
             >
               {STATUS_LABEL[p.status]}
             </div>
+          </>
+        );
+
+        if (p.href) {
+          return (
+            <Link key={p.label} href={p.href} className={cls}>
+              {inner}
+            </Link>
+          );
+        }
+
+        return (
+          <button key={p.label} type="button" className={cls}>
+            {inner}
           </button>
         );
       })}

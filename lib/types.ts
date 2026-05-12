@@ -56,6 +56,8 @@ export type CalendarDay = {
   state?: "today" | "selected" | "closed";
   /** Optional dots beneath the number — CSS color values */
   dots?: string[];
+  /** When set, the day cell renders as a Link (URL-param picker) */
+  href?: string;
 };
 
 export type CalendarEvent = {
@@ -96,6 +98,8 @@ export type BookingTab = {
   id: "music" | "meeting";
   labelEn: string;
   labelTh: string;
+  /** When set, the tab renders as a Link (URL-param picker) */
+  href?: string;
 };
 
 export type BookingPeriod = {
@@ -103,6 +107,8 @@ export type BookingPeriod = {
   label: string;
   time: string;
   status: "available" | "selected" | "booked";
+  /** When set, the period button renders as a Link (URL-param picker) */
+  href?: string;
 };
 
 export type Room = {
@@ -110,6 +116,10 @@ export type Room = {
   nameEn: string;
   nameTh: string;
   status: "free" | "full";
+  /** When set, the room row renders as a Link (URL-param picker) */
+  href?: string;
+  /** True when this room is the URL-selected room */
+  selected?: boolean;
 };
 
 /* ------------------------------------------------------------------ */

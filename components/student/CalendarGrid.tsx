@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CalendarDay } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
@@ -50,8 +51,8 @@ function DayCell({ day }: { day: CalendarDay }) {
           ? "text-mute-300 line-through"
           : "";
 
-  return (
-    <div className={cn(base, stateClass)}>
+  const content = (
+    <>
       {day.num}
       {day.dots && day.dots.length > 0 && (
         <div className="mt-0.5 flex gap-0.5">
@@ -64,6 +65,16 @@ function DayCell({ day }: { day: CalendarDay }) {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
+
+  if (day.href && day.state !== "closed") {
+    return (
+      <Link href={day.href} className={cn(base, stateClass)}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={cn(base, stateClass)}>{content}</div>;
 }
