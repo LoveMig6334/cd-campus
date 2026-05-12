@@ -7,6 +7,7 @@ import { seedBookings } from "./bookings";
 import { seedProjects } from "./projects";
 import { seedPshare } from "./pshare";
 import { seedCarelin } from "./carelin";
+import { seedSiteConfig } from "./siteConfig";
 
 async function main(): Promise<void> {
   assertEnvAllows();
@@ -24,6 +25,7 @@ async function main(): Promise<void> {
   await seedProjects(db, adminId);
   await seedPshare(db, adminId);
   await seedCarelin(db, adminId);
+  await seedSiteConfig(db, adminId);
 
   console.log("Done.");
 }
