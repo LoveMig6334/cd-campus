@@ -10,8 +10,6 @@ import type {
 
 export type BookingFull = Database["public"]["Tables"]["bookings"]["Row"];
 
-const TODAY = "2026-05-12";
-
 export type WeekChip = {
   id: string;
   startHHMM: string;
@@ -57,17 +55,20 @@ function ganttPctFromTime(time: string, dir: "left" | "width", end?: string): nu
   return Math.round(((endMin - startMin) / span) * 100);
 }
 
-export async function getAdminTodayBookings(): Promise<AdminTodayBookingRow[]> {
+export async function getDayBookings(
+  dateISO: string,
+): Promise<AdminTodayBookingRow[]> {
   const db = await createClient();
+  const nextDay = addDays(dateISO, 1);
   const { data, error } = await db
     .from("bookings")
     .select(
       "id, user_label, purpose, starts_at, ends_at, status, rooms!inner(name_en)",
     )
-    .gte("starts_at", `${TODAY}T00:00:00+07:00`)
-    .lt("starts_at", `2026-05-13T00:00:00+07:00`)
+    .gte("starts_at", `${dateISO}T00:00:00+07:00`)
+    .lt("starts_at", `${nextDay}T00:00:00+07:00`)
     .order("starts_at", { ascending: true });
-  if (error) throw new Error(`getAdminTodayBookings: ${error.message}`);
+  if (error) throw new Error(`getDayBookings: ${error.message}`);
   return (data ?? []).map<AdminTodayBookingRow>((b) => {
     const room = b.rooms as unknown as { name_en: string } | null;
     return {
@@ -113,15 +114,16 @@ export async function findConflictingBooking(
   return data && data.length > 0 ? data[0] : null;
 }
 
-export async function getGanttRooms(): Promise<GanttRoom[]> {
+export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
   const db = await createClient();
+  const nextDay = addDays(dateISO, 1);
   const { data, error } = await db
     .from("bookings")
     .select(
       "user_label, starts_at, ends_at, bar_variant, purpose, rooms!inner(name_en, name_th, sort_order)",
     )
-    .gte("starts_at", `${TODAY}T00:00:00+07:00`)
-    .lt("starts_at", `2026-05-13T00:00:00+07:00`)
+    .gte("starts_at", `${dateISO}T00:00:00+07:00`)
+    .lt("starts_at", `${nextDay}T00:00:00+07:00`)
     .order("starts_at", { ascending: true });
   if (error) throw new Error(`getGanttRooms: ${error.message}`);
 

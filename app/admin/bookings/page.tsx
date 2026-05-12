@@ -5,15 +5,15 @@ import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Gantt } from "@/components/admin/Gantt";
 import {
-  getAdminTodayBookings,
+  getDayBookings,
   getGanttRooms,
 } from "@/lib/queries/bookings";
 import { ADMIN_BOOKING_DATE, GANTT_HOURS } from "@/lib/ui/admin";
 
 export default async function AdminBookings() {
   const [todayBookings, ganttRooms] = await Promise.all([
-    getAdminTodayBookings(),
-    getGanttRooms(),
+    getDayBookings("2026-05-12"),
+    getGanttRooms("2026-05-12"),
   ]);
   return (
     <>
