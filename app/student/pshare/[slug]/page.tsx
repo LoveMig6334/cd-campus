@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { MobileBody } from "@/components/layout/MobileBody";
 import { PageHead } from "@/components/layout/PageHead";
-import { IconButton } from "@/components/ui/IconButton";
 import { PshareReader } from "@/components/student/PshareReader";
 import { getPsharePostBySlug } from "@/lib/queries/pshare";
+import { cn } from "@/lib/cn";
 
 export default async function StudentPsharePost({
   params,
@@ -27,19 +26,14 @@ export default async function StudentPsharePost({
       <PageHead
         titleTh="พี่แชร์ น้องชัวร์"
         titleEn="P'share"
-        action={
-          <Link href="/student/pshare">
-            <IconButton label="Back · กลับ">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </IconButton>
-          </Link>
-        }
+        backHref="/student/pshare"
       />
       <MobileBody className="space-y-3.5">
         <div
-          className={`${halftoneClass} grid aspect-[5/3] place-items-center border-[1.5px] border-ink`}
+          className={cn(
+            halftoneClass,
+            "grid aspect-[5/3] place-items-center border-[1.5px] border-ink",
+          )}
           style={{
             background: post.art_bg ?? "var(--color-cream)",
           }}
@@ -53,9 +47,11 @@ export default async function StudentPsharePost({
         </div>
 
         <header className="space-y-1.5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-500">
-            {post.author_alias ?? ""}
-          </p>
+          {post.author_alias && (
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-mute-500">
+              {post.author_alias}
+            </p>
+          )}
           <h1 className="font-display italic text-[26px] leading-tight">
             {post.title}
           </h1>
@@ -66,7 +62,7 @@ export default async function StudentPsharePost({
 
         {post.body_md && <PshareReader body={post.body_md} />}
 
-        {post.tags && post.tags.length > 0 && (
+        {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-2">
             {post.tags.map((tag) => (
               <span
