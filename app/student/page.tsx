@@ -12,14 +12,15 @@ import {
 } from "@/components/student/MenuIcons";
 import { MenuTile } from "@/components/student/MenuTile";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import { HOME_HERO } from "@/supabase/seed/data/home-hero";
+import { getHomeHero } from "@/lib/queries/siteConfig";
 
-export default function StudentHome() {
+export default async function StudentHome() {
+  const hero = await getHomeHero();
   return (
     <>
       <StudentHeader />
       <MobileBody className="space-y-[18px]">
-        <HeroCard hero={HOME_HERO} />
+        <HeroCard hero={hero} />
 
         <SectionDivider>★ Menu · เมนูหลัก ★</SectionDivider>
 
