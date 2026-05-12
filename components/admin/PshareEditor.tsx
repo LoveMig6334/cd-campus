@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { getAssetUrl } from "@/lib/storage";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { saveDraft, publishPost } from "@/app/admin/pshare/actions";
 
@@ -12,6 +14,7 @@ type Defaults = {
   art_halftone?: string | null;
   art_bg?: string | null;
   art_num_color?: string | null;
+  art_image_path?: string | null;
   tags?: string[];
 };
 
@@ -28,7 +31,10 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
   return (
     <Card>
       <CardTitle th="แก้ไขโพสต์" en={d.id ? "Edit post" : "New post"} />
-      <form className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <form
+        className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        encType="multipart/form-data"
+      >
         {d.id && <input type="hidden" name="id" value={d.id} />}
 
         <label className="block">
@@ -155,6 +161,34 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
           />
         </label>
+
+        <div className="md:col-span-2">
+          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
+            Header image (optional, jpg/png/webp, ≤5 MB)
+          </span>
+          {d.art_image_path && (
+            <div className="border-line bg-paper mt-1 aspect-[5/3] overflow-hidden border-[1.5px]">
+              <Image
+                src={getAssetUrl(d.art_image_path)}
+                alt=""
+                width={600}
+                height={360}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+          <input
+            name="image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[13px]"
+          />
+          {d.art_image_path && (
+            <p className="text-mute-500 mt-1 font-mono text-[10px]">
+              Leave empty to keep current image.
+            </p>
+          )}
+        </div>
 
         <label className="block md:col-span-2">
           <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">

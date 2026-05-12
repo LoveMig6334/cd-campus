@@ -5,6 +5,35 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 
+const IMAGE_MIMES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+
+function extFromMime(mime: string): string {
+  if (mime === "image/jpeg") return "jpg";
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  return "";
+}
+
+async function uploadPshareImage(
+  formData: FormData,
+  postId: string,
+): Promise<string | null> {
+  const file = formData.get("image");
+  if (!(file instanceof File) || file.size === 0) return null;
+  if (!IMAGE_MIMES.has(file.type)) return null;
+  if (file.size > IMAGE_MAX_BYTES) return null;
+
+  const ext = extFromMime(file.type);
+  const path = `pshare/${postId}.${ext}`;
+  const db = await createClient();
+  const { error } = await db.storage
+    .from("assets")
+    .upload(path, file, { upsert: true, contentType: file.type });
+  if (error) throw new Error(`pshare upload: ${error.message}`);
+  return path;
+}
+
 type DraftFields = {
   slug: string;
   title: string;
@@ -69,6 +98,7 @@ export async function saveDraft(formData: FormData): Promise<void> {
 
   const id = String(formData.get("id") ?? "");
   const db = await createClient();
+  let rowId = id;
 
   if (id) {
     const { error } = await db
@@ -77,11 +107,25 @@ export async function saveDraft(formData: FormData): Promise<void> {
       .eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await db.from("pshare_posts").insert({
-      ...parsed.data,
-      status: "draft",
-      created_by_admin_id: admin.id,
-    });
+    const { data, error } = await db
+      .from("pshare_posts")
+      .insert({
+        ...parsed.data,
+        status: "draft",
+        created_by_admin_id: admin.id,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    rowId = data.id;
+  }
+
+  const newPath = await uploadPshareImage(formData, rowId);
+  if (newPath) {
+    const { error } = await db
+      .from("pshare_posts")
+      .update({ art_image_path: newPath })
+      .eq("id", rowId);
     if (error) throw new Error(error.message);
   }
 
@@ -98,6 +142,7 @@ export async function publishPost(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const db = await createClient();
   const publishedAt = new Date().toISOString();
+  let rowId = id;
 
   if (id) {
     const { error } = await db
@@ -110,12 +155,26 @@ export async function publishPost(formData: FormData): Promise<void> {
       .eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await db.from("pshare_posts").insert({
-      ...parsed.data,
-      status: "published",
-      published_at: publishedAt,
-      created_by_admin_id: admin.id,
-    });
+    const { data, error } = await db
+      .from("pshare_posts")
+      .insert({
+        ...parsed.data,
+        status: "published",
+        published_at: publishedAt,
+        created_by_admin_id: admin.id,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    rowId = data.id;
+  }
+
+  const newPath = await uploadPshareImage(formData, rowId);
+  if (newPath) {
+    const { error } = await db
+      .from("pshare_posts")
+      .update({ art_image_path: newPath })
+      .eq("id", rowId);
     if (error) throw new Error(error.message);
   }
 
@@ -130,8 +189,20 @@ export async function deletePost(formData: FormData): Promise<void> {
   if (!id) return;
 
   const db = await createClient();
+
+  const { data: row } = await db
+    .from("pshare_posts")
+    .select("art_image_path")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await db.from("pshare_posts").delete().eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (row?.art_image_path) {
+    await db.storage.from("assets").remove([row.art_image_path]);
+    // Ignore storage delete failures — row is gone, orphan acceptable.
+  }
 
   revalidatePath("/admin/pshare");
   revalidatePath("/student/pshare");

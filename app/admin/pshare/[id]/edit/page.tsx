@@ -16,7 +16,7 @@ export default async function EditPsharePost({
   const { data, error } = await db
     .from("pshare_posts")
     .select(
-      "id, slug, title, num_label, snippet, body_md, author_alias, art_halftone, art_bg, art_num_color, tags",
+      "id, slug, title, num_label, snippet, body_md, author_alias, art_halftone, art_bg, art_num_color, art_image_path, tags",
     )
     .eq("id", id)
     .single();
@@ -48,6 +48,7 @@ export default async function EditPsharePost({
           art_halftone: data.art_halftone,
           art_bg: data.art_bg,
           art_num_color: data.art_num_color,
+          art_image_path: data.art_image_path,
           tags: data.tags ?? [],
         }}
       />
