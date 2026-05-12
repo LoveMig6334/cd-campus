@@ -7,10 +7,18 @@ export const BOOKING_TABS: BookingTab[] = [
 
 export const BOOKING_ACTIVE_TAB: BookingTab["id"] = "music";
 
-export const BOOKING_PERIODS: BookingPeriod[] = [
-  { label: "Morning", time: "08:00 — 11:00", status: "available" },
-  { label: "Midday", time: "11:30 — 14:30", status: "selected" },
-  { label: "Evening", time: "15:00 — 18:00", status: "booked" },
+export const PERIOD_HOURS = {
+  morning: { start: "08:00", end: "11:00" },
+  midday:  { start: "11:30", end: "14:30" },
+  evening: { start: "15:00", end: "18:00" },
+} as const;
+
+export type PeriodId = keyof typeof PERIOD_HOURS;
+
+export const BOOKING_PERIODS: (BookingPeriod & { id: PeriodId })[] = [
+  { id: "morning", label: "Morning", time: "08:00 — 11:00", status: "available" },
+  { id: "midday",  label: "Midday",  time: "11:30 — 14:30", status: "selected" },
+  { id: "evening", label: "Evening", time: "15:00 — 18:00", status: "booked" },
 ];
 
 export const BOOKING_CONFIRM_EYEBROW = "13 MAY · MIDDAY · MUSIC ROOM 1";

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { AdminTodayBookingsTable } from "@/components/admin/AdminTodayBookingsTable";
 import { Btn } from "@/components/admin/Btn";
@@ -24,7 +25,12 @@ export default async function AdminBookings() {
             <Btn>◀ 12 May</Btn>
             <Btn variant="ink">13 May (TUE)</Btn>
             <Btn>14 May ▶</Btn>
-            <Btn variant="primary">+ New Booking</Btn>
+            <Link
+              href="/admin/bookings/new"
+              className="inline-block border-[1.5px] border-line bg-blue px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white transition-all [box-shadow:3px_3px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep hover:[box-shadow:4px_4px_0_var(--color-ink)]"
+            >
+              + New Booking
+            </Link>
           </>
         }
       />

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/database.types";
 import type {
   AdminBookingRow,
   AdminTodayBookingRow,
@@ -6,6 +7,8 @@ import type {
   GanttBarVariant,
   GanttRoom,
 } from "@/lib/types";
+
+export type BookingFull = Database["public"]["Tables"]["bookings"]["Row"];
 
 const TODAY = "2026-05-12";
 
@@ -31,7 +34,7 @@ export async function getAdminTodayBookings(): Promise<AdminTodayBookingRow[]> {
   const { data, error } = await db
     .from("bookings")
     .select(
-      "user_label, purpose, starts_at, ends_at, status, rooms!inner(name_en)",
+      "id, user_label, purpose, starts_at, ends_at, status, rooms!inner(name_en)",
     )
     .gte("starts_at", `${TODAY}T00:00:00+07:00`)
     .lt("starts_at", `2026-05-13T00:00:00+07:00`)
@@ -40,6 +43,7 @@ export async function getAdminTodayBookings(): Promise<AdminTodayBookingRow[]> {
   return (data ?? []).map<AdminTodayBookingRow>((b) => {
     const room = b.rooms as unknown as { name_en: string } | null;
     return {
+      id: b.id,
       room: room?.name_en ?? "",
       user: b.user_label,
       start: timeFromTimestamp(b.starts_at),
@@ -48,6 +52,37 @@ export async function getAdminTodayBookings(): Promise<AdminTodayBookingRow[]> {
       status: b.status as AdminTodayBookingRow["status"],
     };
   });
+}
+
+export async function getBookingById(id: string): Promise<BookingFull | null> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("bookings")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`getBookingById: ${error.message}`);
+  return data;
+}
+
+export async function findConflictingBooking(
+  roomId: string,
+  startsAt: string,
+  endsAt: string,
+  excludeId?: string,
+): Promise<{ id: string; user_label: string; starts_at: string; ends_at: string } | null> {
+  const db = await createClient();
+  let query = db
+    .from("bookings")
+    .select("id, user_label, starts_at, ends_at")
+    .eq("room_id", roomId)
+    .lt("starts_at", endsAt)
+    .gt("ends_at", startsAt)
+    .limit(1);
+  if (excludeId) query = query.neq("id", excludeId);
+  const { data, error } = await query;
+  if (error) throw new Error(`findConflictingBooking: ${error.message}`);
+  return data && data.length > 0 ? data[0] : null;
 }
 
 export async function getGanttRooms(): Promise<GanttRoom[]> {

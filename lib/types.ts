@@ -99,12 +99,14 @@ export type BookingTab = {
 };
 
 export type BookingPeriod = {
+  id?: "morning" | "midday" | "evening";
   label: string;
   time: string;
   status: "available" | "selected" | "booked";
 };
 
 export type Room = {
+  id: string;
   nameEn: string;
   nameTh: string;
   status: "free" | "full";
@@ -265,6 +267,7 @@ export type GanttRoom = {
 };
 
 export type AdminTodayBookingRow = {
+  id: string;
   room: string;
   user: string;
   start: string;

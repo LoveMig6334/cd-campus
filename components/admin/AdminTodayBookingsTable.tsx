@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { AdminTodayBookingRow } from "@/lib/types";
 import { Pill } from "./Pill";
 
@@ -19,7 +20,7 @@ export function AdminTodayBookingsTable({
     <table className="w-full border-collapse text-[13px]">
       <thead>
         <tr>
-          {["Room", "User", "Start", "End", "Purpose", "Status"].map((h) => (
+          {["Room", "User", "Start", "End", "Purpose", "Status", ""].map((h) => (
             <th
               key={h}
               className="border-b-[1.5px] border-ink bg-cream px-2.5 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
@@ -51,6 +52,14 @@ export function AdminTodayBookingsTable({
               <td className={td}>{row.purpose}</td>
               <td className={td}>
                 <Pill variant={STATUS_VARIANT[row.status]}>{row.status}</Pill>
+              </td>
+              <td className={td}>
+                <Link
+                  href={`/admin/bookings/${row.id}/edit`}
+                  className="font-mono text-[10px] uppercase tracking-[0.14em] text-blue hover:text-blue-deep"
+                >
+                  Edit →
+                </Link>
               </td>
             </tr>
           );
