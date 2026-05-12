@@ -4,13 +4,11 @@ import { Blurb } from "@/components/student/Blurb";
 import { PshareCard } from "@/components/student/PshareCard";
 import { TagChipRow } from "@/components/student/TagChipRow";
 import { IconButton } from "@/components/ui/IconButton";
-import {
-  PSHARE_ACTIVE_TAG,
-  PSHARE_POSTS,
-  PSHARE_TAGS,
-} from "@/supabase/seed/data/pshare-posts";
+import { getStudentPshareFeed } from "@/lib/queries/pshare";
+import { PSHARE_ACTIVE_TAG, PSHARE_TAGS } from "@/lib/ui/pshare";
 
-export default function StudentPshare() {
+export default async function StudentPshare() {
+  const posts = await getStudentPshareFeed();
   return (
     <>
       <PageHead
@@ -43,7 +41,7 @@ export default function StudentPshare() {
         <TagChipRow tags={PSHARE_TAGS} activeTag={PSHARE_ACTIVE_TAG} />
 
         <div className="grid grid-cols-1 gap-3">
-          {PSHARE_POSTS.map((post) => (
+          {posts.map((post) => (
             <PshareCard key={post.slug} post={post} />
           ))}
         </div>

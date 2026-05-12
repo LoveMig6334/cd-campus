@@ -6,14 +6,17 @@ import { SportFeedCard } from "@/components/student/SportFeedCard";
 import { SportHero } from "@/components/student/SportHero";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import {
-  SPORT_HERO,
-  SPORT_LEADERBOARD,
-  SPORT_LIVE_RESULTS,
-  SPORT_UPCOMING,
-} from "@/supabase/seed/data/sport";
+import { getLeaderboard } from "@/lib/queries/houses";
+import { getStudentLiveResults } from "@/lib/queries/sportResults";
+import { getStudentUpcomingSport } from "@/lib/queries/events";
+import { SPORT_HERO } from "@/lib/ui/sport";
 
-export default function StudentSport() {
+export default async function StudentSport() {
+  const [leaderboard, liveResults, upcoming] = await Promise.all([
+    getLeaderboard(),
+    getStudentLiveResults(),
+    getStudentUpcomingSport(),
+  ]);
   return (
     <>
       <PageHead
@@ -37,18 +40,18 @@ export default function StudentSport() {
       />
       <MobileBody className="space-y-3.5">
         <SportHero {...SPORT_HERO} />
-        <Leaderboard rows={SPORT_LEADERBOARD} />
+        <Leaderboard rows={leaderboard} />
 
         <SectionDivider>⚡ Live Results</SectionDivider>
         <div className="space-y-2.5">
-          {SPORT_LIVE_RESULTS.map((result, i) => (
+          {liveResults.map((result, i) => (
             <SportFeedCard key={i} result={result} />
           ))}
         </div>
 
         <SectionDivider>★ Upcoming</SectionDivider>
         <div className="space-y-2">
-          {SPORT_UPCOMING.map((event, i) => (
+          {upcoming.map((event, i) => (
             <CalendarEventCard key={i} event={event} />
           ))}
         </div>

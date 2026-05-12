@@ -3,9 +3,14 @@ import { PageHead } from "@/components/layout/PageHead";
 import { ProjectCard } from "@/components/student/ProjectCard";
 import { StatsStrip } from "@/components/student/StatsStrip";
 import { IconButton } from "@/components/ui/IconButton";
-import { PORTFOLIO_PROJECTS, PORTFOLIO_STATS } from "@/supabase/seed/data/portfolios";
+import { getStudentProjects } from "@/lib/queries/projects";
+import { getPortfolioStats } from "@/lib/queries/siteConfig";
 
-export default function StudentPortfolio() {
+export default async function StudentPortfolio() {
+  const [stats, projects] = await Promise.all([
+    getPortfolioStats(),
+    getStudentProjects(),
+  ]);
   return (
     <>
       <PageHead
@@ -29,9 +34,9 @@ export default function StudentPortfolio() {
         }
       />
       <MobileBody className="space-y-3.5">
-        <StatsStrip stats={PORTFOLIO_STATS} />
+        <StatsStrip stats={stats} />
         <div className="space-y-3">
-          {PORTFOLIO_PROJECTS.map((project) => (
+          {projects.map((project) => (
             <ProjectCard key={project.title} project={project} />
           ))}
         </div>

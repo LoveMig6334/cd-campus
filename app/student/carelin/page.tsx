@@ -5,9 +5,10 @@ import { CarelinCard } from "@/components/student/CarelinCard";
 import { CarelinCta } from "@/components/student/CarelinCta";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import { CARELIN_REQUESTS } from "@/supabase/seed/data/carelin-requests";
+import { getCarelinRequests } from "@/lib/queries/carelin";
 
-export default function StudentCarelin() {
+export default async function StudentCarelin() {
+  const requests = await getCarelinRequests();
   return (
     <>
       <PageHead
@@ -40,7 +41,7 @@ export default function StudentCarelin() {
         <SectionDivider>⚡ Public Board</SectionDivider>
 
         <div className="space-y-2.5">
-          {CARELIN_REQUESTS.map((request) => (
+          {requests.map((request) => (
             <CarelinCard key={request.title} request={request} />
           ))}
         </div>
