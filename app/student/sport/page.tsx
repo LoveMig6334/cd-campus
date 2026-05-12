@@ -6,6 +6,7 @@ import { SportFeedCard } from "@/components/student/SportFeedCard";
 import { SportHero } from "@/components/student/SportHero";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
+import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import { getLeaderboard } from "@/lib/queries/houses";
 import { getStudentLiveResults } from "@/lib/queries/sportResults";
 import { getStudentUpcomingSport } from "@/lib/queries/events";
@@ -19,6 +20,7 @@ export default async function StudentSport() {
   ]);
   return (
     <>
+      <RealtimeRefresh tables={["sport_results"]} channelKey="rt-sport" />
       <PageHead
         titleTh="กีฬาสี"
         titleEn="Sport Day · Live"
