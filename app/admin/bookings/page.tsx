@@ -5,6 +5,7 @@ import { BookingsWeekGrid } from "@/components/admin/BookingsWeekGrid";
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Gantt } from "@/components/admin/Gantt";
+import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import {
   addDays,
   getDayBookings,
@@ -100,6 +101,7 @@ export default async function AdminBookings({
 
   return (
     <>
+      <RealtimeRefresh tables={["bookings"]} channelKey="rt-bookings" />
       <AdminTopbar
         titleTh="จองห้อง"
         eyebrow={`Bookings · ${fmtEn(selectedDate)}`}
