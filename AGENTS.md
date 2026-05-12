@@ -54,9 +54,17 @@ Thai and English live side-by-side in the UI. Don't strip one. The pattern is mo
 - **Schema + RLS** in `supabase/migrations/`. Regenerate TS types with `npm run gen:types`; commit the output (`lib/supabase/database.types.ts`).
 - **Seed** via `npm run seed` (gated by `SUPABASE_ALLOW_SEED=1` in `.env.local` only — never on Vercel). Idempotent.
 
-## Writes (Phase 3d)
+## Writes
 
-Server Actions are co-located with the page that owns them (`app/.../actions.ts`). Hand-rolled validation — no Zod, no `react-hook-form`. The Carelin request form is the only **public** (anon) write surface, gated by the Postgres `student_id_4 ~ '^[0-9]{4}$'` check constraint and a hand-rolled validator. All other writes require an authenticated admin; root-only writes (creating other admins, deleting rooms) check `is_root_admin()` via the helper SQL function or use the service-role client. See spec §3d for the minimum write set.
+Server Actions are co-located with the page that owns them (`app/.../actions.ts`). Hand-rolled validation — no Zod, no `react-hook-form`. The Carelin request form at `/student/carelin/new` is the only **public** (anon) write surface, gated by the Postgres `student_id_4 ~ '^[0-9]{4}$'` check constraint and a hand-rolled validator. All other writes require an authenticated admin; root-only writes (creating/disabling other admins) call `requireRootAdmin()` and then use the service-role client (`lib/supabase/serviceRole.ts`) — service-role bypasses RLS, which is the intended escape hatch for `admins`-table writes.
+
+**Action signature convention:**
+- Forms consumed by `useActionState` (only the student Carelin form): `(prev: ActionResult, formData: FormData) => Promise<ActionResult>`. Errors surface inline via `state.error`.
+- Every other Server Action: `(formData: FormData) => Promise<void>` (required for `<form action={fn}>` typing in React 19). Validation early-returns silently (client-side `required`/`pattern` shadow them); real DB failures `throw new Error(msg)` to surface in Next's error boundary; success calls `revalidatePath(...)` then `redirect(...)`.
+
+**Auth helpers** (`lib/auth.ts`) — `requireAdmin()` and `requireRootAdmin()` throw on failure. Call at the top of every authenticated Server Action.
+
+See spec §3d for the minimum write set shipped in Phase 3.
 
 ## Auth
 
