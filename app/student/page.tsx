@@ -29,7 +29,6 @@ export default async function StudentHome() {
             href="/student/calendar"
             labelEn="Calendar"
             labelTh="ปฏิทินกิจกรรม"
-            art="bk"
             star={{ color: "ink", position: "tl" }}
           >
             <CalendarIcon />
@@ -38,7 +37,6 @@ export default async function StudentHome() {
             href="/student/booking"
             labelEn="Booking"
             labelTh="จองห้อง"
-            art="bl"
             star={{ color: "yellow", position: "tr" }}
           >
             <BookingIcon />
@@ -47,7 +45,6 @@ export default async function StudentHome() {
             href="/student/sport"
             labelEn="Sport Day"
             labelTh="กีฬาสี · Live"
-            art="bk"
           >
             <SportIcon />
           </MenuTile>
@@ -55,7 +52,6 @@ export default async function StudentHome() {
             href="/student/portfolio"
             labelEn="Portfolio"
             labelTh="รุ่นพี่ · Alumni"
-            art="bl"
             star={{ color: "ink", position: "tl" }}
           >
             <PortfolioIcon />
@@ -64,7 +60,6 @@ export default async function StudentHome() {
             href="/student/pshare"
             labelEn="P'share"
             labelTh="พี่แชร์ น้องชัวร์"
-            art="bl"
             star={{ color: "blue", position: "tr" }}
           >
             <PshareIcon />
@@ -73,7 +68,6 @@ export default async function StudentHome() {
             href="/student/carelin"
             labelEn="CD Carelin"
             labelTh="เรื่องที่อยากเล่า"
-            art="bk"
             star={{ color: "pink", position: "tl" }}
           >
             <CarelinIcon />

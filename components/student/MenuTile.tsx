@@ -1,13 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/cn";
 import { MenuStar } from "./MenuStar";
 
 type Props = {
   href: string;
   labelEn: string;
   labelTh: string;
-  art: "bk" | "bl";
   star?: { color: "ink" | "yellow" | "blue" | "pink"; position: "tl" | "tr" };
   children: ReactNode;
 };
@@ -16,7 +14,6 @@ export function MenuTile({
   href,
   labelEn,
   labelTh,
-  art,
   star,
   children,
 }: Props) {
@@ -26,12 +23,7 @@ export function MenuTile({
       className="group relative flex aspect-square flex-col overflow-hidden rounded border-[1.5px] border-line bg-paper transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:[box-shadow:4px_4px_0_var(--color-blue)]"
     >
       {star && <MenuStar color={star.color} position={star.position} />}
-      <div
-        className={cn(
-          "relative flex-1 bg-cream",
-          art === "bk" ? "halftone-bk" : "halftone-bl",
-        )}
-      >
+      <div className="relative flex-1 bg-cream">
         <span
           aria-hidden
           className="halftone-soft pointer-events-none absolute inset-0 opacity-50"

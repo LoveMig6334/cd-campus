@@ -4,6 +4,21 @@
 
 Move the editorial-zine prototype at `prototype/cd-smart-campus.html` into the Next.js 16 App Router workspace at `app/`. Split the two role views (Student mobile, Admin desktop) into routed pages backed by typed mock data, while preserving the visual language documented in [`design-system.md`](./design-system.md).
 
+## Status (as of 2026-05-13)
+
+| Phase | Status | Notes |
+|---|---|---|
+| Phase 0 — Foundation | ✅ shipped | |
+| Phase 1 — Shells | ✅ shipped | |
+| Phase 2 — Static page port | ✅ shipped (2a–2e) | |
+| Phase 3 — Interactivity | **superseded by the Supabase migration** | Sub-phases 3a (auth foundation) / 3b (schema + RLS + seed) / 3c (read swap) / 3d (minimum write set) all shipped. See [`docs/superpowers/specs/2026-05-12-supabase-migration-design.md`](./superpowers/specs/2026-05-12-supabase-migration-design.md) for the design + [`docs/superpowers/plans/2026-05-12-supabase-3d-writes.md`](./superpowers/plans/2026-05-12-supabase-3d-writes.md) for the most recent plan. |
+| Phase 4 — P'share dynamic routes | **rolled into the new Phase 4** | `/student/pshare/[slug]` reader is tracked alongside the full write surface. |
+| Phase 5 — Polish | **deferred** | Follows the full write surface. |
+
+**Active phase:** Phase 4 — Full write surface. Wire every still-inert prototype button (bookings, portfolio CRUD, calendar edit/delete, sport-result recording, site_config editor, root-only carelin delete) to a Server Action. See [`docs/handoff.md`](./handoff.md) for the next-session briefing.
+
+The original phased plan below remains as historical reference; the route map, directory layout, and visual-language sections are still accurate.
+
 ## Current state
 
 - `prototype/cd-smart-campus.html` — ~6,940-line single-page mockup. Two top-level views (Student / Admin), 7 student pages, 7 admin pages, all in one file.
@@ -319,11 +334,14 @@ Wrap interactive widgets in `'use client'`:
 
 ## Out of scope (later phases)
 
-- Real authentication / RBAC for student vs admin
-- A backend (REST or DB) — currently mock data
-- Server Actions for form submission (Carelin post, P'share publish)
-- i18n routing — content stays bilingual hard-coded
-- Markdown file storage (filesystem/CMS) — can be added later by reading `data/pshare-posts/<slug>.md` with `fs/promises` from a Server Component
+Most items below have since shipped — annotated with their phase. The Supabase migration spec (`docs/superpowers/specs/2026-05-12-supabase-migration-design.md`) owns the current "out of scope" list for Phases 3+.
+
+- ~~Real authentication / RBAC for student vs admin~~ — ✅ Phase 3a (admin-only Supabase Auth; students remain anonymous by design).
+- ~~A backend (REST or DB)~~ — ✅ Phase 3b/3c (Postgres + RLS, all reads through `lib/queries/`).
+- ~~Server Actions for form submission~~ — ✅ Phase 3d for the minimum write set; Phase 4 fills in the rest.
+- i18n routing — content stays bilingual hard-coded (still deferred).
+- Markdown body storage — solved by 3d: P'share `body_md` lives in Postgres; the reader UI is on Phase 4's list.
+- Supabase Realtime + Storage — deferred to Phase 5+.
 
 ## Open questions to resolve before Phase 1
 
