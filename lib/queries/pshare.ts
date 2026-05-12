@@ -38,3 +38,35 @@ export async function getStudentPshareFeed(): Promise<PsharePost[]> {
     },
   }));
 }
+
+export type PshareAdminRow = {
+  id: string;
+  slug: string;
+  title: string;
+  status: "draft" | "published" | "review";
+  author: string;
+  num: string;
+  publishedAt: string | null;
+  updatedAt: string;
+};
+
+export async function getAllPsharePosts(): Promise<PshareAdminRow[]> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("pshare_posts")
+    .select(
+      "id, slug, title, status, author_alias, num_label, published_at, updated_at",
+    )
+    .order("updated_at", { ascending: false });
+  if (error) throw new Error(`getAllPsharePosts: ${error.message}`);
+  return (data ?? []).map<PshareAdminRow>((p) => ({
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    status: p.status as PshareAdminRow["status"],
+    author: p.author_alias ?? "",
+    num: p.num_label ?? "",
+    publishedAt: p.published_at,
+    updatedAt: p.updated_at,
+  }));
+}
