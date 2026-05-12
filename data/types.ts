@@ -109,3 +109,72 @@ export type Room = {
   nameTh: string;
   status: "free" | "full";
 };
+
+/* ------------------------------------------------------------------ */
+/* Portfolio */
+/* ------------------------------------------------------------------ */
+
+export type PortfolioIconKey = "crop" | "solar" | "shm";
+
+export type Project = {
+  title: string;
+  titleTh: string;
+  desc: string;
+  authorLine: string;
+  tags: string[];
+  iconKey: PortfolioIconKey;
+};
+
+export type PortfolioStats = {
+  num: number;
+  label: string;
+};
+
+/* ------------------------------------------------------------------ */
+/* P'share */
+/* ------------------------------------------------------------------ */
+
+export type PshareArt = {
+  /** Art-panel halftone background utility class */
+  halftone: "halftone-bl" | "halftone-bk" | "halftone-soft";
+  /** Background color CSS value (default: var(--color-cream)) */
+  bg?: string;
+  /** Number text color (default: var(--color-ink)) */
+  numColor?: string;
+};
+
+export type PsharePost = {
+  slug: string;
+  num: string;
+  title: string;
+  snippet: string;
+  author: string;
+  date: string;
+  tags: string[];
+  art: PshareArt;
+};
+
+export type PshareTagFilter = string;
+
+/* ------------------------------------------------------------------ */
+/* CD Carelin */
+/* ------------------------------------------------------------------ */
+
+export type CarelinReply = {
+  teacher: string;
+  role: string;
+  when: string;
+  body: string;
+  /** Single-character avatar (Thai or Latin letter) */
+  avatar: string;
+};
+
+export type CarelinRequest = {
+  title: string;
+  body: string;
+  who: string;
+  studentId: string;
+  when: string;
+  status: "open" | "answered";
+  reply?: CarelinReply;
+};
