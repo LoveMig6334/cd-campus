@@ -61,7 +61,7 @@ function Row({ room }: { room: GanttRoom }) {
           {room.nameTh}
         </small>
       </div>
-      <div className="relative col-span-10 h-16 border-b border-dashed border-mute-300 bg-paper">
+      <div className="relative col-span-10 h-16 overflow-hidden border-b border-dashed border-mute-300 bg-paper">
         {room.bars.map((bar, i) => (
           <Bar key={i} bar={bar} />
         ))}
