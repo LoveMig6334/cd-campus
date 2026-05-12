@@ -1,22 +1,72 @@
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Pill } from "@/components/admin/Pill";
+import { Btn } from "@/components/admin/Btn";
 import { requireRootAdmin } from "@/lib/auth";
 import { getAdmins } from "@/lib/queries/admins";
+import { createAdmin, disableAdmin } from "./actions";
 
 export default async function AdminAdminsPage() {
-  await requireRootAdmin();
+  const self = await requireRootAdmin();
   const admins = await getAdmins();
   return (
     <>
       <AdminTopbar titleTh="แอดมิน" eyebrow="Admins · root-only" />
+
+      <Card className="mb-[18px]">
+        <CardTitle th="เพิ่มแอดมิน" en="New admin" />
+        <form action={createAdmin} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            Email
+            <input
+              name="email"
+              type="email"
+              required
+              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+            />
+          </label>
+          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            Display name · ชื่อแสดง
+            <input
+              name="display_name"
+              type="text"
+              required
+              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+            />
+          </label>
+          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            Password (≥ 12 chars)
+            <input
+              name="password"
+              type="password"
+              required
+              minLength={12}
+              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+            />
+          </label>
+          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            Tier
+            <select
+              name="tier"
+              defaultValue="normal"
+              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+            >
+              <option value="normal">normal</option>
+              <option value="root">root</option>
+            </select>
+          </label>
+          <div className="md:col-span-2">
+            <Btn variant="primary">Create admin →</Btn>
+          </div>
+        </form>
+      </Card>
 
       <Card>
         <CardTitle th="แอดมินทั้งหมด" en="All admins" />
         <table className="w-full border-collapse text-[13px]">
           <thead>
             <tr>
-              {["Display name", "Email", "Tier", "Status"].map((h, i) => (
+              {["Display name", "Email", "Tier", "Status", ""].map((h, i) => (
                 <th
                   key={i}
                   className="border-b-[1.5px] border-ink bg-cream px-2.5 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
@@ -57,6 +107,14 @@ export default async function AdminAdminsPage() {
                       <Pill variant="ok">active</Pill>
                     ) : (
                       <Pill variant="pend">disabled</Pill>
+                    )}
+                  </td>
+                  <td className={td}>
+                    {a.is_active && a.id !== self.id && (
+                      <form action={disableAdmin}>
+                        <input type="hidden" name="id" value={a.id} />
+                        <Btn>Disable</Btn>
+                      </form>
                     )}
                   </td>
                 </tr>
