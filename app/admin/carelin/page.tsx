@@ -4,6 +4,7 @@ import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { CarelinDeskTable } from "@/components/admin/CarelinDeskTable";
 import { KpiCard } from "@/components/admin/KpiCard";
+import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import { TabBar } from "@/components/admin/TabBar";
 import { getCarelinDeskRows, getCarelinTabCounts } from "@/lib/queries/carelin";
 import { getCarelinKpis } from "@/lib/queries/siteConfig";
@@ -20,6 +21,7 @@ export default async function AdminCarelin() {
   const isRoot = admin.tier === "root";
   return (
     <>
+      <RealtimeRefresh tables={["carelin_requests"]} channelKey="rt-carelin" />
       <AdminTopbar
         titleTh="ซีดีแคร์ลิน"
         eyebrow="Carelin Desk · the campus care line"
