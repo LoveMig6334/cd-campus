@@ -23,7 +23,8 @@ export async function createAdmin(formData: FormData): Promise<void> {
     password,
     email_confirm: true,
   });
-  if (created.error || !created.data.user) return;
+  if (created.error || !created.data.user)
+    throw new Error(created.error?.message ?? "Failed to create auth user.");
 
   const { error: insertError } = await svc.from("admins").insert({
     auth_user_id: created.data.user.id,
@@ -33,7 +34,7 @@ export async function createAdmin(formData: FormData): Promise<void> {
   });
   if (insertError) {
     await svc.auth.admin.deleteUser(created.data.user.id);
-    return;
+    throw new Error(insertError.message);
   }
 
   revalidatePath("/admin/admins");
@@ -50,7 +51,7 @@ export async function disableAdmin(formData: FormData): Promise<void> {
     .from("admins")
     .update({ is_active: false })
     .eq("id", id);
-  if (error) return;
+  if (error) throw new Error(error.message);
 
   revalidatePath("/admin/admins");
 }
