@@ -1,6 +1,8 @@
 import { assertEnvAllows, getRootAdminId, getServiceRoleClient } from "./util";
 import { seedHouses } from "./houses";
 import { seedRooms } from "./rooms";
+import { seedEvents } from "./events";
+import { seedSportResults } from "./sportResults";
 
 async function main(): Promise<void> {
   assertEnvAllows();
@@ -12,6 +14,8 @@ async function main(): Promise<void> {
 
   await seedHouses(db);
   await seedRooms(db);
+  await seedEvents(db, adminId);
+  await seedSportResults(db, adminId);
 
   console.log("Done.");
 }
