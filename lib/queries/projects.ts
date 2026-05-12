@@ -90,7 +90,7 @@ export async function getAdminPortfolioRows(): Promise<PortfolioAdminRow[]> {
   const { data, error } = await db
     .from("projects")
     .select(
-      "id, title_en, title_th, author_line, klass, icon_key, thumb_bg, tags, submitted_at, status",
+      "id, title_en, title_th, author_line, klass, icon_key, thumb_bg, image_path, tags, submitted_at, status",
     )
     .order("created_at", { ascending: true });
   if (error) throw new Error(`getAdminPortfolioRows: ${error.message}`);
@@ -100,6 +100,7 @@ export async function getAdminPortfolioRows(): Promise<PortfolioAdminRow[]> {
       iconKey: (p.icon_key as PortfolioThumbIcon) ?? "trend",
       bg: p.thumb_bg ?? undefined,
     },
+    imagePath: p.image_path,
     titleEn: p.title_en,
     titleTh: p.title_th ?? "",
     author: trimAuthor(p.author_line ?? ""),

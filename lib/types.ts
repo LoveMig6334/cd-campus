@@ -308,6 +308,7 @@ export type PortfolioTagPill = {
 export type PortfolioAdminRow = {
   id: string;
   thumb: { iconKey: PortfolioThumbIcon; bg?: string };
+  imagePath?: string | null;
   titleEn: string;
   titleTh: string;
   author: string;

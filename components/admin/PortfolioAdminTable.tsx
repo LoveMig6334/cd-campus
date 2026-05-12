@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { PortfolioAdminRow } from "@/lib/types";
 import { setProjectStatus } from "@/app/admin/portfolio/actions";
+import { getAssetUrl } from "@/lib/storage";
 import { Pill } from "./Pill";
 import { PortfolioThumbIconRender } from "./PortfolioThumbIcons";
 
@@ -60,12 +62,24 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
               className="hover:bg-cream transition-colors [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
             >
               <td className={td}>
-                <div
-                  className="border-ink text-yellow grid h-14 w-14 place-items-center border-[1.5px]"
-                  style={{ background: thumbBg }}
-                >
-                  <PortfolioThumbIconRender icon={row.thumb.iconKey} />
-                </div>
+                {row.imagePath ? (
+                  <div className="border-ink relative h-14 w-14 overflow-hidden border-[1.5px]">
+                    <Image
+                      src={getAssetUrl(row.imagePath)}
+                      alt=""
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="border-ink text-yellow grid h-14 w-14 place-items-center border-[1.5px]"
+                    style={{ background: thumbBg }}
+                  >
+                    <PortfolioThumbIconRender icon={row.thumb.iconKey} />
+                  </div>
+                )}
               </td>
               <td className={td}>
                 <span className="font-display text-[15px] italic">
