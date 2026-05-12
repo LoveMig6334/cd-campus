@@ -79,10 +79,12 @@ export type Database = {
           created_by_admin_id: string | null
           ends_at: string
           id: string
+          klass: string | null
           purpose: string | null
           room_id: string
           starts_at: string
           status: Database["public"]["Enums"]["booking_status"]
+          student_id_4: string | null
           updated_at: string
           user_label: string
         }
@@ -92,10 +94,12 @@ export type Database = {
           created_by_admin_id?: string | null
           ends_at: string
           id?: string
+          klass?: string | null
           purpose?: string | null
           room_id: string
           starts_at: string
           status?: Database["public"]["Enums"]["booking_status"]
+          student_id_4?: string | null
           updated_at?: string
           user_label: string
         }
@@ -105,10 +109,12 @@ export type Database = {
           created_by_admin_id?: string | null
           ends_at?: string
           id?: string
+          klass?: string | null
           purpose?: string | null
           room_id?: string
           starts_at?: string
           status?: Database["public"]["Enums"]["booking_status"]
+          student_id_4?: string | null
           updated_at?: string
           user_label?: string
         }
