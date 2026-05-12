@@ -1,4 +1,4 @@
-import type { House, LeaderRow } from "@/supabase/seed/data/types";
+import type { House, LeaderRow } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const HOUSE_COLOR: Record<House, string> = {

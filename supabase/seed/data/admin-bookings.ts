@@ -1,4 +1,4 @@
-import type { AdminTodayBookingRow, GanttRoom } from "./types";
+import type { AdminTodayBookingRow, GanttRoom } from "@/lib/types";
 
 export const ADMIN_BOOKING_DATE = "13 May 2026";
 

@@ -2,7 +2,7 @@ import type {
   AdminKpi,
   AdminTabItem,
   CarelinDeskRow,
-} from "./types";
+} from "@/lib/types";
 
 export const CARELIN_DESK_KPIS: AdminKpi[] = [
   {

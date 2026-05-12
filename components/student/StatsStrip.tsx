@@ -1,4 +1,4 @@
-import type { PortfolioStats } from "@/supabase/seed/data/types";
+import type { PortfolioStats } from "@/lib/types";
 
 export function StatsStrip({ stats }: { stats: PortfolioStats[] }) {
   return (

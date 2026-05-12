@@ -1,4 +1,4 @@
-import type { CalendarEvent, LeaderRow, LiveResult } from "./types";
+import type { CalendarEvent, LeaderRow, LiveResult } from "@/lib/types";
 
 export const SPORT_HERO = {
   label: "★ Chitralada Sport Day 2026",

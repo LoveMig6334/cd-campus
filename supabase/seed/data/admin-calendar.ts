@@ -1,4 +1,4 @@
-import type { BigCalDay } from "./types";
+import type { BigCalDay } from "@/lib/types";
 
 const make = (
   num: number,

@@ -1,4 +1,4 @@
-import { CATEGORY_COLOR, type CalendarEvent } from "@/supabase/seed/data/types";
+import { CATEGORY_COLOR, type CalendarEvent } from "@/lib/types";
 
 export function CalendarEventCard({ event }: { event: CalendarEvent }) {
   return (

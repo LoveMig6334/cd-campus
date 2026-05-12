@@ -3,7 +3,7 @@ import type {
   BookingTab,
   CalendarDay,
   Room,
-} from "./types";
+} from "@/lib/types";
 
 export const BOOKING_TABS: BookingTab[] = [
   { id: "music", labelEn: "Music", labelTh: "ห้องดนตรี" },

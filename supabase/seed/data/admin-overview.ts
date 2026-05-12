@@ -3,7 +3,7 @@ import {
   type AdminBookingRow,
   type AdminEvent,
   type AdminKpi,
-} from "./types";
+} from "@/lib/types";
 
 export const ADMIN_GREETING = {
   th: "สวัสดี อ.อาทรง",

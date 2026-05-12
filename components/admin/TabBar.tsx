@@ -1,4 +1,4 @@
-import type { AdminTabItem } from "@/supabase/seed/data/types";
+import type { AdminTabItem } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 type Props = {

@@ -1,4 +1,4 @@
-import type { PsharePost, PshareTagFilter } from "./types";
+import type { PsharePost, PshareTagFilter } from "@/lib/types";
 
 export const PSHARE_TAGS: PshareTagFilter[] = [
   "All",

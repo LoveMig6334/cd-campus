@@ -1,4 +1,4 @@
-import type { PortfolioAdminRow } from "@/supabase/seed/data/types";
+import type { PortfolioAdminRow } from "@/lib/types";
 import { Pill } from "./Pill";
 import { PortfolioThumbIconRender } from "./PortfolioThumbIcons";
 

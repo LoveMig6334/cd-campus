@@ -1,4 +1,4 @@
-import type { CalendarDay } from "@/supabase/seed/data/types";
+import type { CalendarDay } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];

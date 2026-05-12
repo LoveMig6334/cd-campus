@@ -1,4 +1,4 @@
-import type { BookingPeriod } from "@/supabase/seed/data/types";
+import type { BookingPeriod } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const STATUS_DOT: Record<BookingPeriod["status"], string> = {

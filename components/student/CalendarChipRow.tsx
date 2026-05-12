@@ -1,4 +1,4 @@
-import { CATEGORY_COLOR, type CalendarChip } from "@/supabase/seed/data/types";
+import { CATEGORY_COLOR, type CalendarChip } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 export function CalendarChipRow({

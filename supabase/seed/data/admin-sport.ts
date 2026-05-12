@@ -1,5 +1,5 @@
-import { CATEGORY_COLOR, type ScoreboardEntry, type SportResultRow } from "./types";
-import type { CalendarEvent } from "./types";
+import { CATEGORY_COLOR, type ScoreboardEntry, type SportResultRow } from "@/lib/types";
+import type { CalendarEvent } from "@/lib/types";
 
 export const ADMIN_SCOREBOARD: ScoreboardEntry[] = [
   {

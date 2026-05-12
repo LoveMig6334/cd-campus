@@ -2,7 +2,7 @@ import type {
   AdminKpi,
   AdminTabItem,
   PortfolioAdminRow,
-} from "./types";
+} from "@/lib/types";
 
 export const PORTFOLIO_KPIS: AdminKpi[] = [
   {

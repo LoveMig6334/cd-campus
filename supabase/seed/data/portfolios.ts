@@ -1,4 +1,4 @@
-import type { PortfolioStats, Project } from "./types";
+import type { PortfolioStats, Project } from "@/lib/types";
 
 export const PORTFOLIO_STATS: PortfolioStats[] = [
   { num: 142, label: "Projects" },

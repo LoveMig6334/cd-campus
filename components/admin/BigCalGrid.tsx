@@ -1,4 +1,4 @@
-import { CATEGORY_COLOR, type BigCalDay, type BigCalEvent } from "@/supabase/seed/data/types";
+import { CATEGORY_COLOR, type BigCalDay, type BigCalEvent } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];

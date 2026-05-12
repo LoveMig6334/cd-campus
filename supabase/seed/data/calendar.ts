@@ -3,7 +3,7 @@ import {
   type CalendarChip,
   type CalendarDay,
   type CalendarEvent,
-} from "./types";
+} from "@/lib/types";
 
 export const CALENDAR_CHIPS: CalendarChip[] = [
   { id: "all", labelEn: "All" },

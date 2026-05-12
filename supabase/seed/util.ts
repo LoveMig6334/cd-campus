@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config({ path: ".env.local" });
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../lib/supabase/database.types";
-import type { House } from "./data/types";
+import type { House } from "@/lib/types";
 
 export const HOUSE_ID_BY_KEY: Record<House, number> = {
   green: 1,

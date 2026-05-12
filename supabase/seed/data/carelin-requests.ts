@@ -1,4 +1,4 @@
-import type { CarelinRequest } from "./types";
+import type { CarelinRequest } from "@/lib/types";
 
 export const CARELIN_REQUESTS: CarelinRequest[] = [
   {
