@@ -35,7 +35,7 @@ export function BigCalGrid({ days }: { days: BigCalDay[] }) {
         <div
           key={i}
           className={cn(
-            "relative aspect-[1/0.85] border-r border-b border-dashed border-mute-200 px-2 py-1.5",
+            "relative aspect-[1/0.85] overflow-hidden border-r border-b border-dashed border-mute-200 px-2 py-1.5",
             (i + 1) % 7 === 0 && "border-r-0",
             !day.inMonth && "bg-cream-2 text-mute-300",
             day.isToday && "bg-blue text-white",
