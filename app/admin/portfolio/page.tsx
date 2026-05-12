@@ -5,14 +5,18 @@ import { Card } from "@/components/admin/Card";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { PortfolioAdminTable } from "@/components/admin/PortfolioAdminTable";
 import { TabBar } from "@/components/admin/TabBar";
+import { getAdminPortfolioRows } from "@/lib/queries/projects";
+import { getPortfolioKpis } from "@/lib/queries/siteConfig";
 import {
   PORTFOLIO_ACTIVE_TAB,
-  PORTFOLIO_KPIS,
-  PORTFOLIO_ROWS,
   PORTFOLIO_TABS,
-} from "@/supabase/seed/data/admin-portfolio";
+} from "@/lib/ui/portfolio";
 
-export default function AdminPortfolio() {
+export default async function AdminPortfolio() {
+  const [kpis, rows] = await Promise.all([
+    getPortfolioKpis(),
+    getAdminPortfolioRows(),
+  ]);
   return (
     <>
       <AdminTopbar
@@ -28,7 +32,7 @@ export default function AdminPortfolio() {
       />
 
       <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        {PORTFOLIO_KPIS.map((kpi) => (
+        {kpis.map((kpi) => (
           <KpiCard key={kpi.label} kpi={kpi} />
         ))}
       </div>
@@ -36,7 +40,7 @@ export default function AdminPortfolio() {
       <TabBar tabs={PORTFOLIO_TABS} activeId={PORTFOLIO_ACTIVE_TAB} />
 
       <Card className="!p-0">
-        <PortfolioAdminTable rows={PORTFOLIO_ROWS} />
+        <PortfolioAdminTable rows={rows} />
       </Card>
     </>
   );

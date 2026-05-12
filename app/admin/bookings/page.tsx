@@ -4,13 +4,16 @@ import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Gantt } from "@/components/admin/Gantt";
 import {
-  ADMIN_BOOKING_DATE,
-  ADMIN_TODAY_BOOKINGS,
-  GANTT_HOURS,
-  GANTT_ROOMS,
-} from "@/supabase/seed/data/admin-bookings";
+  getAdminTodayBookings,
+  getGanttRooms,
+} from "@/lib/queries/bookings";
+import { ADMIN_BOOKING_DATE, GANTT_HOURS } from "@/lib/ui/admin";
 
-export default function AdminBookings() {
+export default async function AdminBookings() {
+  const [todayBookings, ganttRooms] = await Promise.all([
+    getAdminTodayBookings(),
+    getGanttRooms(),
+  ]);
   return (
     <>
       <AdminTopbar
@@ -26,7 +29,7 @@ export default function AdminBookings() {
         }
       />
 
-      <Gantt hours={GANTT_HOURS} rooms={GANTT_ROOMS} />
+      <Gantt hours={GANTT_HOURS} rooms={ganttRooms} />
 
       <Card className="mt-[18px]">
         <CardTitle
@@ -34,7 +37,7 @@ export default function AdminBookings() {
           en="Today's bookings"
           menu="12 active · 2 pending"
         />
-        <AdminTodayBookingsTable rows={ADMIN_TODAY_BOOKINGS} />
+        <AdminTodayBookingsTable rows={todayBookings} />
       </Card>
     </>
   );

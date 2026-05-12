@@ -5,14 +5,18 @@ import { Card, CardTitle } from "@/components/admin/Card";
 import { CarelinDeskTable } from "@/components/admin/CarelinDeskTable";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { TabBar } from "@/components/admin/TabBar";
+import { getCarelinDeskRows } from "@/lib/queries/carelin";
+import { getCarelinKpis } from "@/lib/queries/siteConfig";
 import {
   CARELIN_DESK_ACTIVE_TAB,
-  CARELIN_DESK_KPIS,
-  CARELIN_DESK_ROWS,
   CARELIN_DESK_TABS,
-} from "@/supabase/seed/data/admin-carelin";
+} from "@/lib/ui/carelin";
 
-export default function AdminCarelin() {
+export default async function AdminCarelin() {
+  const [kpis, rows] = await Promise.all([
+    getCarelinKpis(),
+    getCarelinDeskRows(),
+  ]);
   return (
     <>
       <AdminTopbar
@@ -27,7 +31,7 @@ export default function AdminCarelin() {
       />
 
       <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        {CARELIN_DESK_KPIS.map((kpi) => (
+        {kpis.map((kpi) => (
           <KpiCard key={kpi.label} kpi={kpi} />
         ))}
       </div>
@@ -35,7 +39,7 @@ export default function AdminCarelin() {
       <Card>
         <CardTitle th="คำขอความช่วยเหลือ" en="All requests" />
         <TabBar tabs={CARELIN_DESK_TABS} activeId={CARELIN_DESK_ACTIVE_TAB} />
-        <CarelinDeskTable rows={CARELIN_DESK_ROWS} />
+        <CarelinDeskTable rows={rows} />
       </Card>
     </>
   );
