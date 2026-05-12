@@ -453,10 +453,11 @@ The script:
 - Uses natural keys (slug, sort_order) for idempotency where possible.
 - Reports what it did.
 
-Run via `bun run supabase/seed/index.ts` (or `tsx`).
+Run via a new `npm run seed` script that wraps `tsx supabase/seed/index.ts`. The project uses npm (no Bun in the toolchain).
 
 ### Truncation safety
-- The seed script gates on `process.env.SUPABASE_ALLOW_SEED === '1'` — set in `.env.local` only, **never on Vercel**.
+- The seed script checks `process.env.SUPABASE_ALLOW_SEED === '1'` at startup and exits with a printed message if unset.
+- The flag goes in `.env.local` only — **never on Vercel**.
 - This ensures a stray invocation against prod becomes a no-op once admins start posting real Carelin requests.
 
 ## Dev workflow
