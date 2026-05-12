@@ -8,15 +8,9 @@ type PhoneShellProps = {
 
 export function PhoneShell({ header, footer, children }: PhoneShellProps) {
   return (
-    <div className="flex justify-center px-4 py-10 sm:py-16">
-      <div
-        className="bg-cream border-line relative flex h-[800px] w-[390px] flex-col overflow-hidden rounded-[44px] border-2"
-        style={{
-          boxShadow:
-            "0 0 0 6px var(--color-ink), 14px 14px 0 var(--color-blue), 14px 14px 0 8px var(--color-ink)",
-        }}
-      >
-        <div className="bg-ink text-cream flex h-[30px] shrink-0 items-center justify-between px-7 font-mono text-[11px]">
+    <div className="flex sm:justify-center sm:px-4 sm:py-10 md:py-16">
+      <div className="bg-cream sm:border-line relative flex h-dvh w-full flex-col overflow-hidden sm:h-[800px] sm:w-[390px] sm:rounded-[44px] sm:border-2 sm:shadow-[0_0_0_6px_var(--color-ink),14px_14px_0_var(--color-blue),14px_14px_0_8px_var(--color-ink)]">
+        <div className="bg-ink text-cream hidden h-[30px] shrink-0 items-center justify-between px-7 font-mono text-[11px] sm:flex">
           <span className="font-semibold">8:42</span>
           <div className="flex items-center gap-1">
             <span className="bg-cream inline-block h-1 w-1 rounded-full" />
