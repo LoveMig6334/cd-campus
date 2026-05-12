@@ -1,4 +1,5 @@
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: ".env.local" });
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../lib/supabase/database.types";
 import type { House } from "./data/types";

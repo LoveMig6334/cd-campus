@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "tsx --env-file .env.local supabase/seed/index.ts",
+    "seed": "tsx supabase/seed/index.ts",
     "gen:types": "supabase gen types typescript --linked > lib/supabase/database.types.ts"
   },
   "dependencies": {
