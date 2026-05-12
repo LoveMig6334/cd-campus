@@ -26,6 +26,7 @@ export default async function AdminPortfolio() {
           <>
             <AdminSearch placeholder="🔍  Search projects, authors…" />
             <Btn>Export ↓</Btn>
+            {/* + Add Project: deferred to Phase 5 — needs student submission flow design. */}
             <Btn variant="primary">+ Add Project</Btn>
           </>
         }

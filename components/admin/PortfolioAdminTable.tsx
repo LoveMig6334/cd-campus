@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { PortfolioAdminRow } from "@/lib/types";
+import { setProjectStatus } from "@/app/admin/portfolio/actions";
 import { Pill } from "./Pill";
 import { PortfolioThumbIconRender } from "./PortfolioThumbIcons";
 
@@ -16,6 +18,12 @@ const STATUS_LABEL: Record<PortfolioAdminRow["status"], string> = {
   "Under Review": "Under Review",
   Draft: "Draft",
 };
+
+const STATUS_OPTIONS: PortfolioAdminRow["status"][] = [
+  "Published",
+  "Under Review",
+  "Draft",
+];
 
 export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
   return (
@@ -85,10 +93,29 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
                   {STATUS_LABEL[row.status]}
                 </Pill>
               </td>
-              <td
-                className={`${td} font-mono text-[12px] text-mute-500`}
-              >
-                ⋯
+              <td className={`${td} font-mono text-[10px] uppercase tracking-[0.14em]`}>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <form action={setProjectStatus} className="contents">
+                    <input type="hidden" name="id" value={row.id} />
+                    {STATUS_OPTIONS.filter((s) => s !== row.status).map((s) => (
+                      <button
+                        key={s}
+                        type="submit"
+                        name="status"
+                        value={s}
+                        className="border-[1.5px] border-line bg-paper px-2 py-1 text-mute-700 hover:bg-cream"
+                      >
+                        → {s}
+                      </button>
+                    ))}
+                  </form>
+                  <Link
+                    href={`/admin/portfolio/${row.id}/edit`}
+                    className="border-[1.5px] border-line bg-paper px-2 py-1 text-blue hover:bg-cream"
+                  >
+                    Edit
+                  </Link>
+                </div>
               </td>
             </tr>
           );

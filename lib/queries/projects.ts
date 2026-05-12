@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/database.types";
 import type {
   PortfolioAdminRow,
   PortfolioIconKey,
@@ -6,6 +7,8 @@ import type {
   PortfolioThumbIcon,
   Project,
 } from "@/lib/types";
+
+export type ProjectFull = Database["public"]["Tables"]["projects"]["Row"];
 
 function trimAuthor(line: string): string {
   // "ธรรศ์ × นนท์ — Y9 / 2025" → "ธรรศ์ × นนท์"
@@ -77,11 +80,12 @@ export async function getAdminPortfolioRows(): Promise<PortfolioAdminRow[]> {
   const { data, error } = await db
     .from("projects")
     .select(
-      "title_en, title_th, author_line, klass, icon_key, thumb_bg, tags, submitted_at, status",
+      "id, title_en, title_th, author_line, klass, icon_key, thumb_bg, tags, submitted_at, status",
     )
     .order("created_at", { ascending: true });
   if (error) throw new Error(`getAdminPortfolioRows: ${error.message}`);
   return (data ?? []).map<PortfolioAdminRow>((p) => ({
+    id: p.id,
     thumb: {
       iconKey: (p.icon_key as PortfolioThumbIcon) ?? "trend",
       bg: p.thumb_bg ?? undefined,
@@ -94,4 +98,15 @@ export async function getAdminPortfolioRows(): Promise<PortfolioAdminRow[]> {
     submitted: fmtSubmitted(p.submitted_at),
     status: p.status as PortfolioAdminRow["status"],
   }));
+}
+
+export async function getProjectById(id: string): Promise<ProjectFull | null> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`getProjectById: ${error.message}`);
+  return data;
 }

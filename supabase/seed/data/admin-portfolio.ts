@@ -3,6 +3,10 @@ import type {
   PortfolioAdminRow,
 } from "@/lib/types";
 
+// Seed rows live before the DB assigns a UUID, so the `id` field on
+// PortfolioAdminRow is irrelevant here. Strip it for the seed fixtures.
+type PortfolioSeedRow = Omit<PortfolioAdminRow, "id">;
+
 export const PORTFOLIO_KPIS: AdminKpi[] = [
   {
     label: "Total",
@@ -39,7 +43,7 @@ const TAG_GREEN = { background: "var(--color-house-green)" };
 const TAG_PURPLE = { background: "var(--color-house-purple)" };
 const TAG_ORANGE = { background: "var(--color-house-orange)" };
 
-export const PORTFOLIO_ROWS: PortfolioAdminRow[] = [
+export const PORTFOLIO_ROWS: PortfolioSeedRow[] = [
   {
     thumb: { iconKey: "trend" },
     titleEn: "CropPlanner",
