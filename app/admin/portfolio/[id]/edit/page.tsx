@@ -166,6 +166,16 @@ export default async function EditProjectPage({
             />
           </label>
 
+          <label className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700">
+            Submitted at (YYYY-MM-DD)
+            <input
+              name="submitted_at"
+              type="date"
+              defaultValue={row.submitted_at ?? ""}
+              className="border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[13px] normal-case tracking-normal text-ink"
+            />
+          </label>
+
           <div className="flex items-center gap-3 md:col-span-2">
             <Btn type="submit" variant="primary">Save project →</Btn>
             <button
@@ -176,6 +186,9 @@ export default async function EditProjectPage({
               Delete project
             </button>
           </div>
+          <p className="md:col-span-2 font-mono text-[10px] text-mute-500">
+            Tags are managed in Phase 5 — existing tags are preserved by this form.
+          </p>
         </form>
       </Card>
     </>

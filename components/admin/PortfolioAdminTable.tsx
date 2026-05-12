@@ -105,7 +105,7 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
                         value={s}
                         className="border-[1.5px] border-line bg-paper px-2 py-1 text-mute-700 hover:bg-cream"
                       >
-                        → {s}
+                        → {s === "Published" ? "Pub" : s === "Under Review" ? "Rev" : "Drf"}
                       </button>
                     ))}
                   </form>

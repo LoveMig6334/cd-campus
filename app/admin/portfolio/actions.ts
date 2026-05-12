@@ -39,6 +39,7 @@ type ProjectFields = {
   icon_key: string | null;
   thumb_bg: string | null;
   status: ProjectStatus;
+  submitted_at: string | null;
 };
 
 function parseProject(formData: FormData):
@@ -57,6 +58,8 @@ function parseProject(formData: FormData):
   const desc_long = String(formData.get("desc_long") ?? "").trim() || null;
   const icon_key = String(formData.get("icon_key") ?? "").trim() || null;
   const thumb_bg = String(formData.get("thumb_bg") ?? "").trim() || null;
+  const submitted_at_raw = String(formData.get("submitted_at") ?? "").trim();
+  const submitted_at = submitted_at_raw || null;
 
   return {
     ok: true,
@@ -69,6 +72,7 @@ function parseProject(formData: FormData):
       icon_key,
       thumb_bg,
       status,
+      submitted_at,
     },
   };
 }
