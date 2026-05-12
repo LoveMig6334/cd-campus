@@ -7,14 +7,22 @@ import { KpiCard } from "@/components/admin/KpiCard";
 import { RecentBookingsTable } from "@/components/admin/RecentBookingsTable";
 import { TodayEventsCard } from "@/components/admin/TodayEventsCard";
 import { TrendChart } from "@/components/admin/TrendChart";
+import { getRecentBookings } from "@/lib/queries/bookings";
+import { getAdminTodayEvents } from "@/lib/queries/events";
 import {
-  ADMIN_GREETING,
-  ADMIN_KPIS,
-  ADMIN_RECENT_BOOKINGS,
-  ADMIN_TODAY_EVENTS,
-} from "@/supabase/seed/data/admin-overview";
+  getAdminGreeting,
+  getOverviewKpis,
+  getTrendChart,
+} from "@/lib/queries/siteConfig";
 
-export default function AdminOverview() {
+export default async function AdminOverview() {
+  const [greeting, kpis, trend, todayEvents, recentBookings] = await Promise.all([
+    getAdminGreeting(),
+    getOverviewKpis(),
+    getTrendChart(),
+    getAdminTodayEvents(),
+    getRecentBookings(),
+  ]);
   return (
     <>
       <AdminTopbar
@@ -29,10 +37,10 @@ export default function AdminOverview() {
         }
       />
 
-      <GreetingBanner th={ADMIN_GREETING.th} en={ADMIN_GREETING.en} />
+      <GreetingBanner th={greeting.th} en={greeting.en} />
 
       <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        {ADMIN_KPIS.map((kpi) => (
+        {kpis.map((kpi) => (
           <KpiCard key={kpi.label} kpi={kpi} />
         ))}
       </div>
@@ -40,14 +48,14 @@ export default function AdminOverview() {
       <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-[2fr_1fr]">
         <Card accent>
           <CardTitle th="กิจกรรม 12 เดือน" en="12-month trend" menu="↗ View report" />
-          <TrendChart />
+          <TrendChart data={trend} />
         </Card>
-        <TodayEventsCard events={ADMIN_TODAY_EVENTS} />
+        <TodayEventsCard events={todayEvents} />
       </div>
 
       <Card className="mt-[18px]">
         <CardTitle th="การจองล่าสุด" en="Recent bookings" menu="View all →" />
-        <RecentBookingsTable rows={ADMIN_RECENT_BOOKINGS} />
+        <RecentBookingsTable rows={recentBookings} />
       </Card>
     </>
   );
