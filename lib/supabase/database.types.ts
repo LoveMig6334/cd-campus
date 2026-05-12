@@ -304,6 +304,7 @@ export type Database = {
           desc_long: string | null
           icon_key: string | null
           id: string
+          image_path: string | null
           is_featured: boolean
           klass: string | null
           status: Database["public"]["Enums"]["project_status"]
@@ -321,6 +322,7 @@ export type Database = {
           desc_long?: string | null
           icon_key?: string | null
           id?: string
+          image_path?: string | null
           is_featured?: boolean
           klass?: string | null
           status: Database["public"]["Enums"]["project_status"]
@@ -338,6 +340,7 @@ export type Database = {
           desc_long?: string | null
           icon_key?: string | null
           id?: string
+          image_path?: string | null
           is_featured?: boolean
           klass?: string | null
           status?: Database["public"]["Enums"]["project_status"]
@@ -362,6 +365,7 @@ export type Database = {
         Row: {
           art_bg: string | null
           art_halftone: string | null
+          art_image_path: string | null
           art_num_color: string | null
           author_alias: string | null
           body_md: string | null
@@ -380,6 +384,7 @@ export type Database = {
         Insert: {
           art_bg?: string | null
           art_halftone?: string | null
+          art_image_path?: string | null
           art_num_color?: string | null
           author_alias?: string | null
           body_md?: string | null
@@ -398,6 +403,7 @@ export type Database = {
         Update: {
           art_bg?: string | null
           art_halftone?: string | null
+          art_image_path?: string | null
           art_num_color?: string | null
           author_alias?: string | null
           body_md?: string | null
