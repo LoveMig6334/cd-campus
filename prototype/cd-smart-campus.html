@@ -414,21 +414,6 @@
         place-items: center;
         border: 1.5px solid var(--cream);
       }
-      .avatar {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        background: var(--blue);
-        color: var(--yellow);
-        display: grid;
-        place-items: center;
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: 18px;
-        border: 1.5px solid var(--line);
-        box-shadow: 2px 2px 0 var(--yellow);
-      }
-
       .m-body {
         padding: 14px 18px 100px;
       }
@@ -683,7 +668,7 @@
         background: var(--cream);
         border-top: 1.5px solid var(--line);
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         padding: 8px 0 14px;
         z-index: 10;
       }
@@ -1300,104 +1285,6 @@
         padding: 3px 6px;
         background: var(--blue);
         color: var(--white);
-      }
-
-      .profile-hero {
-        background: var(--white);
-        border: 1.5px solid var(--line);
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 14px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-      }
-      .profile-hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-image: radial-gradient(
-          circle,
-          var(--blue) 0.8px,
-          transparent 1.2px
-        );
-        background-size: 9px 9px;
-        opacity: 0.15;
-      }
-      .profile-hero__avatar {
-        width: 84px;
-        height: 84px;
-        margin: 0 auto 12px;
-        background: var(--blue);
-        color: var(--yellow);
-        display: grid;
-        place-items: center;
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: 36px;
-        border-radius: 50%;
-        border: 2px solid var(--ink);
-        box-shadow: 4px 4px 0 var(--yellow);
-        position: relative;
-      }
-      .profile-hero__name {
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: 22px;
-        position: relative;
-      }
-      .profile-hero__class {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: var(--gray-500);
-        margin-top: 4px;
-        position: relative;
-      }
-      .profile-id {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        margin-top: 10px;
-        padding: 6px 10px;
-        border: 1px solid var(--ink);
-        display: inline-block;
-        position: relative;
-        background: var(--yellow);
-      }
-      .profile-list {
-        background: var(--white);
-        border: 1.5px solid var(--line);
-        border-radius: 10px;
-        margin-bottom: 14px;
-      }
-      .profile-list-row {
-        padding: 12px 14px;
-        border-bottom: 1px dashed var(--gray-200);
-      }
-      .profile-list-row:last-child {
-        border-bottom: none;
-      }
-      .profile-list-row__icon {
-        width: 32px;
-        height: 32px;
-        background: var(--cream);
-        border: 1px solid var(--ink);
-        display: grid;
-        place-items: center;
-        flex-shrink: 0;
-      }
-      .profile-list-row__label {
-        font-family: var(--font-mono);
-        font-size: 10px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--gray-500);
-      }
-      .profile-list-row__value {
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: 16px;
       }
 
       .float-sparkle {
@@ -2945,8 +2832,10 @@
             <div class="page is-active" data-page="home">
               <div class="m-header">
                 <div>
-                  <div class="m-header__greet">Tuesday · 12 May</div>
-                  <div class="m-header__name">สวัสดี <span>ธรรศ์</span></div>
+                  <div class="m-header__greet">Tuesday · 12 May 2026</div>
+                  <div class="m-header__name">
+                    อังคารที่ <span>12</span> พฤษภาคม
+                  </div>
                 </div>
                 <div class="m-header__right">
                   <button class="icon-btn">
@@ -2962,7 +2851,6 @@
                       <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg
                     ><span class="icon-btn__badge">3</span>
                   </button>
-                  <div class="avatar">ธ</div>
                 </div>
               </div>
 
@@ -4679,134 +4567,6 @@
               </div>
             </div>
 
-            <!-- PROFILE -->
-            <div class="page" data-page="profile">
-              <div class="m-page-head">
-                <button class="m-page-head__back" data-nav="home">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M15 6l-6 6 6 6" />
-                  </svg>
-                </button>
-                <div class="m-page-head__title">
-                  <div class="m-page-head__title-th">โปรไฟล์</div>
-                  <div class="m-page-head__title-en">Profile</div>
-                </div>
-                <button class="icon-btn">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </button>
-              </div>
-              <div class="m-body">
-                <div class="profile-hero">
-                  <div class="profile-hero__avatar">ธ</div>
-                  <div class="profile-hero__name">ธรรศ์ ภัทรกุล</div>
-                  <div class="profile-hero__class">
-                    Class 9 / Section 4 · Sci-Math
-                  </div>
-                  <div class="profile-id">ID · 26-0428-CD</div>
-                </div>
-                <div class="profile-list">
-                  <div class="profile-list-row">
-                    <div class="profile-list-row__label">School Email</div>
-                    <div class="profile-list-row__value">
-                      that.p@chitralada.ac.th
-                    </div>
-                  </div>
-                  <div class="profile-list-row">
-                    <div class="profile-list-row__label">House · บ้านสี</div>
-                    <div class="profile-list-row__value">
-                      <span
-                        class="house-dot"
-                        style="
-                          background: var(--house-green);
-                          display: inline-block;
-                          width: 10px;
-                          height: 10px;
-                          border-radius: 50%;
-                          margin-right: 6px;
-                          vertical-align: middle;
-                        "
-                      ></span
-                      >Green House
-                    </div>
-                  </div>
-                  <div class="profile-list-row">
-                    <div class="profile-list-row__label">Class teacher</div>
-                    <div class="profile-list-row__value">อ.อาทรง มุขโง้น</div>
-                  </div>
-                  <div class="profile-list-row">
-                    <div class="profile-list-row__label">Bookings active</div>
-                    <div class="profile-list-row__value">
-                      2 · ห้องดนตรี 1 · ห้องประชุม
-                    </div>
-                  </div>
-                </div>
-                <div class="menu-section-title">
-                  <span class="menu-section-title__line"></span
-                  ><span class="menu-section-title__text">⚡ Settings</span
-                  ><span class="menu-section-title__line"></span>
-                </div>
-                <div class="profile-list">
-                  <div class="profile-list-row">
-                    <div
-                      class="profile-list-row__value"
-                      style="font-size: 14px"
-                    >
-                      Notification preferences
-                    </div>
-                  </div>
-                  <div class="profile-list-row">
-                    <div
-                      class="profile-list-row__value"
-                      style="font-size: 14px"
-                    >
-                      Language · ภาษา
-                      <span
-                        style="
-                          font-family: var(--font-mono);
-                          font-style: normal;
-                          font-size: 10px;
-                          color: var(--gray-500);
-                          margin-left: 6px;
-                        "
-                        >TH / EN</span
-                      >
-                    </div>
-                  </div>
-                  <div class="profile-list-row">
-                    <div
-                      class="profile-list-row__value"
-                      style="font-size: 14px"
-                    >
-                      Theme · ธีม
-                    </div>
-                  </div>
-                  <div class="profile-list-row">
-                    <div
-                      class="profile-list-row__value"
-                      style="font-size: 14px; color: var(--house-pink)"
-                    >
-                      Sign out
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <nav class="m-bottomnav">
@@ -4854,17 +4614,6 @@
                 <circle cx="12" cy="12" r="9" />
                 <path d="M12 4 L12 20 M4 12 L20 12" /></svg
               >Sport
-            </button>
-            <button class="m-bottomnav__btn" data-nav="profile">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-              >
-                <circle cx="12" cy="9" r="4" />
-                <path d="M3 21c0-5 4-8 9-8s9 3 9 8" /></svg
-              >Profile
             </button>
           </nav>
         </div>
