@@ -18,7 +18,7 @@ After Phase 4, the only deliberately-deferred write is **+ Add Project** on `/ad
 | 1 | Student room bookings | Anonymous, mirroring Carelin. Form takes free-form name + 4-digit `student_id_4` + optional class + purpose. New RLS policy + check constraint on `bookings`. |
 | 2 | Portfolio breadth | Approve/reject (status toggle) + edit + delete. `+ Add Project` stays inert with an in-code "deferred to Phase 5" comment. |
 | 3 | Calendar edit UX | Side-rail event list on `/admin/calendar` listing this month's events with row Edit/Delete controls. BigCal cells stay non-interactive. |
-| 4 | site_config editor | One generic action `updateSiteConfig`, but routes are per-key with structured forms: `/admin/config` (index) + `/admin/config/[key]/edit`. `admin_greeting` hidden from the index (computed from `admins.display_name`). |
+| 4 | site_config editor | One generic action `updateSiteConfig`, but routes are per-key with structured forms: `/admin/config` (index) + `/admin/config/[key]/edit`. Six keys editable: `home_hero`, `overview_kpis`, `trend_chart`, `portfolio_stats`, `portfolio_kpis`, `carelin_kpis`. `admin_greeting` hidden from the index (computed from `admins.display_name`). |
 | 5 | Sport results UI | Dedicated routes `/admin/sport/result/new` + `/[id]/edit`. The misleading `+ Add event` button is renamed `+ Record result`. Row `⋯` on `EventResultsTable` links to edit; delete from edit form. |
 | 6 | P'share reader | Included. New `app/student/pshare/[slug]/page.tsx`, RSC, renders `body_md` with `react-markdown` + `remark-gfm`. RLS already restricts anon SELECT to `status='published'`. |
 | 7 | Booking selection state | URL params (`?date=…&period=…&room=…`). Pickers become `<Link>`s; no whole-page client wrapper. `useActionState` is a small client leaf on the bottom form. |
@@ -37,10 +37,10 @@ Phase 4 ships as **one logical phase**, but each row in the [per-entity write se
 | 1 | Carelin | `deleteCarelinRequest` | (extends `app/admin/carelin/actions.ts`) | **root** | Service-role. Row `⋯` on `CarelinDeskTable` shows Delete only if `requireRootAdmin()` resolves for the caller — server-resolved at table-render time. |
 | 2 | P'share reader | (read-only) | `app/student/pshare/[slug]/page.tsx` | anon | New `getPsharePostBySlug` query helper. Renders art panel + markdown body. `notFound()` on missing slug. |
 | 3 | Calendar | `updateEvent`, `deleteEvent` | `app/admin/calendar/[id]/edit/page.tsx` + `components/admin/AdminCalendarEventList.tsx` | admin | Side-rail right of BigCal on `/admin/calendar`. New `getAdminMonthEventList(year, month)` returns sorted `{id, starts_at, title_th, category, location}[]`. |
-| 4 | Sport results | `recordSportResult`, `updateSportResult`, `deleteSportResult` | `app/admin/sport/result/new`, `app/admin/sport/result/[id]/edit` | admin | 4 ordered house slots, category, time_label, bilingual titles. `EventResultsTable` gains row `⋯` → edit. Delete from edit form. Topbar button renamed "+ Record result." |
+| 4 | Sport results | `recordSportResult`, `updateSportResult`, `deleteSportResult` | `app/admin/sport/result/new`, `app/admin/sport/result/[id]/edit` | admin | 4 ordered house slots, category, time_label, bilingual titles. `EventResultsTable` gains a new trailing `⋯` column → edit link. Delete from edit form. Topbar button renamed "+ Record result." |
 | 5 | Portfolio | `setProjectStatus`, `updateProject`, `deleteProject` | `app/admin/portfolio/[id]/edit/page.tsx` | admin | `PortfolioAdminTable`'s existing `⋯` cell becomes a small form rendering 3 `<button formAction={setProjectStatus}>` controls (one per status) + an Edit link. Delete on edit form. |
-| 6 | site_config | `updateSiteConfig` (key-dispatched) | `app/admin/config/page.tsx`, `app/admin/config/[key]/edit/page.tsx` | admin | 6 editable keys. Per-key structured form. `trend_chart` form has 13 point inputs; server derives the SVG `path` string at write time. `home_hero` form is flat ~10 fields (with nested `leading` + `weather` flattened). KPI keys render as repeating 4-card field groups. |
-| 7 | Admin bookings | `createBooking`, `updateBooking`, `cancelBooking` | `app/admin/bookings/new`, `app/admin/bookings/[id]/edit` | admin | Wires the `+ New Booking` topbar button + row `⋯` on `AdminTodayBookingsTable`. `cancelBooking` is a hard DELETE. Reuses the [conflict pre-check](#bookings-flow). |
+| 6 | site_config | `updateSiteConfig` (key-dispatched) | `app/admin/config/page.tsx`, `app/admin/config/[key]/edit/page.tsx` | admin | Six keys: `home_hero`, `overview_kpis`, `trend_chart`, `portfolio_stats`, `portfolio_kpis`, `carelin_kpis`. Per-key structured form. `trend_chart` form has 13 point inputs; server derives the SVG `path` string at write time. `home_hero` form is flat ~10 fields (with nested `leading` + `weather` flattened). KPI keys render as repeating 4-card field groups. |
+| 7 | Admin bookings | `createBooking`, `updateBooking`, `cancelBooking` | `app/admin/bookings/new`, `app/admin/bookings/[id]/edit` | admin | Wires the `+ New Booking` topbar button. `AdminTodayBookingsTable` gains a new trailing `⋯` column → edit link (table has none today). `cancelBooking` is a hard DELETE. Reuses the [conflict pre-check](#conflict-pre-check). |
 | 8 | Student bookings | `bookRoom` | (writes from existing `/student/booking`) | **anon** | New RLS policy + check constraint. Form uses `useActionState`. 4-digit `student_id_4` + name + optional class + purpose. Derives `starts_at`/`ends_at` from `PERIOD_HOURS[period]` + date. |
 
 **Service-role usage** after Phase 4: `createAdmin`, `disableAdmin`, `deleteCarelinRequest`. Nothing else.
@@ -159,10 +159,10 @@ The existing prototype layout on `/student/booking` stays — same chrome, same 
 Page is server-rendered; `searchParams: Promise<{...}>` is awaited per Next 16. Selected state for the eyebrow ("13 MAY · MIDDAY · MUSIC ROOM 1") is derived server-side from the URL.
 
 The Confirm form at the bottom is a small `'use client'` leaf using `useActionState`:
-- Hidden inputs for `date`, `period`, `room`, `tab` (from URL).
+- Hidden inputs for `date`, `period`, `room`, `tab` (read from URL via the parent server component and forwarded as props).
 - Text inputs for `name`, `student_id_4`, `klass` (optional), `purpose` (optional).
-- `bookRoom` returns `ActionResult`; errors render inline above the CTA.
-- Success: client navigates to `/student/booking?ok=1` (`useActionState` does not auto-redirect; action returns `{ok:true}` and the client component conditionally renders a success banner + clears URL selection params).
+- `bookRoom` returns `ActionResult`; on `{ok: false}`, the error renders inline above the CTA.
+- On `{ok: true}`, the action returns; `useActionState` does not redirect. The client form then calls `router.replace('/student/booking?ok=1')` (single `useEffect` watching the state), which drops the `?date`/`?period`/`?room` selection params and triggers a re-render. The server-rendered page reads `?ok=1` and shows a success banner above the (now empty) pickers.
 
 ### Period → timestamp mapping
 
