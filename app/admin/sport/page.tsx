@@ -9,7 +9,7 @@ import {
   ADMIN_SCOREBOARD,
   ADMIN_SPORT_RESULTS,
   ADMIN_SPORT_UPCOMING,
-} from "@/data/admin-sport";
+} from "@/supabase/seed/data/admin-sport";
 
 export default function AdminSport() {
   return (

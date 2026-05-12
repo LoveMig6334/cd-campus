@@ -10,7 +10,7 @@ import {
   PORTFOLIO_KPIS,
   PORTFOLIO_ROWS,
   PORTFOLIO_TABS,
-} from "@/data/admin-portfolio";
+} from "@/supabase/seed/data/admin-portfolio";
 
 export default function AdminPortfolio() {
   return (

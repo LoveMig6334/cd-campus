@@ -1,4 +1,4 @@
-import type { CarelinRequest } from "@/data/types";
+import type { CarelinRequest } from "@/supabase/seed/data/types";
 import { cn } from "@/lib/cn";
 
 const STATUS_CLASS: Record<CarelinRequest["status"], string> = {

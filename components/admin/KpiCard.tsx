@@ -1,4 +1,4 @@
-import type { AdminKpi } from "@/data/types";
+import type { AdminKpi } from "@/supabase/seed/data/types";
 import { cn } from "@/lib/cn";
 
 const DELTA_CLASS: Record<AdminKpi["delta"]["kind"], string> = {

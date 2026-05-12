@@ -1,4 +1,4 @@
-import type { House, LiveResult } from "@/data/types";
+import type { House, LiveResult } from "@/supabase/seed/data/types";
 
 const HOUSE_COLOR: Record<House, string> = {
   green: "var(--color-house-green)",

@@ -12,7 +12,7 @@ import {
 } from "@/components/student/MenuIcons";
 import { MenuTile } from "@/components/student/MenuTile";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import { HOME_HERO } from "@/data/home-hero";
+import { HOME_HERO } from "@/supabase/seed/data/home-hero";
 
 export default function StudentHome() {
   return (

@@ -3,7 +3,7 @@ import { PageHead } from "@/components/layout/PageHead";
 import { ProjectCard } from "@/components/student/ProjectCard";
 import { StatsStrip } from "@/components/student/StatsStrip";
 import { IconButton } from "@/components/ui/IconButton";
-import { PORTFOLIO_PROJECTS, PORTFOLIO_STATS } from "@/data/portfolios";
+import { PORTFOLIO_PROJECTS, PORTFOLIO_STATS } from "@/supabase/seed/data/portfolios";
 
 export default function StudentPortfolio() {
   return (

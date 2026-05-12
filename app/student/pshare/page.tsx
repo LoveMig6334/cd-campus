@@ -8,7 +8,7 @@ import {
   PSHARE_ACTIVE_TAG,
   PSHARE_POSTS,
   PSHARE_TAGS,
-} from "@/data/pshare-posts";
+} from "@/supabase/seed/data/pshare-posts";
 
 export default function StudentPshare() {
   return (

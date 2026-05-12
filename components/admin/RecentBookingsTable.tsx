@@ -1,4 +1,4 @@
-import type { AdminBookingRow } from "@/data/types";
+import type { AdminBookingRow } from "@/supabase/seed/data/types";
 import { Pill } from "./Pill";
 
 const STATUS_VARIANT: Record<

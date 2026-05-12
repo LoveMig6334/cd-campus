@@ -5,7 +5,7 @@ import { CarelinCard } from "@/components/student/CarelinCard";
 import { CarelinCta } from "@/components/student/CarelinCta";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import { CARELIN_REQUESTS } from "@/data/carelin-requests";
+import { CARELIN_REQUESTS } from "@/supabase/seed/data/carelin-requests";
 
 export default function StudentCarelin() {
   return (

@@ -8,7 +8,7 @@ import {
   ADMIN_TODAY_BOOKINGS,
   GANTT_HOURS,
   GANTT_ROOMS,
-} from "@/data/admin-bookings";
+} from "@/supabase/seed/data/admin-bookings";
 
 export default function AdminBookings() {
   return (

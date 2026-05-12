@@ -1,4 +1,4 @@
-import type { HomeHero } from "@/data/types";
+import type { HomeHero } from "@/supabase/seed/data/types";
 
 export function HeroCard({ hero }: { hero: HomeHero }) {
   return (

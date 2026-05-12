@@ -15,7 +15,7 @@ import {
   BOOKING_PERIODS,
   BOOKING_ROOMS,
   BOOKING_TABS,
-} from "@/data/bookings";
+} from "@/supabase/seed/data/bookings";
 
 export default function StudentBooking() {
   return (

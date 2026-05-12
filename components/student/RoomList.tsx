@@ -1,4 +1,4 @@
-import type { Room } from "@/data/types";
+import type { Room } from "@/supabase/seed/data/types";
 import { cn } from "@/lib/cn";
 
 export function RoomList({ rooms }: { rooms: Room[] }) {

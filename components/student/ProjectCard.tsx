@@ -1,4 +1,4 @@
-import type { Project } from "@/data/types";
+import type { Project } from "@/supabase/seed/data/types";
 import { PortfolioIcon } from "./PortfolioIcons";
 
 export function ProjectCard({ project }: { project: Project }) {

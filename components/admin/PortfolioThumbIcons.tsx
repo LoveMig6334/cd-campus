@@ -1,4 +1,4 @@
-import type { PortfolioThumbIcon } from "@/data/types";
+import type { PortfolioThumbIcon } from "@/supabase/seed/data/types";
 
 const SVG_PROPS = {
   width: 22,

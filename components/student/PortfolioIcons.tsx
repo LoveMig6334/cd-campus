@@ -1,4 +1,4 @@
-import type { PortfolioIconKey } from "@/data/types";
+import type { PortfolioIconKey } from "@/supabase/seed/data/types";
 
 const SVG_PROPS = {
   viewBox: "0 0 64 64",

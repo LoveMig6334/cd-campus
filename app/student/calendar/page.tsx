@@ -10,7 +10,7 @@ import {
   MAY_2026_DAYS,
   SELECTED_DAY_EVENTS,
   SELECTED_DAY_LABEL,
-} from "@/data/calendar";
+} from "@/supabase/seed/data/calendar";
 
 export default function StudentCalendar() {
   return (

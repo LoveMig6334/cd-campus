@@ -1,4 +1,4 @@
-import type { BookingTab } from "@/data/types";
+import type { BookingTab } from "@/supabase/seed/data/types";
 import { cn } from "@/lib/cn";
 
 export function BookingTabs({

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { PsharePost } from "@/data/types";
+import type { PsharePost } from "@/supabase/seed/data/types";
 import { PshareTag } from "./PshareTag";
 
 export function PshareCard({ post }: { post: PsharePost }) {

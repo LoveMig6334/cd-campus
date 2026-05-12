@@ -10,7 +10,7 @@ import {
   CARELIN_DESK_KPIS,
   CARELIN_DESK_ROWS,
   CARELIN_DESK_TABS,
-} from "@/data/admin-carelin";
+} from "@/supabase/seed/data/admin-carelin";
 
 export default function AdminCarelin() {
   return (

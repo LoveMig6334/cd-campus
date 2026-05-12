@@ -2,7 +2,7 @@ import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { BigCalGrid } from "@/components/admin/BigCalGrid";
 import { Btn } from "@/components/admin/Btn";
 import { CalendarLegend } from "@/components/admin/CalendarLegend";
-import { ADMIN_MAY_2026 } from "@/data/admin-calendar";
+import { ADMIN_MAY_2026 } from "@/supabase/seed/data/admin-calendar";
 
 export default function AdminCalendar() {
   return (

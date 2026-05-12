@@ -1,4 +1,4 @@
-import type { CarelinDeskRow } from "@/data/types";
+import type { CarelinDeskRow } from "@/supabase/seed/data/types";
 import { Btn } from "./Btn";
 import { Pill } from "./Pill";
 

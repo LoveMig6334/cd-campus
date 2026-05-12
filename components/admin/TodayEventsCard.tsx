@@ -1,4 +1,4 @@
-import type { AdminEvent } from "@/data/types";
+import type { AdminEvent } from "@/supabase/seed/data/types";
 import { Card, CardTitle } from "./Card";
 
 export function TodayEventsCard({ events }: { events: AdminEvent[] }) {

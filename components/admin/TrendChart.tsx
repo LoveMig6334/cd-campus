@@ -2,7 +2,7 @@ import {
   ADMIN_TREND_MONTHS,
   ADMIN_TREND_PATH,
   ADMIN_TREND_POINTS,
-} from "@/data/admin-overview";
+} from "@/supabase/seed/data/admin-overview";
 
 export function TrendChart() {
   const lastIndex = ADMIN_TREND_POINTS.length - 1;

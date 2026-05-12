@@ -12,7 +12,7 @@ import {
   ADMIN_KPIS,
   ADMIN_RECENT_BOOKINGS,
   ADMIN_TODAY_EVENTS,
-} from "@/data/admin-overview";
+} from "@/supabase/seed/data/admin-overview";
 
 export default function AdminOverview() {
   return (

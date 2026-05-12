@@ -1,4 +1,4 @@
-import type { GanttBar, GanttBarVariant, GanttRoom } from "@/data/types";
+import type { GanttBar, GanttBarVariant, GanttRoom } from "@/supabase/seed/data/types";
 import { cn } from "@/lib/cn";
 
 const BAR_VARIANT: Record<GanttBarVariant, string> = {

@@ -1,4 +1,4 @@
-import { CATEGORY_COLOR } from "@/data/types";
+import { CATEGORY_COLOR } from "@/supabase/seed/data/types";
 import { Pill } from "./Pill";
 
 const ITEMS = [

@@ -1,4 +1,4 @@
-import { CATEGORY_COLOR, type CalendarEvent } from "@/data/types";
+import { CATEGORY_COLOR, type CalendarEvent } from "@/supabase/seed/data/types";
 
 export function UpcomingGrid({ events }: { events: CalendarEvent[] }) {
   return (

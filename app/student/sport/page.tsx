@@ -11,7 +11,7 @@ import {
   SPORT_LEADERBOARD,
   SPORT_LIVE_RESULTS,
   SPORT_UPCOMING,
-} from "@/data/sport";
+} from "@/supabase/seed/data/sport";
 
 export default function StudentSport() {
   return (

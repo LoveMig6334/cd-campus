@@ -1,5 +1,5 @@
-import { PLACEMENT_COLOR } from "@/data/admin-sport";
-import type { House, SportResultRow } from "@/data/types";
+import { PLACEMENT_COLOR } from "@/supabase/seed/data/admin-sport";
+import type { House, SportResultRow } from "@/supabase/seed/data/types";
 
 const HOUSE_LABEL: Record<House, string> = {
   green: "Green",
