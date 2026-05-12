@@ -24,3 +24,88 @@ export type HomeMenuItem = {
   /** Inline SVG icon (drawn on the art panel) */
   icon: import("react").ReactNode;
 };
+
+/* ------------------------------------------------------------------ */
+/* Calendar */
+/* ------------------------------------------------------------------ */
+
+export type CalendarCategory =
+  | "sport"
+  | "tradition"
+  | "music"
+  | "admin"
+  | "academic";
+
+export const CATEGORY_COLOR: Record<CalendarCategory, string> = {
+  sport: "var(--color-house-orange)",
+  tradition: "var(--color-house-purple)",
+  music: "var(--color-house-pink)",
+  admin: "var(--color-blue)",
+  academic: "var(--color-house-green)",
+};
+
+export type CalendarChip = {
+  id: "all" | CalendarCategory;
+  labelEn: string;
+};
+
+export type CalendarDay = {
+  num: number;
+  /** false = day belongs to neighbouring month */
+  inMonth: boolean;
+  state?: "today" | "selected" | "closed";
+  /** Optional dots beneath the number — CSS color values */
+  dots?: string[];
+};
+
+export type CalendarEvent = {
+  time: string;
+  titleTh: string;
+  tag: string;
+  category: CalendarCategory;
+};
+
+/* ------------------------------------------------------------------ */
+/* Sport day */
+/* ------------------------------------------------------------------ */
+
+export type LeaderRow = {
+  rank: number;
+  house: House;
+  nameEn: string;
+  nameTh: string;
+  score: number;
+  /** Bar fill percentage (0–100) */
+  barPct: number;
+};
+
+export type LiveResult = {
+  titleTh: string;
+  metaEn: string;
+  /** Placements ordered 1st → 4th */
+  placements: House[];
+  /** Icon variant for the chip */
+  icon: "running" | "ball";
+};
+
+/* ------------------------------------------------------------------ */
+/* Booking */
+/* ------------------------------------------------------------------ */
+
+export type BookingTab = {
+  id: "music" | "meeting";
+  labelEn: string;
+  labelTh: string;
+};
+
+export type BookingPeriod = {
+  label: string;
+  time: string;
+  status: "available" | "selected" | "booked";
+};
+
+export type Room = {
+  nameEn: string;
+  nameTh: string;
+  status: "free" | "full";
+};
