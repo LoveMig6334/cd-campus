@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/database.types";
 import {
   CATEGORY_COLOR,
   type AdminEvent,
@@ -230,4 +231,45 @@ export async function getAdminUpcomingSport(
   limit = 3,
 ): Promise<CalendarEvent[]> {
   return getStudentUpcomingSport(limit);
+}
+
+export type AdminCalendarRow = {
+  id: string;
+  starts_at: string;
+  title_th: string;
+  title_en: string | null;
+  tag: string | null;
+  category: Database["public"]["Enums"]["event_category"];
+  location: string | null;
+  highlight: boolean;
+};
+
+export async function getAdminMonthEventList(
+  year: number,
+  month: number, // 1-indexed
+): Promise<AdminCalendarRow[]> {
+  const db = await createClient();
+  const start = `${year}-${String(month).padStart(2, "0")}-01T00:00:00+07:00`;
+  const next = month === 12
+    ? `${year + 1}-01-01T00:00:00+07:00`
+    : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
+  const { data, error } = await db
+    .from("events")
+    .select("id, starts_at, title_th, title_en, tag, category, location, highlight")
+    .gte("starts_at", start)
+    .lt("starts_at", next)
+    .order("starts_at", { ascending: true });
+  if (error) throw new Error(`getAdminMonthEventList: ${error.message}`);
+  return (data ?? []) as AdminCalendarRow[];
+}
+
+export async function getEventById(id: string): Promise<AdminCalendarRow | null> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("events")
+    .select("id, starts_at, title_th, title_en, tag, category, location, highlight")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`getEventById: ${error.message}`);
+  return data as AdminCalendarRow | null;
 }

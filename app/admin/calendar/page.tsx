@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
+import { AdminCalendarEventList } from "@/components/admin/AdminCalendarEventList";
 import { BigCalGrid } from "@/components/admin/BigCalGrid";
 import { Btn } from "@/components/admin/Btn";
 import { CalendarLegend } from "@/components/admin/CalendarLegend";
-import { getAdminMonth } from "@/lib/queries/events";
+import { getAdminMonth, getAdminMonthEventList } from "@/lib/queries/events";
 
 export default async function AdminCalendar() {
-  const days = await getAdminMonth(2026, 5);
+  const [days, list] = await Promise.all([
+    getAdminMonth(2026, 5),
+    getAdminMonthEventList(2026, 5),
+  ]);
   return (
     <>
       <AdminTopbar
@@ -27,7 +31,10 @@ export default async function AdminCalendar() {
         }
       />
       <CalendarLegend />
-      <BigCalGrid days={days} />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
+        <BigCalGrid days={days} />
+        <AdminCalendarEventList rows={list} />
+      </div>
     </>
   );
 }
