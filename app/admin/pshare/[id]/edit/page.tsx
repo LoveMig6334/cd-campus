@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { PshareEditor } from "@/components/admin/PshareEditor";
+import { Card, CardTitle } from "@/components/admin/Card";
 import { createClient } from "@/lib/supabase/server";
+import { deletePost } from "../../actions";
 
 export default async function EditPsharePost({
   params,
@@ -49,6 +51,18 @@ export default async function EditPsharePost({
           tags: data.tags ?? [],
         }}
       />
+      <Card className="mt-[18px] border-house-pink">
+        <CardTitle th="ลบโพสต์" en="Delete post" />
+        <form action={deletePost}>
+          <input type="hidden" name="id" value={data.id} />
+          <button
+            type="submit"
+            className="inline-block border-[1.5px] border-line bg-paper px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-house-pink transition-all [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-house-pink hover:text-white"
+          >
+            Delete permanently
+          </button>
+        </form>
+      </Card>
     </>
   );
 }

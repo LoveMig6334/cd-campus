@@ -105,3 +105,17 @@ export async function publishPost(formData: FormData): Promise<void> {
   revalidatePath("/student/pshare");
   redirect("/admin/pshare");
 }
+
+export async function deletePost(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const db = await createClient();
+  const { error } = await db.from("pshare_posts").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/pshare");
+  revalidatePath("/student/pshare");
+  redirect("/admin/pshare");
+}
