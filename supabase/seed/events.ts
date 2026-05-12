@@ -23,6 +23,24 @@ const TIME_BY_TITLE: Record<string, string> = {
 
 const HIGHLIGHT_DEFAULT_CATEGORY: Category = "admin";
 
+function categoryFromTag(tag: string): Category {
+  const prefix = tag.split("·")[0]?.trim().toLowerCase() ?? "";
+  switch (prefix) {
+    case "sport":
+      return "sport";
+    case "music":
+      return "music";
+    case "admin":
+      return "admin";
+    case "academic":
+      return "academic";
+    case "tradition":
+      return "tradition";
+    default:
+      return "admin";
+  }
+}
+
 function categoryFor(variant: string): { category: Category; highlight: boolean } {
   if (variant === "highlight") {
     return { category: HIGHLIGHT_DEFAULT_CATEGORY, highlight: true };
@@ -77,6 +95,20 @@ export async function seedEvents(
       title_en: null,
       tag: ev.tag,
       category: ev.category,
+      starts_at: iso(12, ev.time),
+      location: null,
+      highlight: false,
+      created_by_admin_id: adminId,
+    });
+  }
+
+  // Admin today-events on 12 May (admin overview cards)
+  for (const ev of ADMIN_TODAY_EVENTS) {
+    rows.push({
+      title_th: ev.title,
+      title_en: null,
+      tag: ev.tag,
+      category: categoryFromTag(ev.tag),
       starts_at: iso(12, ev.time),
       location: null,
       highlight: false,
