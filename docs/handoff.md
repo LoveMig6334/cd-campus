@@ -15,7 +15,8 @@ You're picking up the **CD Smart Campus** project — a Next.js 16 + React 19 + 
 5. `docs/superpowers/plans/2026-05-12-phase-5a-features.md` — the Phase 5a plan that just shipped. 12 tasks, per-task commits on `main`.
 6. `docs/migration-plan.md` — original phased plan + route map (Phase 3 and the original Phase 4–5 are superseded; read the route map and architecture for context).
 7. `docs/design-system.md` — color tokens, typography, halftone patterns, bilingual rules.
-8. `prototype/cd-smart-campus.html` — source-of-truth visual prototype. When in doubt, match the prototype.
+8. `docs/deployment.md` — Vercel deployment runbook (env vars, Supabase Auth URL config, rollback). Read before doing anything deploy-related.
+9. `prototype/cd-smart-campus.html` — source-of-truth visual prototype. When in doubt, match the prototype.
 
 ## Critical: Next.js 16 has breaking changes
 
@@ -150,6 +151,17 @@ If not yet done, run the Phase 5a exit-criteria walkthrough end-to-end (from `do
 - **`uploadPshareImage` and `uploadProjectImage`** are near-identical helpers in two action files (folder name only). Could collapse to a single `uploadAsset(formData, folder, id)`. See 5b candidate #15.
 - **Storage delete failures are silently swallowed** in `deletePost` / `deleteProject`. Orphan storage objects accumulate over time. Acceptable for prototype; instrument logging if you see growth. See 5b candidate #16.
 - **Realtime relies on RLS** for delivery filtering. `sport_results` public-read so anon students get events. `carelin_requests` + `bookings` need admin SELECT policies (verified during 5a; flag #17 if you ever modify them).
+
+## Deployment
+
+Vercel, GitHub auto-deploy on `main`. Full runbook in `docs/deployment.md` — read that before doing anything deploy-related rather than re-deriving. Two gotchas to flag if the user mentions deployment:
+
+- **Env vars must be set in Vercel BEFORE the first deploy.** `next.config.ts` reads `NEXT_PUBLIC_SUPABASE_URL` at build time (it derives `images.remotePatterns` from the URL — added in Phase 5a) and throws if missing. The 3 vars are `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. **Never** set `SUPABASE_ALLOW_SEED` on Vercel — that's local-dev only.
+- **Supabase Auth needs the Vercel URL added** to Site URL + Redirect URLs (`https://<domain>/**`) or the admin magic-link login redirects with "URL not allowed".
+
+Preview deploys currently share the production Supabase project (Phase 5b candidate to split). PR previews can mutate prod data — review with care.
+
+`PhoneShell` is responsive: full-bleed on real phones (<640px), 390×800 mockup on `sm+`. Don't revert that without an explicit design reason — the mockup-on-mobile was the prototype's biggest UX wart pre-deploy.
 
 ## Conventions (unchanged)
 
