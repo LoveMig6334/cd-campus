@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { House, ScoreboardEntry } from "@/lib/types";
 
 const HOUSE_COLOR: Record<House, string> = {
@@ -25,9 +26,12 @@ export function ScoreboardCard({ entry }: { entry: ScoreboardEntry }) {
         {entry.score}
       </div>
       <div className="font-mono text-[10px] text-mute-500">{entry.stat}</div>
-      <span className="mt-2.5 inline-block border border-blue px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-blue">
+      <Link
+        href="/admin/sport/edit"
+        className="mt-2.5 inline-block border border-blue px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-blue"
+      >
         ✎ edit score
-      </span>
+      </Link>
     </div>
   );
 }
