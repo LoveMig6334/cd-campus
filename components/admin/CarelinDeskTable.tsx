@@ -1,5 +1,5 @@
+import Link from "next/link";
 import type { CarelinDeskRow } from "@/lib/types";
-import { Btn } from "./Btn";
 import { Pill } from "./Pill";
 
 export function CarelinDeskTable({ rows }: { rows: CarelinDeskRow[] }) {
@@ -55,11 +55,16 @@ export function CarelinDeskTable({ rows }: { rows: CarelinDeskRow[] }) {
                 )}
               </td>
               <td className={td}>
-                {row.status === "Open" ? (
-                  <Btn variant="primary">Reply</Btn>
-                ) : (
-                  <Btn>View</Btn>
-                )}
+                <Link
+                  href={`/admin/carelin/${row.id}`}
+                  className={
+                    row.status === "Open"
+                      ? "inline-block border-[1.5px] border-line bg-blue px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-yellow"
+                      : "inline-block border-[1.5px] border-line bg-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-mute-700"
+                  }
+                >
+                  {row.status === "Open" ? "Reply" : "View"}
+                </Link>
               </td>
             </tr>
           );

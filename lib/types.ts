@@ -307,6 +307,7 @@ export type PortfolioAdminRow = {
 /* ------------------------------------------------------------------ */
 
 export type CarelinDeskRow = {
+  id: string;
   when: string;
   requester: { name: string; studentId: string; klass: string };
   title: string;

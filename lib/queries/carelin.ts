@@ -58,10 +58,11 @@ export async function getCarelinDeskRows(): Promise<CarelinDeskRow[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("carelin_requests")
-    .select("title, body, who_name, student_id_4, klass, status, created_at")
+    .select("id, title, body, who_name, student_id_4, klass, status, created_at")
     .order("created_at", { ascending: false });
   if (error) throw new Error(`getCarelinDeskRows: ${error.message}`);
   return (data ?? []).map<CarelinDeskRow>((r) => ({
+    id: r.id,
     when: relativeWhen(r.created_at),
     requester: {
       name: r.who_name,
@@ -72,4 +73,78 @@ export async function getCarelinDeskRows(): Promise<CarelinDeskRow[]> {
     snippet: r.body.length > 60 ? r.body.slice(0, 60) + "..." : r.body,
     status: r.status === "answered" ? "Answered" : "Open",
   }));
+}
+
+export type CarelinDetail = {
+  id: string;
+  title: string;
+  body: string;
+  who: string;
+  studentId: string;
+  klass: string;
+  status: "open" | "answered";
+  when: string;
+  replies: Array<{
+    teacher: string;
+    role: string;
+    body: string;
+    avatar: string;
+    when: string;
+  }>;
+};
+
+export async function getCarelinDetail(id: string): Promise<CarelinDetail | null> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("carelin_requests")
+    .select(
+      "id, title, body, who_name, student_id_4, klass, status, created_at, carelin_replies(teacher_name, role_label, body, avatar_letter, created_at)",
+    )
+    .eq("id", id)
+    .single();
+  if (error || !data) return null;
+  const replies = (data.carelin_replies as unknown as Array<{
+    teacher_name: string | null;
+    role_label: string | null;
+    body: string;
+    avatar_letter: string | null;
+    created_at: string;
+  }>) ?? [];
+  return {
+    id: data.id,
+    title: data.title,
+    body: data.body,
+    who: data.who_name,
+    studentId: data.student_id_4,
+    klass: data.klass ?? "",
+    status: data.status as CarelinDetail["status"],
+    when: relativeWhen(data.created_at),
+    replies: replies
+      .sort((a, b) => a.created_at.localeCompare(b.created_at))
+      .map((r) => ({
+        teacher: r.teacher_name ?? "",
+        role: r.role_label ?? "",
+        body: r.body,
+        avatar: r.avatar_letter ?? "",
+        when: relativeWhen(r.created_at),
+      })),
+  };
+}
+
+export async function getCarelinTabCounts(): Promise<{
+  all: number;
+  open: number;
+  answered: number;
+}> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("carelin_requests")
+    .select("status");
+  if (error) throw new Error(`getCarelinTabCounts: ${error.message}`);
+  const rows = (data ?? []) as Array<{ status: "open" | "answered" }>;
+  return {
+    all: rows.length,
+    open: rows.filter((r) => r.status === "open").length,
+    answered: rows.filter((r) => r.status === "answered").length,
+  };
 }

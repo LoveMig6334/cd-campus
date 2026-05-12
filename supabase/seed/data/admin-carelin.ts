@@ -32,6 +32,7 @@ export const CARELIN_DESK_KPIS: AdminKpi[] = [
 
 export const CARELIN_DESK_ROWS: CarelinDeskRow[] = [
   {
+    id: "00000000-0000-0000-0000-000000000001",
     when: "09:48",
     requester: { name: "วงกต", studentId: "0612", klass: "ม.5/2" },
     title: "หาเพื่อนติวฟิสิกส์ บทคลื่นแม่เหล็กไฟฟ้า",
@@ -39,6 +40,7 @@ export const CARELIN_DESK_ROWS: CarelinDeskRow[] = [
     status: "Open",
   },
   {
+    id: "00000000-0000-0000-0000-000000000002",
     when: "09:33",
     requester: { name: "พลอย", studentId: "0307", klass: "ม.4/1" },
     title: "เครื่องน้ำดื่มอาคาร 5 ชั้น 2 พัง",
@@ -46,6 +48,7 @@ export const CARELIN_DESK_ROWS: CarelinDeskRow[] = [
     status: "Open",
   },
   {
+    id: "00000000-0000-0000-0000-000000000003",
     when: "09:12",
     requester: { name: "นัด", studentId: "0521", klass: "ม.5/4" },
     title: "ลืมกระเป๋าไว้ที่ห้องดนตรี",
@@ -53,6 +56,7 @@ export const CARELIN_DESK_ROWS: CarelinDeskRow[] = [
     status: "Answered",
   },
   {
+    id: "00000000-0000-0000-0000-000000000004",
     when: "เมื่อวาน",
     requester: { name: "เกรซ", studentId: "0855", klass: "ม.3/2" },
     title: "อยากปรึกษาเรื่องเลือกสายชั้น ม.4",
@@ -60,6 +64,7 @@ export const CARELIN_DESK_ROWS: CarelinDeskRow[] = [
     status: "Open",
   },
   {
+    id: "00000000-0000-0000-0000-000000000005",
     when: "เมื่อวาน",
     requester: { name: "ภีม", studentId: "0418", klass: "ม.6/3" },
     title: "Wi-Fi อาคาร 4 หลุดบ่อย",
@@ -67,6 +72,7 @@ export const CARELIN_DESK_ROWS: CarelinDeskRow[] = [
     status: "Answered",
   },
   {
+    id: "00000000-0000-0000-0000-000000000006",
     when: "เมื่อวาน",
     requester: { name: "มินทร์", studentId: "0739", klass: "ม.4/3" },
     title: "อยากชวนเพื่อนเข้าชมรมหุ่นยนต์",
