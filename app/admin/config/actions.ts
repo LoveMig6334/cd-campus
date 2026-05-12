@@ -23,23 +23,25 @@ function isEditableKey(k: string): k is EditableKey {
 }
 
 function revalidateFor(key: EditableKey): void {
-  switch (key) {
-    case "home_hero":
-      revalidatePath("/student");
-      return;
-    case "overview_kpis":
-    case "trend_chart":
-      revalidatePath("/admin");
-      return;
-    case "portfolio_stats":
-      revalidatePath("/student/portfolio");
-      return;
-    case "portfolio_kpis":
-      revalidatePath("/admin/portfolio");
-      return;
-    case "carelin_kpis":
-      revalidatePath("/admin/carelin");
-      return;
+  revalidatePath("/admin/config");
+  revalidatePath(`/admin/config/${key}/edit`);
+
+  if (key === "home_hero") {
+    revalidatePath("/student");
+    return;
+  }
+  if (key === "overview_kpis" || key === "trend_chart") {
+    revalidatePath("/admin");
+    return;
+  }
+  if (key === "portfolio_kpis" || key === "portfolio_stats") {
+    revalidatePath("/admin/portfolio");
+    revalidatePath("/student/portfolio");
+    return;
+  }
+  if (key === "carelin_kpis") {
+    revalidatePath("/admin/carelin");
+    return;
   }
 }
 
