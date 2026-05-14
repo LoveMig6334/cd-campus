@@ -5,8 +5,6 @@ export const BOOKING_TABS: BookingTab[] = [
   { id: "meeting", labelEn: "Meeting", labelTh: "ห้องประชุม" },
 ];
 
-export const BOOKING_ACTIVE_TAB: BookingTab["id"] = "music";
-
 export const PERIOD_HOURS = {
   morning: { start: "08:00", end: "11:00" },
   midday: { start: "11:30", end: "14:30" },
@@ -25,8 +23,6 @@ export const BOOKING_PERIODS: (BookingPeriod & { id: PeriodId })[] = [
   { id: "midday", label: "Midday", time: "11:30 — 14:30", status: "selected" },
   { id: "evening", label: "Evening", time: "15:00 — 18:00", status: "booked" },
 ];
-
-export const BOOKING_CONFIRM_EYEBROW = "13 MAY · MIDDAY · MUSIC ROOM 1";
 
 const make = (
   num: number,
