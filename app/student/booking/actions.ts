@@ -65,7 +65,15 @@ export async function bookRoom(
     status: "Pending",
     bar_variant: "default",
   });
-  if (error) return { ok: false, error: error.message };
+  if (error) {
+    if (error.code === "23P01") {
+      return {
+        ok: false,
+        error: "ห้องนี้เพิ่งถูกจองไป / This room was just booked. Please pick another slot.",
+      };
+    }
+    return { ok: false, error: error.message };
+  }
 
   revalidatePath("/student/booking");
   revalidatePath("/admin/bookings");

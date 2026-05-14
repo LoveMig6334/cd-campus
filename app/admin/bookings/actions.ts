@@ -68,7 +68,12 @@ export async function createBooking(formData: FormData): Promise<void> {
     purpose: purpose_raw || null,
     created_by_admin_id: admin.id,
   });
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.code === "23P01") {
+      throw new Error("This room was just booked for that period.");
+    }
+    throw new Error(error.message);
+  }
 
   revalidatePath("/admin/bookings");
   revalidatePath("/student/booking");
@@ -116,7 +121,12 @@ export async function updateBooking(formData: FormData): Promise<void> {
       purpose: purpose_raw || null,
     })
     .eq("id", id);
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.code === "23P01") {
+      throw new Error("This room was just booked for that period.");
+    }
+    throw new Error(error.message);
+  }
 
   revalidatePath("/admin/bookings");
   revalidatePath("/student/booking");
