@@ -264,7 +264,7 @@ export async function getRecentBookings(limit = 5): Promise<AdminBookingRow[]> {
   const { data, error } = await db
     .from("bookings")
     .select("user_label, starts_at, ends_at, status, rooms!inner(name_en)")
-    .order("starts_at", { ascending: true })
+    .order("starts_at", { ascending: false })
     .limit(limit);
   if (error) throw new Error(`getRecentBookings: ${error.message}`);
   return (data ?? []).map<AdminBookingRow>((b) => {
