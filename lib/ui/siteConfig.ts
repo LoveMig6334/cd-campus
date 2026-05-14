@@ -1,0 +1,39 @@
+import type { House } from "@/lib/types";
+
+export const EDITABLE_KEYS = [
+  "home_hero",
+  "overview_kpis",
+  "trend_chart",
+  "portfolio_stats",
+  "portfolio_kpis",
+  "carelin_kpis",
+] as const;
+
+export type EditableKey = (typeof EDITABLE_KEYS)[number];
+
+export function isEditableKey(k: string): k is EditableKey {
+  return (EDITABLE_KEYS as readonly string[]).includes(k);
+}
+
+export const KEY_LABELS: Record<EditableKey, { en: string; th: string }> = {
+  home_hero: { en: "Home hero", th: "หน้าจอแรกของนักเรียน" },
+  overview_kpis: { en: "Overview KPIs", th: "ตัวเลขสรุปหน้าหลัก" },
+  trend_chart: { en: "Trend chart", th: "กราฟแนวโน้ม" },
+  portfolio_stats: { en: "Portfolio stats", th: "ตัวเลขโครงงาน · นักเรียน" },
+  portfolio_kpis: { en: "Portfolio KPIs", th: "ตัวเลขโครงงาน · ครู" },
+  carelin_kpis: { en: "Carelin KPIs", th: "ตัวเลขพี่แคร์ลิน · ครู" },
+};
+
+export const HOUSE_KEYS: readonly House[] = [
+  "green",
+  "purple",
+  "orange",
+  "pink",
+];
+
+export function isHouse(v: string): v is House {
+  return (HOUSE_KEYS as readonly string[]).includes(v);
+}
+
+export const KPI_KINDS = ["up", "down", "flat"] as const;
+export type KpiKind = (typeof KPI_KINDS)[number];

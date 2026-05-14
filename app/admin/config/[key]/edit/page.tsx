@@ -4,26 +4,14 @@ import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Btn } from "@/components/admin/Btn";
 import { getConfigByKey } from "@/lib/queries/siteConfig";
-import type { AdminKpi, HomeHero, House, PortfolioStats } from "@/lib/types";
+import type { AdminKpi, HomeHero, PortfolioStats } from "@/lib/types";
 import { updateSiteConfig } from "../../actions";
-
-const VALID = new Set([
-  "home_hero",
-  "overview_kpis",
-  "trend_chart",
-  "portfolio_stats",
-  "portfolio_kpis",
-  "carelin_kpis",
-]);
-
-const KEY_LABELS: Record<string, { en: string; th: string }> = {
-  home_hero: { en: "Home hero", th: "หน้าจอแรกของนักเรียน" },
-  overview_kpis: { en: "Overview KPIs", th: "ตัวเลขสรุปหน้าหลัก" },
-  trend_chart: { en: "Trend chart", th: "กราฟแนวโน้ม" },
-  portfolio_stats: { en: "Portfolio stats", th: "ตัวเลขโครงงาน · นักเรียน" },
-  portfolio_kpis: { en: "Portfolio KPIs", th: "ตัวเลขโครงงาน · ครู" },
-  carelin_kpis: { en: "Carelin KPIs", th: "ตัวเลขพี่แคร์ลิน · ครู" },
-};
+import {
+  isEditableKey,
+  KEY_LABELS,
+  HOUSE_KEYS,
+  KPI_KINDS,
+} from "@/lib/ui/siteConfig";
 
 const INPUT_CLS =
   "mt-1 w-full border-[1.5px] border-line bg-paper px-3 py-2 font-sans text-[14px] text-ink";
@@ -32,16 +20,13 @@ const INPUT_MONO =
 const LABEL_CLS =
   "block font-mono text-[10px] uppercase tracking-[0.16em] text-mute-700";
 
-const HOUSES: readonly House[] = ["green", "purple", "orange", "pink"];
-const KPI_KINDS = ["up", "down", "flat"] as const;
-
 export default async function EditConfigPage({
   params,
 }: {
   params: Promise<{ key: string }>;
 }) {
   const { key } = await params;
-  if (!VALID.has(key)) notFound();
+  if (!isEditableKey(key)) notFound();
   const labels = KEY_LABELS[key];
 
   return (
@@ -136,7 +121,7 @@ async function HomeHeroFields() {
           defaultValue={v.leading.house}
           className={INPUT_MONO}
         >
-          {HOUSES.map((h) => (
+          {HOUSE_KEYS.map((h) => (
             <option key={h} value={h}>
               {h}
             </option>

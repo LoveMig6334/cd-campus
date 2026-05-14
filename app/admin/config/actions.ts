@@ -6,21 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import type { AdminKpi, HomeHero, House, PortfolioStats } from "@/lib/types";
 import type { Json } from "@/lib/supabase/database.types";
-
-const EDITABLE_KEYS = [
-  "home_hero",
-  "overview_kpis",
-  "trend_chart",
-  "portfolio_stats",
-  "portfolio_kpis",
-  "carelin_kpis",
-] as const;
-
-type EditableKey = (typeof EDITABLE_KEYS)[number];
-
-function isEditableKey(k: string): k is EditableKey {
-  return (EDITABLE_KEYS as readonly string[]).includes(k);
-}
+import {
+  isEditableKey,
+  HOUSE_KEYS,
+  KPI_KINDS,
+  type EditableKey,
+} from "@/lib/ui/siteConfig";
 
 function revalidateFor(key: EditableKey): void {
   revalidatePath("/admin/config");
@@ -45,9 +36,6 @@ function revalidateFor(key: EditableKey): void {
   }
 }
 
-const HOUSES: readonly House[] = ["green", "purple", "orange", "pink"];
-const KPI_KINDS = ["up", "down", "flat"] as const;
-
 function str(formData: FormData, name: string): string {
   return String(formData.get(name) ?? "").trim();
 }
@@ -66,7 +54,7 @@ function parseHomeHero(formData: FormData): HomeHero {
     .filter(Boolean);
 
   const houseRaw = str(formData, "leading_house");
-  const house: House = (HOUSES as readonly string[]).includes(houseRaw)
+  const house: House = (HOUSE_KEYS as readonly string[]).includes(houseRaw)
     ? (houseRaw as House)
     : "green";
   const label = str(formData, "leading_label");
