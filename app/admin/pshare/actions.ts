@@ -4,35 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
-
-const IMAGE_MIMES = new Set(["image/jpeg", "image/png", "image/webp"]);
-const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
-
-function extFromMime(mime: string): string {
-  if (mime === "image/jpeg") return "jpg";
-  if (mime === "image/png") return "png";
-  if (mime === "image/webp") return "webp";
-  return "";
-}
-
-async function uploadPshareImage(
-  formData: FormData,
-  postId: string,
-): Promise<string | null> {
-  const file = formData.get("image");
-  if (!(file instanceof File) || file.size === 0) return null;
-  if (!IMAGE_MIMES.has(file.type)) return null;
-  if (file.size > IMAGE_MAX_BYTES) return null;
-
-  const ext = extFromMime(file.type);
-  const path = `pshare/${postId}.${ext}`;
-  const db = await createClient();
-  const { error } = await db.storage
-    .from("assets")
-    .upload(path, file, { upsert: true, contentType: file.type });
-  if (error) throw new Error(`pshare upload: ${error.message}`);
-  return path;
-}
+import { uploadAsset } from "@/lib/uploads";
 
 type DraftFields = {
   slug: string;
@@ -120,7 +92,7 @@ export async function saveDraft(formData: FormData): Promise<void> {
     rowId = data.id;
   }
 
-  const newPath = await uploadPshareImage(formData, rowId);
+  const newPath = await uploadAsset(formData, "pshare", rowId);
   if (newPath) {
     const { error } = await db
       .from("pshare_posts")
@@ -169,7 +141,7 @@ export async function publishPost(formData: FormData): Promise<void> {
     rowId = data.id;
   }
 
-  const newPath = await uploadPshareImage(formData, rowId);
+  const newPath = await uploadAsset(formData, "pshare", rowId);
   if (newPath) {
     const { error } = await db
       .from("pshare_posts")

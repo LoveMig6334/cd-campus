@@ -5,41 +5,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import { normalizeTags } from "@/lib/ui/portfolio";
+import { uploadAsset } from "@/lib/uploads";
 
 const PROJECT_STATUSES = ["Published", "Under Review", "Draft"] as const;
 type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
 function isProjectStatus(v: string): v is ProjectStatus {
   return (PROJECT_STATUSES as readonly string[]).includes(v);
-}
-
-const IMAGE_MIMES = new Set(["image/jpeg", "image/png", "image/webp"]);
-const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
-
-function extFromMime(mime: string): string {
-  if (mime === "image/jpeg") return "jpg";
-  if (mime === "image/png") return "png";
-  if (mime === "image/webp") return "webp";
-  return "";
-}
-
-async function uploadProjectImage(
-  formData: FormData,
-  projectId: string,
-): Promise<string | null> {
-  const file = formData.get("image");
-  if (!(file instanceof File) || file.size === 0) return null;
-  if (!IMAGE_MIMES.has(file.type)) return null;
-  if (file.size > IMAGE_MAX_BYTES) return null;
-
-  const ext = extFromMime(file.type);
-  const path = `portfolio/${projectId}.${ext}`;
-  const db = await createClient();
-  const { error } = await db.storage
-    .from("assets")
-    .upload(path, file, { upsert: true, contentType: file.type });
-  if (error) throw new Error(`project upload: ${error.message}`);
-  return path;
 }
 
 export async function setProjectStatus(formData: FormData): Promise<void> {
@@ -129,7 +101,7 @@ export async function createProject(formData: FormData): Promise<void> {
     .single();
   if (error) throw new Error(error.message);
 
-  const path = await uploadProjectImage(formData, data.id);
+  const path = await uploadAsset(formData, "portfolio", data.id);
   if (path) {
     const { error: updErr } = await db
       .from("projects")
@@ -154,7 +126,7 @@ export async function updateProject(formData: FormData): Promise<void> {
   const { error } = await db.from("projects").update(parsed.data).eq("id", id);
   if (error) throw new Error(error.message);
 
-  const path = await uploadProjectImage(formData, id);
+  const path = await uploadAsset(formData, "portfolio", id);
   if (path) {
     const { error: updErr } = await db
       .from("projects")
