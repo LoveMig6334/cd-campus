@@ -30,7 +30,7 @@ export function RealtimeRefresh({ tables, channelKey }: Props) {
         { event: "*", schema: "public", table },
         () => {
           if (timer.current) clearTimeout(timer.current);
-          timer.current = setTimeout(() => router.refresh(), 250);
+          timer.current = setTimeout(() => router.refresh(), 1200);
         },
       );
     }
