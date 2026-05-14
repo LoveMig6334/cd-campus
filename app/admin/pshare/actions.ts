@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import { uploadAsset } from "@/lib/uploads";
@@ -93,16 +94,17 @@ export async function saveDraft(formData: FormData): Promise<void> {
   }
 
   const newPath = await uploadAsset(formData, "pshare", rowId);
-  if (newPath) {
-    const { error } = await db
-      .from("pshare_posts")
-      .update({ art_image_path: newPath })
-      .eq("id", rowId);
-    if (error) throw new Error(error.message);
-  }
 
   revalidatePath("/admin/pshare");
-  revalidatePath("/student/pshare");
+  after(async () => {
+    if (newPath) {
+      await db
+        .from("pshare_posts")
+        .update({ art_image_path: newPath })
+        .eq("id", rowId);
+    }
+    revalidatePath("/student/pshare");
+  });
   redirect("/admin/pshare");
 }
 
@@ -142,16 +144,17 @@ export async function publishPost(formData: FormData): Promise<void> {
   }
 
   const newPath = await uploadAsset(formData, "pshare", rowId);
-  if (newPath) {
-    const { error } = await db
-      .from("pshare_posts")
-      .update({ art_image_path: newPath })
-      .eq("id", rowId);
-    if (error) throw new Error(error.message);
-  }
 
   revalidatePath("/admin/pshare");
-  revalidatePath("/student/pshare");
+  after(async () => {
+    if (newPath) {
+      await db
+        .from("pshare_posts")
+        .update({ art_image_path: newPath })
+        .eq("id", rowId);
+    }
+    revalidatePath("/student/pshare");
+  });
   redirect("/admin/pshare");
 }
 
