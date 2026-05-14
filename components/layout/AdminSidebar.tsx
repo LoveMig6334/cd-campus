@@ -1,10 +1,6 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/cn";
 import { signOut } from "@/app/auth/signout/actions";
+import { ActiveLink } from "./ActiveLink";
 
 export type NavItem = {
   href: string;
@@ -92,8 +88,12 @@ const NAV: NavItem[] = [
   },
 ];
 
+const BASE_LINK =
+  "flex items-center gap-3 border-l-[3px] px-3 py-2.5 text-left font-sans text-[13.5px] transition-colors";
+const ACTIVE_LINK = `${BASE_LINK} border-blue bg-ink text-yellow font-medium group`;
+const INACTIVE_LINK = `${BASE_LINK} text-ink hover:bg-cream border-transparent group`;
+
 export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
-  const pathname = usePathname();
   const items = [...NAV, ...extraItems];
   return (
     <aside
@@ -124,53 +124,35 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
         Workspace
       </div>
       <nav className="flex flex-col gap-0.5">
-        {items.map((item) => {
-          const active =
-            item.href === "/admin"
-              ? pathname === "/admin"
-              : pathname === item.href || pathname.startsWith(`${item.href}/`);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "flex items-center gap-3 border-l-[3px] px-3 py-2.5 text-left font-sans text-[13.5px] transition-colors",
-                active
-                  ? "border-blue bg-ink text-yellow font-medium"
-                  : "text-ink hover:bg-cream border-transparent",
-              )}
+        {items.map((item) => (
+          <ActiveLink
+            key={item.href}
+            href={item.href}
+            exact={item.href === "/admin"}
+            activeClass={ACTIVE_LINK}
+            inactiveClass={INACTIVE_LINK}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-mute-700 shrink-0 group-data-[active=true]:text-yellow"
             >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={cn(
-                  "shrink-0",
-                  active ? "text-yellow" : "text-mute-700",
-                )}
-              >
-                {item.icon}
-              </svg>
-              <span>
-                {item.en}{" "}
-                <span
-                  className={cn(
-                    "font-display ml-1 text-[13px] italic",
-                    active ? "text-yellow" : "text-mute-500",
-                  )}
-                >
-                  {item.th}
-                </span>
+              {item.icon}
+            </svg>
+            <span>
+              {item.en}{" "}
+              <span className="font-display text-mute-500 group-data-[active=true]:text-yellow ml-1 text-[13px] italic">
+                {item.th}
               </span>
-            </Link>
-          );
-        })}
+            </span>
+          </ActiveLink>
+        ))}
       </nav>
       <form action={signOut} className="border-line mt-3 border-t-[1.5px] pt-3">
         <button
