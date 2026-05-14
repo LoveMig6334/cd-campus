@@ -5,17 +5,11 @@ import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { getSportResultById } from "@/lib/queries/sportResults";
 import { deleteSportResult, updateSportResult } from "../../../actions";
+import { HOUSES } from "@/lib/ui/sport";
 
 const CATEGORIES = [
   { value: "Track", label: "Track · ลู่" },
   { value: "Team", label: "Team · ทีม" },
-];
-
-const HOUSES = [
-  { value: "1", label: "Green · เขียว" },
-  { value: "2", label: "Purple · ม่วง" },
-  { value: "3", label: "Orange · ส้ม" },
-  { value: "4", label: "Pink · ชมพู" },
 ];
 
 const PLACEMENT_LABELS = [
