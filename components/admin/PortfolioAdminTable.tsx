@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { PortfolioAdminRow } from "@/lib/types";
 import { setProjectStatus } from "@/app/admin/portfolio/actions";
 import { getAssetUrl } from "@/lib/storage";
+import { PROJECT_STATUSES, STATUS_LABEL } from "@/lib/ui/portfolio";
 import { Pill } from "./Pill";
 import { PortfolioThumbIconRender } from "./PortfolioThumbIcons";
 
@@ -14,18 +15,6 @@ const STATUS_VARIANT: Record<
   "Under Review": "rev",
   Draft: "pend",
 };
-
-const STATUS_LABEL: Record<PortfolioAdminRow["status"], string> = {
-  Published: "Published",
-  "Under Review": "Under Review",
-  Draft: "Draft",
-};
-
-const STATUS_OPTIONS: PortfolioAdminRow["status"][] = [
-  "Published",
-  "Under Review",
-  "Draft",
-];
 
 export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
   return (
@@ -118,7 +107,7 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
                 <div className="flex flex-wrap items-center gap-1.5">
                   <form action={setProjectStatus} className="contents">
                     <input type="hidden" name="id" value={row.id} />
-                    {STATUS_OPTIONS.filter((s) => s !== row.status).map((s) => (
+                    {PROJECT_STATUSES.filter((s) => s !== row.status).map((s) => (
                       <button
                         key={s}
                         type="submit"

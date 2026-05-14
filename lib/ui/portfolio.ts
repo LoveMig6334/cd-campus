@@ -49,3 +49,23 @@ export function normalizeTags(raw: unknown): PortfolioTagPill[] {
   }
   return out;
 }
+
+export const PROJECT_STATUSES = [
+  "Published",
+  "Under Review",
+  "Draft",
+] as const;
+
+export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
+
+export const STATUS_LABEL: Record<ProjectStatus, string> = {
+  Published: "Published",
+  "Under Review": "Under Review",
+  Draft: "Draft",
+};
+
+export const STATUS_LABEL_BILINGUAL: Record<ProjectStatus, string> = {
+  Published: "Published · เผยแพร่",
+  "Under Review": "Under Review · กำลังตรวจ",
+  Draft: "Draft · ฉบับร่าง",
+};

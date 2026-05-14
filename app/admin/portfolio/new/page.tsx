@@ -4,12 +4,7 @@ import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { PortfolioTagsField } from "@/components/admin/PortfolioTagsField";
 import { createProject } from "../actions";
-
-const STATUS_OPTIONS = [
-  { value: "Draft", label: "Draft · ฉบับร่าง" },
-  { value: "Under Review", label: "Under Review · กำลังตรวจ" },
-  { value: "Published", label: "Published · เผยแพร่" },
-];
+import { PROJECT_STATUSES, STATUS_LABEL_BILINGUAL } from "@/lib/ui/portfolio";
 
 const ICON_OPTIONS = [
   { value: "", label: "— (default trend)" },
@@ -116,9 +111,9 @@ export default function NewProjectPage() {
               defaultValue="Draft"
               className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             >
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
+              {PROJECT_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {STATUS_LABEL_BILINGUAL[s]}
                 </option>
               ))}
             </select>
