@@ -1,9 +1,5 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/cn";
+import { ActiveLink } from "./ActiveLink";
 
 type Tab = {
   href: string;
@@ -56,47 +52,41 @@ const TABS: Tab[] = [
   },
 ];
 
+const BASE_TAB =
+  "relative flex flex-col items-center gap-[3px] py-1.5 font-mono text-[9px] tracking-[0.1em] uppercase transition-colors group";
+const ACTIVE_TAB = `${BASE_TAB} text-blue font-semibold`;
+const INACTIVE_TAB = `${BASE_TAB} text-mute-500`;
+
 export function StudentBottomNav() {
-  const pathname = usePathname();
   return (
     <nav className="border-line bg-cream grid shrink-0 grid-cols-5 border-t-[1.5px] pt-2 pb-3.5">
-      {TABS.map((tab) => {
-        const active =
-          tab.href === "/student"
-            ? pathname === "/student"
-            : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
-        return (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "relative flex flex-col items-center gap-[3px] py-1.5 font-mono text-[9px] tracking-[0.1em] uppercase transition-colors",
-              active ? "text-blue font-semibold" : "text-mute-500",
-            )}
+      {TABS.map((tab) => (
+        <ActiveLink
+          key={tab.href}
+          href={tab.href}
+          exact={tab.href === "/student"}
+          activeClass={ACTIVE_TAB}
+          inactiveClass={INACTIVE_TAB}
+        >
+          <span
+            aria-hidden
+            className="bg-blue absolute -top-2 left-1/2 hidden h-[3px] w-6 -translate-x-1/2 group-data-[active=true]:block"
+          />
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            {active && (
-              <span
-                aria-hidden
-                className="bg-blue absolute -top-2 left-1/2 h-[3px] w-6 -translate-x-1/2"
-              />
-            )}
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {tab.icon}
-            </svg>
-            {tab.label}
-          </Link>
-        );
-      })}
+            {tab.icon}
+          </svg>
+          {tab.label}
+        </ActiveLink>
+      ))}
     </nav>
   );
 }
