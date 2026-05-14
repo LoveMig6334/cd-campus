@@ -429,6 +429,27 @@ export type Database = {
           },
         ]
       }
+      rate_limit_buckets: {
+        Row: {
+          action: string
+          bucket_start: string
+          hits: number
+          ip: string
+        }
+        Insert: {
+          action: string
+          bucket_start: string
+          hits?: number
+          ip: string
+        }
+        Update: {
+          action?: string
+          bucket_start?: string
+          hits?: number
+          ip?: string
+        }
+        Relationships: []
+      }
       rooms: {
         Row: {
           id: string
@@ -534,6 +555,10 @@ export type Database = {
       current_admin_id: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_root_admin: { Args: never; Returns: boolean }
+      record_anon_hit: {
+        Args: { p_action: string; p_ip: string }
+        Returns: number
+      }
     }
     Enums: {
       admin_tier: "root" | "normal"
