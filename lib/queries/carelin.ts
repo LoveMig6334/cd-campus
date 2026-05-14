@@ -151,8 +151,10 @@ export async function getCarelinTabCounts(): Promise<{
       .select("*", { count: "exact", head: true })
       .eq("status", "answered"),
   ]);
-  if (allRes.error) throw new Error(`getCarelinTabCounts: ${allRes.error.message}`);
-  if (openRes.error) throw new Error(`getCarelinTabCounts: ${openRes.error.message}`);
+  if (allRes.error)
+    throw new Error(`getCarelinTabCounts: ${allRes.error.message}`);
+  if (openRes.error)
+    throw new Error(`getCarelinTabCounts: ${openRes.error.message}`);
   if (answeredRes.error) {
     throw new Error(`getCarelinTabCounts: ${answeredRes.error.message}`);
   }

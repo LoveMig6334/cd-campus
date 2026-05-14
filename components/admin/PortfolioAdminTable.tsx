@@ -107,22 +107,24 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
                 <div className="flex flex-wrap items-center gap-1.5">
                   <form action={setProjectStatus} className="contents">
                     <input type="hidden" name="id" value={row.id} />
-                    {PROJECT_STATUSES.filter((s) => s !== row.status).map((s) => (
-                      <button
-                        key={s}
-                        type="submit"
-                        name="status"
-                        value={s}
-                        className="border-line bg-paper text-mute-700 hover:bg-cream border-[1.5px] px-2 py-1"
-                      >
-                        →{" "}
-                        {s === "Published"
-                          ? "Pub"
-                          : s === "Under Review"
-                            ? "Rev"
-                            : "Drf"}
-                      </button>
-                    ))}
+                    {PROJECT_STATUSES.filter((s) => s !== row.status).map(
+                      (s) => (
+                        <button
+                          key={s}
+                          type="submit"
+                          name="status"
+                          value={s}
+                          className="border-line bg-paper text-mute-700 hover:bg-cream border-[1.5px] px-2 py-1"
+                        >
+                          →{" "}
+                          {s === "Published"
+                            ? "Pub"
+                            : s === "Under Review"
+                              ? "Rev"
+                              : "Drf"}
+                        </button>
+                      ),
+                    )}
                   </form>
                   <Link
                     href={`/admin/portfolio/${row.id}/edit`}

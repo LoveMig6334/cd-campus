@@ -8,7 +8,7 @@
 
 No new dependencies. No new env vars. No database migrations.
 
-**Tech Stack:** Next.js 16 App Router, React 19 (`cache()`, `Suspense`, `after()`), `@supabase/ssr`, Tailwind 4 (CSS-first `@theme`), `react-markdown` + `remark-gfm` (server-side from Phase A onward), `proxy.ts` (Next 16 convention — *not* `middleware.ts`).
+**Tech Stack:** Next.js 16 App Router, React 19 (`cache()`, `Suspense`, `after()`), `@supabase/ssr`, Tailwind 4 (CSS-first `@theme`), `react-markdown` + `remark-gfm` (server-side from Phase A onward), `proxy.ts` (Next 16 convention — _not_ `middleware.ts`).
 
 **Source of findings:** Performance review conducted 2026-05-14, cross-referenced against `.agents/skills/vercel-react-best-practices/rules/*`. Each task cites the Vercel rule ID it implements.
 
@@ -26,31 +26,31 @@ No new dependencies. No new env vars. No database migrations.
 
 ## File structure
 
-| File                                                      | Purpose                                                              | New / Modified | Phase |
-| --------------------------------------------------------- | -------------------------------------------------------------------- | -------------- | ----- |
-| `lib/auth.ts`                                             | Wrap `requireAdmin` / `requireRootAdmin` in `React.cache()`          | Modified       | A     |
-| `components/student/PshareReader.tsx`                     | Drop `"use client"` — render markdown on the server                  | Modified       | A     |
-| `lib/queries/bookings.ts`                                 | Fix `getRecentBookings` order; parallelize internal awaits           | Modified       | A     |
-| `lib/queries/carelin.ts`                                  | Replace row-scan count with head-only counts; hoist regex            | Modified       | A     |
-| `lib/queries/events.ts`                                   | Hoist regexes to module scope                                        | Modified       | A     |
-| `lib/queries/projects.ts`                                 | Hoist regex to module scope                                          | Modified       | A     |
-| `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg` | Delete — dead Next-template assets                       | Deleted        | A     |
-| `next.config.ts`                                          | Add `images.formats = ["image/avif", "image/webp"]`                  | Modified       | A     |
-| `lib/fonts.ts`                                            | Drop unused Plex Thai weights 300 and 700                            | Modified       | A     |
-| `app/layout.tsx`                                          | `preconnect(SUPABASE_URL)` in the root server component              | Modified       | A     |
-| `app/admin/loading.tsx`                                   | Route-level loading skeleton for admin                               | New            | B     |
-| `app/student/loading.tsx`                                 | Route-level loading skeleton for student                             | New            | B     |
-| `app/admin/page.tsx`                                      | Split into `<Suspense>`-wrapped async child server components        | Modified       | B     |
-| `components/admin/cards/AdminOverviewCards.tsx`           | New file holding the four async children for `/admin`                | New            | B     |
-| `components/layout/ActiveLink.tsx`                        | Tiny client wrapper deriving active state from `usePathname()`       | New            | B     |
-| `components/layout/AdminSidebar.tsx`                      | Revert to server component; use `<ActiveLink>` per row               | Modified       | B     |
-| `components/layout/StudentBottomNav.tsx`                  | Revert to server component; use `<ActiveLink>` per tab               | Modified       | B     |
-| `app/globals.css`                                         | Add `.cv-row` utility for `content-visibility: auto`                 | Modified       | B     |
-| `components/admin/PortfolioAdminTable.tsx`                | Apply `cv-row` to each `<tr>`                                        | Modified       | B     |
-| `components/admin/AdminTodayBookingsTable.tsx`            | Apply `cv-row` to each `<tr>`                                        | Modified       | B     |
-| `app/student/booking/actions.ts`                          | Move cross-role `revalidatePath` calls into `after()`                | Modified       | B     |
-| `app/admin/pshare/actions.ts`                             | Move secondary `art_image_path` UPDATE into `after()`                | Modified       | B     |
-| `components/RealtimeRefresh.tsx`                          | Lengthen debounce 250 ms → 1200 ms                                   | Modified       | C     |
+| File                                                                   | Purpose                                                        | New / Modified | Phase |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------- | -------------- | ----- |
+| `lib/auth.ts`                                                          | Wrap `requireAdmin` / `requireRootAdmin` in `React.cache()`    | Modified       | A     |
+| `components/student/PshareReader.tsx`                                  | Drop `"use client"` — render markdown on the server            | Modified       | A     |
+| `lib/queries/bookings.ts`                                              | Fix `getRecentBookings` order; parallelize internal awaits     | Modified       | A     |
+| `lib/queries/carelin.ts`                                               | Replace row-scan count with head-only counts; hoist regex      | Modified       | A     |
+| `lib/queries/events.ts`                                                | Hoist regexes to module scope                                  | Modified       | A     |
+| `lib/queries/projects.ts`                                              | Hoist regex to module scope                                    | Modified       | A     |
+| `public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg` | Delete — dead Next-template assets                             | Deleted        | A     |
+| `next.config.ts`                                                       | Add `images.formats = ["image/avif", "image/webp"]`            | Modified       | A     |
+| `lib/fonts.ts`                                                         | Drop unused Plex Thai weights 300 and 700                      | Modified       | A     |
+| `app/layout.tsx`                                                       | `preconnect(SUPABASE_URL)` in the root server component        | Modified       | A     |
+| `app/admin/loading.tsx`                                                | Route-level loading skeleton for admin                         | New            | B     |
+| `app/student/loading.tsx`                                              | Route-level loading skeleton for student                       | New            | B     |
+| `app/admin/page.tsx`                                                   | Split into `<Suspense>`-wrapped async child server components  | Modified       | B     |
+| `components/admin/cards/AdminOverviewCards.tsx`                        | New file holding the four async children for `/admin`          | New            | B     |
+| `components/layout/ActiveLink.tsx`                                     | Tiny client wrapper deriving active state from `usePathname()` | New            | B     |
+| `components/layout/AdminSidebar.tsx`                                   | Revert to server component; use `<ActiveLink>` per row         | Modified       | B     |
+| `components/layout/StudentBottomNav.tsx`                               | Revert to server component; use `<ActiveLink>` per tab         | Modified       | B     |
+| `app/globals.css`                                                      | Add `.cv-row` utility for `content-visibility: auto`           | Modified       | B     |
+| `components/admin/PortfolioAdminTable.tsx`                             | Apply `cv-row` to each `<tr>`                                  | Modified       | B     |
+| `components/admin/AdminTodayBookingsTable.tsx`                         | Apply `cv-row` to each `<tr>`                                  | Modified       | B     |
+| `app/student/booking/actions.ts`                                       | Move cross-role `revalidatePath` calls into `after()`          | Modified       | B     |
+| `app/admin/pshare/actions.ts`                                          | Move secondary `art_image_path` UPDATE into `after()`          | Modified       | B     |
+| `components/RealtimeRefresh.tsx`                                       | Lengthen debounce 250 ms → 1200 ms                             | Modified       | C     |
 
 ---
 
@@ -63,6 +63,7 @@ No new dependencies. No new env vars. No database migrations.
 Today every admin page load runs `supabase.auth.getUser()` in three places (`proxy.ts`, `AdminLayout`, and any page that puts `requireAdmin()` in its top-level `Promise.all`). The proxy roundtrip is mandatory for cookie refresh. The layout and page calls are redundant within a single render — `React.cache()` collapses them.
 
 **Files:**
+
 - Modify: `lib/auth.ts`
 
 - [ ] **Step 1: Replace the file contents**
@@ -127,6 +128,7 @@ git commit -m "perf: cache requireAdmin per request via React.cache()"
 `components/student/PshareReader.tsx` is `"use client"` despite having zero state, zero effects, and zero handlers. The result: every `/student/pshare/[slug]` page ships `react-markdown` + `remark-gfm` + the `unified`/`micromark`/`mdast` chain to the browser (~100–150 KB gzipped) just to render static text.
 
 **Files:**
+
 - Modify: `components/student/PshareReader.tsx`
 
 - [ ] **Step 1: Replace file contents**
@@ -166,9 +168,10 @@ git commit -m "perf: render PshareReader on the server, drop client bundle of re
 
 ### Task 3: Fix `getRecentBookings` ordering
 
-**Bug — also a perf smell.** `getRecentBookings` is intended to return the most recent bookings (the admin overview's "Recent bookings" card). Today it orders ascending and limits, so it returns the *oldest* `limit` rows and forces the database to scan from the beginning of the index every time.
+**Bug — also a perf smell.** `getRecentBookings` is intended to return the most recent bookings (the admin overview's "Recent bookings" card). Today it orders ascending and limits, so it returns the _oldest_ `limit` rows and forces the database to scan from the beginning of the index every time.
 
 **Files:**
+
 - Modify: `lib/queries/bookings.ts:267-269`
 
 - [ ] **Step 1: Flip the order direction**
@@ -207,6 +210,7 @@ git commit -m "fix: getRecentBookings returns most recent rows, not oldest"
 Both helpers fetch bookings, then sequentially fetch the rooms list. The two queries have no dependency on each other and can run in parallel.
 
 **Files:**
+
 - Modify: `lib/queries/bookings.ts:126-195` (`getGanttRooms`) and `lib/queries/bookings.ts:197-241` (`getWeekBookings`)
 
 - [ ] **Step 1: Rewrite `getGanttRooms`**
@@ -233,8 +237,10 @@ export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
       .order("sort_order", { ascending: true }),
   ]);
 
-  if (bookingsRes.error) throw new Error(`getGanttRooms: ${bookingsRes.error.message}`);
-  if (roomsRes.error) throw new Error(`getGanttRooms rooms: ${roomsRes.error.message}`);
+  if (bookingsRes.error)
+    throw new Error(`getGanttRooms: ${bookingsRes.error.message}`);
+  if (roomsRes.error)
+    throw new Error(`getGanttRooms rooms: ${roomsRes.error.message}`);
 
   type Row = {
     user_label: string;
@@ -317,8 +323,10 @@ export async function getWeekBookings(
       .order("sort_order", { ascending: true }),
   ]);
 
-  if (bookingsRes.error) throw new Error(`getWeekBookings: ${bookingsRes.error.message}`);
-  if (roomsRes.error) throw new Error(`getWeekBookings rooms: ${roomsRes.error.message}`);
+  if (bookingsRes.error)
+    throw new Error(`getWeekBookings: ${bookingsRes.error.message}`);
+  if (roomsRes.error)
+    throw new Error(`getWeekBookings rooms: ${roomsRes.error.message}`);
 
   const bookingsByRoomDay: Record<string, Record<string, WeekChip[]>> = {};
   for (const b of bookingsRes.data ?? []) {
@@ -366,6 +374,7 @@ git commit -m "perf: parallelize bookings + rooms fetches in getGanttRooms and g
 Today the function pulls every `carelin_requests` row to compute three counts in JS. As the table grows this is O(n) network and CPU. Three head-only count queries (parallel) move the work to Postgres and transfer only the counters.
 
 **Files:**
+
 - Modify: `lib/queries/carelin.ts:140-154`
 
 - [ ] **Step 1: Replace the function**
@@ -390,8 +399,10 @@ export async function getCarelinTabCounts(): Promise<{
       .select("*", { count: "exact", head: true })
       .eq("status", "answered"),
   ]);
-  if (allRes.error) throw new Error(`getCarelinTabCounts: ${allRes.error.message}`);
-  if (openRes.error) throw new Error(`getCarelinTabCounts: ${openRes.error.message}`);
+  if (allRes.error)
+    throw new Error(`getCarelinTabCounts: ${allRes.error.message}`);
+  if (openRes.error)
+    throw new Error(`getCarelinTabCounts: ${openRes.error.message}`);
   if (answeredRes.error) {
     throw new Error(`getCarelinTabCounts: ${answeredRes.error.message}`);
   }
@@ -424,6 +435,7 @@ git commit -m "perf: count carelin tabs server-side via head queries instead of 
 `public/` carries five SVG files from `create-next-app`: `file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`. None are referenced anywhere in `app/` or `components/`.
 
 **Files:**
+
 - Delete: `public/file.svg`, `public/globe.svg`, `public/next.svg`, `public/vercel.svg`, `public/window.svg`
 
 - [ ] **Step 1: Confirm no references**
@@ -453,6 +465,7 @@ git commit -m "chore: drop unused Next-template SVGs from public/"
 **Vercel rule analog:** image-bytes-on-the-wire reduction. AVIF averages ~30% smaller than WebP for photographic content (P'share hero images served from Supabase storage).
 
 **Files:**
+
 - Modify: `next.config.ts`
 
 - [ ] **Step 1: Add `formats` to the `images` block**
@@ -492,6 +505,7 @@ git commit -m "perf: serve AVIF (then WebP) via next/image"
 **Vercel rule:** `js-hoist-regexp`. RegExp literals inside hot functions are recompiled on every call. Hoisting is free and avoids the work on `router.refresh()`-driven re-renders.
 
 **Files:**
+
 - Modify: `lib/queries/events.ts`
 - Modify: `lib/queries/bookings.ts`
 - Modify: `lib/queries/carelin.ts`
@@ -624,6 +638,7 @@ git commit -m "perf: hoist regex literals to module scope in query helpers"
 A grep across `app/` and `components/` confirms `font-light` and `font-bold` are never used. `lib/fonts.ts` loads Plex Thai weights `["300", "400", "500", "600", "700"]`. Weights 300 and 700 are dead — dropping them removes two WOFF2 subsets (latin + thai) from the font payload.
 
 **Files:**
+
 - Modify: `lib/fonts.ts`
 
 - [ ] **Step 1: Confirm nothing uses 300 or 700**
@@ -664,6 +679,7 @@ git commit -m "perf: drop unused IBM Plex Thai weights 300 and 700"
 **Vercel rule:** `rendering-resource-hints`. The HTML response reaches the browser before any `<img>` triggers DNS for Supabase. A `preconnect` in the root layout starts the DNS + TCP + TLS handshake earlier.
 
 **Files:**
+
 - Modify: `app/layout.tsx`
 
 - [ ] **Step 1: Import `preconnect` and call it in `RootLayout`**
@@ -726,6 +742,7 @@ git commit -m "perf: preconnect Supabase from the root layout"
 **Vercel rule:** `async-suspense-boundaries` (HIGH — faster initial paint). Route-level `loading.tsx` paints instantly on navigation while the page resolves data.
 
 **Files:**
+
 - Create: `app/admin/loading.tsx`
 
 - [ ] **Step 1: Create the file**
@@ -781,6 +798,7 @@ git commit -m "perf: route-level loading skeleton for /admin"
 ### Task 12: Add `app/student/loading.tsx`
 
 **Files:**
+
 - Create: `app/student/loading.tsx`
 
 - [ ] **Step 1: Create the file**
@@ -818,6 +836,7 @@ git commit -m "perf: route-level loading skeleton for /student"
 **Vercel rule:** `async-suspense-boundaries` + `server-parallel-fetching`. Today `app/admin/page.tsx` awaits all five queries before any HTML returns. Split each card into an async child server component so the shell renders immediately and cards stream as their data arrives.
 
 **Files:**
+
 - Create: `components/admin/cards/OverviewCards.tsx`
 - Modify: `app/admin/page.tsx`
 
@@ -859,7 +878,11 @@ export async function TrendCard() {
   const trend = await getTrendChart();
   return (
     <Card accent>
-      <CardTitle th="กิจกรรม 12 เดือน" en="12-month trend" menu="↗ View report" />
+      <CardTitle
+        th="กิจกรรม 12 เดือน"
+        en="12-month trend"
+        menu="↗ View report"
+      />
       <TrendChart data={trend} />
     </Card>
   );
@@ -989,9 +1012,10 @@ git commit -m "perf: stream /admin overview cards via per-card Suspense boundari
 
 ### Task 14: Extract `ActiveLink` and de-clientify `AdminSidebar`
 
-**Vercel rule:** `server-serialization` (minimize what crosses the client boundary). `AGENTS.md` explicitly says: *"Active nav state is derived from `usePathname()` in tiny client wrappers — don't drag whole layouts client-side."*
+**Vercel rule:** `server-serialization` (minimize what crosses the client boundary). `AGENTS.md` explicitly says: _"Active nav state is derived from `usePathname()` in tiny client wrappers — don't drag whole layouts client-side."_
 
 **Files:**
+
 - Create: `components/layout/ActiveLink.tsx`
 - Modify: `components/layout/AdminSidebar.tsx`
 
@@ -1138,8 +1162,7 @@ const BASE_LINK =
 const ACTIVE_LINK = `${BASE_LINK} border-blue bg-ink text-yellow font-medium`;
 const INACTIVE_LINK = `${BASE_LINK} text-ink hover:bg-cream border-transparent`;
 
-const BASE_ICON =
-  "shrink-0";
+const BASE_ICON = "shrink-0";
 const ACTIVE_ICON = `${BASE_ICON} text-yellow`;
 const INACTIVE_ICON = `${BASE_ICON} text-mute-700`;
 
@@ -1199,7 +1222,9 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
             </svg>
             <span>
               {item.en}{" "}
-              <span className={`${BASE_TH} text-mute-500 group-data-[active=true]:text-yellow`}>
+              <span
+                className={`${BASE_TH} text-mute-500 group-data-[active=true]:text-yellow`}
+              >
                 {item.th}
               </span>
             </span>
@@ -1234,6 +1259,7 @@ Run: `npm run lint && npm run build`
 Expected: pass.
 
 Run: `npm run dev`, sign in as admin. Click through every sidebar item and verify:
+
 1. The active row has the blue left border + ink background + yellow text + yellow icon + yellow Thai gloss.
 2. Inactive rows have grey text and grey icons.
 3. Hovering an inactive row tints the background cream.
@@ -1253,6 +1279,7 @@ git commit -m "refactor: ActiveLink wrapper; AdminSidebar reverts to server comp
 Same playbook: keep `usePathname` in a tiny client wrapper, render the rest server-side.
 
 **Files:**
+
 - Modify: `components/layout/StudentBottomNav.tsx`
 
 - [ ] **Step 1: Replace the file**
@@ -1358,6 +1385,7 @@ Run: `npm run lint && npm run build`
 Expected: pass.
 
 Run: `npm run dev`, open `/student`. Tap each bottom-nav tab:
+
 1. The active tab shows the blue top bar, blue text, semibold.
 2. Inactive tabs show grey.
 3. Pathname change updates the active state immediately.
@@ -1376,6 +1404,7 @@ git commit -m "refactor: StudentBottomNav reverts to server component, uses Acti
 **Vercel rule:** `rendering-content-visibility`. Skips layout + paint for rows off-screen — 10× faster initial render at the 1k-row scale.
 
 **Files:**
+
 - Modify: `app/globals.css`
 - Modify: `components/admin/PortfolioAdminTable.tsx`
 - Modify: `components/admin/AdminTodayBookingsTable.tsx`
@@ -1397,6 +1426,7 @@ Append to `app/globals.css` (after the existing halftone block):
 Open `components/admin/PortfolioAdminTable.tsx`. Find the `<tr>` element inside the `rows.map` (around line 60). Append `cv-row` to its `className`:
 
 Before:
+
 ```tsx
 <tr
   key={i}
@@ -1405,6 +1435,7 @@ Before:
 ```
 
 After:
+
 ```tsx
 <tr
   key={i}
@@ -1437,6 +1468,7 @@ git commit -m "perf: content-visibility on admin long-list rows"
 **Vercel rule:** `server-after-nonblocking`. The student doesn't need `/admin/bookings` revalidation to finish before seeing their success banner — but today they wait for it.
 
 **Files:**
+
 - Modify: `app/student/booking/actions.ts`
 
 - [ ] **Step 1: Reorder revalidation**
@@ -1535,6 +1567,7 @@ git commit -m "perf: defer admin-path revalidation in bookRoom via after()"
 **Vercel rule:** `server-after-nonblocking`. Today `saveDraft` and `publishPost` each do INSERT (or UPDATE) → upload → second UPDATE. The admin waits for all three before getting a redirect. The second UPDATE can move into `after()` so the admin lands on the index list immediately and the thumbnail appears moments later.
 
 **Files:**
+
 - Modify: `app/admin/pshare/actions.ts`
 
 - [ ] **Step 1: Replace `saveDraft` and `publishPost`**
@@ -1666,6 +1699,7 @@ git commit -m "perf: defer secondary art_image_path UPDATE in pshare actions via
 **Vercel rule analog:** `client-event-listeners` (rate-limit chattier event sources). `router.refresh()` re-runs the entire route's server tree — including the proxy auth roundtrip and every page-level query. With several admins watching `/admin/bookings` during a busy window, the 250 ms debounce barely caps anything. 1200 ms still feels live to a human and substantially reduces SSR thrash.
 
 **Files:**
+
 - Modify: `components/RealtimeRefresh.tsx`
 
 - [ ] **Step 1: Bump the debounce**
@@ -1673,26 +1707,26 @@ git commit -m "perf: defer secondary art_image_path UPDATE in pshare actions via
 In `components/RealtimeRefresh.tsx`, change the `setTimeout` delay from 250 to 1200. The full updated effect body:
 
 ```tsx
-  useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase.channel(channelKey);
-    for (const table of tablesKey.split("|")) {
-      channel.on(
-        "postgres_changes",
-        { event: "*", schema: "public", table },
-        () => {
-          if (timer.current) clearTimeout(timer.current);
-          timer.current = setTimeout(() => router.refresh(), 1200);
-        },
-      );
-    }
-    channel.subscribe();
+useEffect(() => {
+  const supabase = createClient();
+  const channel = supabase.channel(channelKey);
+  for (const table of tablesKey.split("|")) {
+    channel.on(
+      "postgres_changes",
+      { event: "*", schema: "public", table },
+      () => {
+        if (timer.current) clearTimeout(timer.current);
+        timer.current = setTimeout(() => router.refresh(), 1200);
+      },
+    );
+  }
+  channel.subscribe();
 
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-      void supabase.removeChannel(channel);
-    };
-  }, [channelKey, tablesKey, router]);
+  return () => {
+    if (timer.current) clearTimeout(timer.current);
+    void supabase.removeChannel(channel);
+  };
+}, [channelKey, tablesKey, router]);
 ```
 
 - [ ] **Step 2: Verify**

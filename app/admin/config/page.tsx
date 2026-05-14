@@ -12,10 +12,7 @@ export default async function AdminConfigIndex() {
         <CardTitle th="คอนฟิกทั้งหมด" en="All keys" />
         <ul className="divide-mute-200 divide-y divide-dashed">
           {EDITABLE_KEYS.map((k) => (
-            <li
-              key={k}
-              className="flex items-center justify-between px-3 py-3"
-            >
+            <li key={k} className="flex items-center justify-between px-3 py-3">
               <div>
                 <div className="font-display text-[15px] italic">
                   {KEY_LABELS[k].en}

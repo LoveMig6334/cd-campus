@@ -15,18 +15,18 @@ Phase 5a closed the last user-visible feature gap. The codebase now has two prac
 
 ## In scope
 
-| # (handoff) | Item                                        | Surface                                                                                              |
-| ----------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 3           | Anon-write rate limit (5/min/IP/action)     | new `rate_limit_buckets` + `record_anon_hit()` in `0005`, new `lib/rateLimit.ts`, two action callers |
-| 4           | Drop unused `admin_greeting` site_config    | `lib/queries/siteConfig.ts`, seed, any callers                                                       |
-| 6           | `Btn type="submit"` backfill on 3d forms    | `app/admin/calendar/new/page.tsx`, `app/admin/admins/page.tsx`, `components/admin/PshareEditor.tsx`  |
-| 9           | Booking conflict race window — DB backstop  | `bookings_no_overlap` EXCLUDE in `0005`, `23P01` catch in booking actions                            |
-| 11          | Dead exports in `lib/ui/booking.ts`         | `BOOKING_ACTIVE_TAB`, `BOOKING_CONFIRM_EYEBROW`                                                      |
-| 12          | Constants consolidation                     | new `lib/ui/siteConfig.ts`; grow `lib/ui/sport.ts` (HOUSES) + `lib/ui/portfolio.ts` (STATUS_OPTIONS) |
-| 14          | Seed-side type cleanup                      | `supabase/seed/data/admin-portfolio.ts`, `admin-bookings.ts`                                         |
-| 15          | Image upload helper consolidation           | new `lib/uploads.ts`, two action files                                                               |
-| 16          | Storage delete observability                | `deletePost`, `deleteProject`                                                                        |
-| 17          | RLS audit (Realtime delivery)               | spec-time verification — no code change                                                              |
+| # (handoff) | Item                                       | Surface                                                                                              |
+| ----------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| 3           | Anon-write rate limit (5/min/IP/action)    | new `rate_limit_buckets` + `record_anon_hit()` in `0005`, new `lib/rateLimit.ts`, two action callers |
+| 4           | Drop unused `admin_greeting` site_config   | `lib/queries/siteConfig.ts`, seed, any callers                                                       |
+| 6           | `Btn type="submit"` backfill on 3d forms   | `app/admin/calendar/new/page.tsx`, `app/admin/admins/page.tsx`, `components/admin/PshareEditor.tsx`  |
+| 9           | Booking conflict race window — DB backstop | `bookings_no_overlap` EXCLUDE in `0005`, `23P01` catch in booking actions                            |
+| 11          | Dead exports in `lib/ui/booking.ts`        | `BOOKING_ACTIVE_TAB`, `BOOKING_CONFIRM_EYEBROW`                                                      |
+| 12          | Constants consolidation                    | new `lib/ui/siteConfig.ts`; grow `lib/ui/sport.ts` (HOUSES) + `lib/ui/portfolio.ts` (STATUS_OPTIONS) |
+| 14          | Seed-side type cleanup                     | `supabase/seed/data/admin-portfolio.ts`, `admin-bookings.ts`                                         |
+| 15          | Image upload helper consolidation          | new `lib/uploads.ts`, two action files                                                               |
+| 16          | Storage delete observability               | `deletePost`, `deleteProject`                                                                        |
+| 17          | RLS audit (Realtime delivery)              | spec-time verification — no code change                                                              |
 
 ## Out of scope
 
@@ -187,7 +187,8 @@ const limit = await checkAnonRateLimit("carelin"); // or "booking"
 if (!limit.ok) {
   return {
     ok: false,
-    error: "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
+    error:
+      "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
   };
 }
 ```
@@ -199,7 +200,8 @@ Both actions already return `ActionResult` via `useActionState`; the error rende
 The only caller is `app/admin/page.tsx` (line 13 import, line 21 call). The page already fetches data via `Promise.all`; we add `requireAdmin()` to that call and derive the greeting from `admin.display_name` directly. The `admin` row is fetched once by `app/admin/layout.tsx` already (line 24); calling `requireAdmin()` again from the page is a second DB hit per render — acceptable, matches the existing pattern documented in the handoff's "open items" (admin layout + page both call `requireAdmin` already).
 
 Steps:
-1. In `app/admin/page.tsx`: import `requireAdmin` from `@/lib/auth`. Replace the `getAdminGreeting()` entry in `Promise.all` with `requireAdmin()`. Derive `greeting = { th: \`สวัสดี อาจารย์${admin.display_name}\`, en: \`Hello, ${admin.display_name}\` }` (or change `GreetingBanner` to accept `displayName` and format internally — implementer's call, no strong preference).
+
+1. In `app/admin/page.tsx`: import `requireAdmin` from `@/lib/auth`. Replace the `getAdminGreeting()` entry in `Promise.all` with `requireAdmin()`. Derive `greeting = { th: \`สวัสดี อาจารย์${admin.display_name}\`, en: \`Hello, ${admin.display_name}\` }`(or change`GreetingBanner`to accept`displayName` and format internally — implementer's call, no strong preference).
 2. Remove `getAdminGreeting()` from `lib/queries/siteConfig.ts` (line 23–25).
 3. Delete the `admin_greeting` row from the seed data (locate via grep — likely `supabase/seed/data/site-config.ts` or whichever seed file feeds `site_config`).
 4. One-off SQL run note in the commit message: `delete from site_config where key = 'admin_greeting'`. Not added to a migration (`site_config` data is seed-managed; the row would repopulate if missed).
@@ -305,10 +307,11 @@ if (row?.art_image_path) {
     .from("assets")
     .remove([row.art_image_path]);
   if (storageErr) {
-    console.error(
-      "storage delete failed",
-      { surface: "pshare", path: row.art_image_path, error: storageErr.message },
-    );
+    console.error("storage delete failed", {
+      surface: "pshare",
+      path: row.art_image_path,
+      error: storageErr.message,
+    });
   }
 }
 ```
@@ -328,20 +331,20 @@ Both tables are publicly readable, so the admin Realtime subscriptions in `/admi
 
 Migration first (gates everything that depends on regenerated types and `23P01` semantics). Then the two new modules, then independent refactors in any order. ~12 commits on `main`.
 
-| #   | Commit                                                                | Item    | Depends on |
-| --- | --------------------------------------------------------------------- | ------- | ---------- |
+| #   | Commit                                                                   | Item         | Depends on |
+| --- | ------------------------------------------------------------------------ | ------------ | ---------- |
 | 1   | `add: 0005 — rate_limit_buckets, record_anon_hit(), bookings_no_overlap` | #3+#9 schema | —          |
-| 2   | `add: lib/rateLimit.ts + throttle anon writes (5/min)`                | #3      | 1          |
-| 3   | `fix: surface 23P01 as friendly conflict message in booking actions`  | #9      | 1          |
-| 4   | `refactor: consolidate image upload into lib/uploads.ts`              | #15     | —          |
-| 5   | `refactor: extract config keys/validators to lib/ui/siteConfig.ts`    | #12a    | —          |
-| 6   | `refactor: extract HOUSES to lib/ui/sport.ts`                         | #12b    | —          |
-| 7   | `refactor: consolidate STATUS_OPTIONS in lib/ui/portfolio.ts`         | #12c    | —          |
-| 8   | `chore: drop unused admin_greeting site_config + helper`              | #4      | —          |
-| 9   | `fix: explicit type="submit" on 3d-era admin forms`                   | #6      | —          |
-| 10  | `chore: drop dead exports in lib/ui/booking.ts`                       | #11     | —          |
-| 11  | `refactor: simplify seed-side portfolio/bookings types`               | #14     | —          |
-| 12  | `chore: log storage delete failures`                                  | #16     | —          |
+| 2   | `add: lib/rateLimit.ts + throttle anon writes (5/min)`                   | #3           | 1          |
+| 3   | `fix: surface 23P01 as friendly conflict message in booking actions`     | #9           | 1          |
+| 4   | `refactor: consolidate image upload into lib/uploads.ts`                 | #15          | —          |
+| 5   | `refactor: extract config keys/validators to lib/ui/siteConfig.ts`       | #12a         | —          |
+| 6   | `refactor: extract HOUSES to lib/ui/sport.ts`                            | #12b         | —          |
+| 7   | `refactor: consolidate STATUS_OPTIONS in lib/ui/portfolio.ts`            | #12c         | —          |
+| 8   | `chore: drop unused admin_greeting site_config + helper`                 | #4           | —          |
+| 9   | `fix: explicit type="submit" on 3d-era admin forms`                      | #6           | —          |
+| 10  | `chore: drop dead exports in lib/ui/booking.ts`                          | #11          | —          |
+| 11  | `refactor: simplify seed-side portfolio/bookings types`                  | #14          | —          |
+| 12  | `chore: log storage delete failures`                                     | #16          | —          |
 
 Tasks 4–12 are independent and could be reordered freely; the table order matches dependency-then-impact (refactors that touch more files first).
 

@@ -22,7 +22,8 @@ export async function bookRoom(
   if (!limit.ok) {
     return {
       ok: false,
-      error: "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
+      error:
+        "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
     };
   }
 
@@ -70,7 +71,8 @@ export async function bookRoom(
     if (error.code === "23P01") {
       return {
         ok: false,
-        error: "ห้องนี้เพิ่งถูกจองไป / This room was just booked. Please pick another slot.",
+        error:
+          "ห้องนี้เพิ่งถูกจองไป / This room was just booked. Please pick another slot.",
       };
     }
     return { ok: false, error: error.message };

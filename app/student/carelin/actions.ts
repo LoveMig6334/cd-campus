@@ -16,7 +16,8 @@ export async function postCarelinRequest(
   if (!limit.ok) {
     return {
       ok: false,
-      error: "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
+      error:
+        "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
     };
   }
 

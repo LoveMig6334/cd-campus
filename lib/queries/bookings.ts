@@ -146,8 +146,10 @@ export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
       .order("sort_order", { ascending: true }),
   ]);
 
-  if (bookingsRes.error) throw new Error(`getGanttRooms: ${bookingsRes.error.message}`);
-  if (roomsRes.error) throw new Error(`getGanttRooms rooms: ${roomsRes.error.message}`);
+  if (bookingsRes.error)
+    throw new Error(`getGanttRooms: ${bookingsRes.error.message}`);
+  if (roomsRes.error)
+    throw new Error(`getGanttRooms rooms: ${roomsRes.error.message}`);
 
   type Row = {
     user_label: string;
@@ -224,8 +226,10 @@ export async function getWeekBookings(
       .order("sort_order", { ascending: true }),
   ]);
 
-  if (bookingsRes.error) throw new Error(`getWeekBookings: ${bookingsRes.error.message}`);
-  if (roomsRes.error) throw new Error(`getWeekBookings rooms: ${roomsRes.error.message}`);
+  if (bookingsRes.error)
+    throw new Error(`getWeekBookings: ${bookingsRes.error.message}`);
+  if (roomsRes.error)
+    throw new Error(`getWeekBookings rooms: ${roomsRes.error.message}`);
 
   const bookingsByRoomDay: Record<string, Record<string, WeekChip[]>> = {};
   for (const b of bookingsRes.data ?? []) {

@@ -50,11 +50,7 @@ export function normalizeTags(raw: unknown): PortfolioTagPill[] {
   return out;
 }
 
-export const PROJECT_STATUSES = [
-  "Published",
-  "Under Review",
-  "Draft",
-] as const;
+export const PROJECT_STATUSES = ["Published", "Under Review", "Draft"] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 

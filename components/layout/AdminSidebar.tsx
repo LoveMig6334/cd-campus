@@ -141,7 +141,7 @@ export function AdminSidebar({ extraItems = [] }: { extraItems?: NavItem[] }) {
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-mute-700 shrink-0 group-data-[active=true]:text-yellow"
+              className="text-mute-700 group-data-[active=true]:text-yellow shrink-0"
             >
               {item.icon}
             </svg>

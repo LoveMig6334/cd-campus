@@ -34,7 +34,11 @@ export async function TrendCard() {
   const trend = await getTrendChart();
   return (
     <Card accent>
-      <CardTitle th="กิจกรรม 12 เดือน" en="12-month trend" menu="↗ View report" />
+      <CardTitle
+        th="กิจกรรม 12 เดือน"
+        en="12-month trend"
+        menu="↗ View report"
+      />
       <TrendChart data={trend} />
     </Card>
   );

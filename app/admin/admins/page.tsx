@@ -59,7 +59,9 @@ export default async function AdminAdminsPage() {
             </select>
           </label>
           <div className="md:col-span-2">
-            <Btn type="submit" variant="primary">Create admin →</Btn>
+            <Btn type="submit" variant="primary">
+              Create admin →
+            </Btn>
           </div>
         </form>
       </Card>

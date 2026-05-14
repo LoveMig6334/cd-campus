@@ -15,6 +15,7 @@
 **Spec correction noted during planning:** The spec said the `Btn type="submit"` fix touches three files including `components/admin/PshareEditor.tsx`. On read, `PshareEditor.tsx` already uses native `<button type="submit" formAction={...}>` (lines 206-220). The real scope is two files (`app/admin/calendar/new/page.tsx`, `app/admin/admins/page.tsx`) and three `<Btn>` call sites. Plan reflects this.
 
 **Spec correction noted during planning:** The spec routed all `HOUSES` consolidation to `lib/ui/sport.ts`. On grep, there are two distinct `HOUSES` arrays sharing a name:
+
 - `app/admin/config/{actions.ts:48,[key]/edit/page.tsx:35}` — simple string tuple `["green","purple","orange","pink"]` used for config validation.
 - `app/admin/sport/result/{new/page.tsx:12,[id]/edit/page.tsx:14}` — object array for the sport result form.
 
@@ -283,6 +284,7 @@ git commit -m "add: lib/rateLimit.ts + throttle anon writes (5/min)"
 **Why this exists:** `findConflictingBooking` is a SELECT-then-INSERT pre-check with a small race window. Phase 5b adds the `bookings_no_overlap` EXCLUDE constraint as a backstop. When a race wins, the constraint fires with SQLSTATE `23P01` — without this task, that surfaces as a generic 500 in Next's error boundary.
 
 Catch points:
+
 - `bookRoom` (student, `useActionState`) — return `{ ok: false, error: ... }`.
 - `createBooking` (admin, plain Server Action) — throw with a friendlier message instead of `error.message`.
 - `updateBooking` (admin, plain Server Action) — same.
@@ -292,15 +294,16 @@ Catch points:
 In `app/student/booking/actions.ts`, replace the existing `if (error) return { ok: false, error: error.message };` block (around line 59) with:
 
 ```ts
-  if (error) {
-    if (error.code === "23P01") {
-      return {
-        ok: false,
-        error: "ห้องนี้เพิ่งถูกจองไป / This room was just booked. Please pick another slot.",
-      };
-    }
-    return { ok: false, error: error.message };
+if (error) {
+  if (error.code === "23P01") {
+    return {
+      ok: false,
+      error:
+        "ห้องนี้เพิ่งถูกจองไป / This room was just booked. Please pick another slot.",
+    };
   }
+  return { ok: false, error: error.message };
+}
 ```
 
 - [ ] **Step 2: Update `createBooking`**
@@ -308,12 +311,12 @@ In `app/student/booking/actions.ts`, replace the existing `if (error) return { o
 In `app/admin/bookings/actions.ts`, replace `if (error) throw new Error(error.message);` (around line 71) with:
 
 ```ts
-  if (error) {
-    if (error.code === "23P01") {
-      throw new Error("This room was just booked for that period.");
-    }
-    throw new Error(error.message);
+if (error) {
+  if (error.code === "23P01") {
+    throw new Error("This room was just booked for that period.");
   }
+  throw new Error(error.message);
+}
 ```
 
 - [ ] **Step 3: Update `updateBooking`**
@@ -442,6 +445,7 @@ git commit -m "refactor: consolidate image upload into lib/uploads.ts"
 - Modify: `app/admin/config/page.tsx`, `app/admin/config/[key]/edit/page.tsx`, `app/admin/config/actions.ts`
 
 The three files duplicate four things:
+
 - The editable-key list (as a `KeyRow[]` with labels in `page.tsx:11`, as a `string[] as const` in `actions.ts:10`, and as a `Set<string>` in `[key]/edit/page.tsx:10` with parallel `KEY_LABELS` in `:19`).
 - An `isEditableKey` type guard (only in `actions.ts:21`).
 - A `House` validator: `["green","purple","orange","pink"]` in `actions.ts:48` and `[key]/edit/page.tsx:35` (distinct from the sport `HOUSES` array — that's Task 6).
@@ -512,10 +516,7 @@ export default async function AdminConfigIndex() {
         <CardTitle th="คอนฟิกทั้งหมด" en="All keys" />
         <ul className="divide-mute-200 divide-y divide-dashed">
           {EDITABLE_KEYS.map((k) => (
-            <li
-              key={k}
-              className="flex items-center justify-between px-3 py-3"
-            >
+            <li key={k} className="flex items-center justify-between px-3 py-3">
               <div>
                 <div className="font-display text-[15px] italic">
                   {KEY_LABELS[k].en}
@@ -680,6 +681,7 @@ git commit -m "refactor: extract HOUSES to lib/ui/sport.ts"
 - Modify: `lib/ui/portfolio.ts`, `components/admin/PortfolioAdminTable.tsx`, `app/admin/portfolio/[id]/edit/page.tsx`, `app/admin/portfolio/new/page.tsx`
 
 Three duplicates today, **two different shapes**:
+
 - `PortfolioAdminTable.tsx` (lines 18–28): `STATUS_LABEL: Record<status, string>` (plain English) + `STATUS_OPTIONS: status[]` (plain string array) — used for the row pill + the multi-submit-status form.
 - `app/admin/portfolio/new/page.tsx` (lines 8–12) and `[id]/edit/page.tsx` (lines 13–17): `STATUS_OPTIONS: { value, label }[]` (bilingual `· ฉบับร่าง` etc.) — used for the `<select>` dropdown. Note: the `new` page orders Draft first; the `[id]/edit` page orders Published first. Plan consolidates to the canonical tuple order (Published, Under Review, Draft); the dropdown default-selection is controlled separately by each form's `defaultValue` attribute.
 
@@ -690,11 +692,7 @@ Consolidation: one canonical tuple + two label maps (plain English for the table
 Append to `lib/ui/portfolio.ts` (after the existing `normalizeTags` function):
 
 ```ts
-export const PROJECT_STATUSES = [
-  "Published",
-  "Under Review",
-  "Draft",
-] as const;
+export const PROJECT_STATUSES = ["Published", "Under Review", "Draft"] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
@@ -737,21 +735,25 @@ import { PROJECT_STATUSES, STATUS_LABEL_BILINGUAL } from "@/lib/ui/portfolio";
 3. Find the JSX that maps `STATUS_OPTIONS` to `<option>` elements (around line 119). Change from:
 
 ```tsx
-{STATUS_OPTIONS.map((s) => (
-  <option key={s.value} value={s.value}>
-    {s.label}
-  </option>
-))}
+{
+  STATUS_OPTIONS.map((s) => (
+    <option key={s.value} value={s.value}>
+      {s.label}
+    </option>
+  ));
+}
 ```
 
 to:
 
 ```tsx
-{PROJECT_STATUSES.map((s) => (
-  <option key={s} value={s}>
-    {STATUS_LABEL_BILINGUAL[s]}
-  </option>
-))}
+{
+  PROJECT_STATUSES.map((s) => (
+    <option key={s} value={s}>
+      {STATUS_LABEL_BILINGUAL[s]}
+    </option>
+  ));
+}
 ```
 
 4. The existing `defaultValue="Draft"` on the `<select>` (verify with grep — likely present near the same lines) stays. The order in the dropdown becomes Published / Under Review / Draft, but the default selection is still Draft.
@@ -902,7 +904,9 @@ Around line 124, change:
 to:
 
 ```tsx
-<Btn type="submit" variant="primary">Save event →</Btn>
+<Btn type="submit" variant="primary">
+  Save event →
+</Btn>
 ```
 
 - [ ] **Step 2: Update `app/admin/admins/page.tsx`**
@@ -916,7 +920,9 @@ Around line 62, change:
 to:
 
 ```tsx
-<Btn type="submit" variant="primary">Create admin →</Btn>
+<Btn type="submit" variant="primary">
+  Create admin →
+</Btn>
 ```
 
 Around line 119, change:
@@ -1010,9 +1016,11 @@ This filters out the array's own definition line. If a match shows up in `supaba
 - [ ] **Step 2: Restructure path (live arrays)**
 
 If `PORTFOLIO_ROWS` is consumed:
+
 - Open `supabase/seed/data/admin-portfolio.ts`. The `PortfolioSeedRow = Omit<PortfolioAdminRow, "id">` alias exists because the consumer doesn't need `id`. The alias is the cleanest expression of that fact — **leave it as-is** but rename the comment block to drop the "workaround" language (it's not a workaround, it's a deliberate scoping decision).
 
 If `ADMIN_TODAY_BOOKINGS` is consumed:
+
 - Open `supabase/seed/data/admin-bookings.ts`. Change the array element type from `AdminTodayBookingRow` to a local `Omit<AdminTodayBookingRow, "id">` and remove all `id: "seed-N"` lines. Update the consumer in `supabase/seed/*.ts` if it reads `id` (it shouldn't — the seed script generates real UUIDs at insert time).
 
 Run `npx tsc --noEmit` and `npm run seed` (only if `SUPABASE_ALLOW_SEED=1` is set in `.env.local`; otherwise skip — the type-check is sufficient).
@@ -1049,27 +1057,27 @@ Both `deletePost` and `deleteProject` currently ignore failures from `storage.re
 In `app/admin/pshare/actions.ts`, around line 202–205 (current):
 
 ```ts
-  if (row?.art_image_path) {
-    await db.storage.from("assets").remove([row.art_image_path]);
-    // Ignore storage delete failures — row is gone, orphan acceptable.
-  }
+if (row?.art_image_path) {
+  await db.storage.from("assets").remove([row.art_image_path]);
+  // Ignore storage delete failures — row is gone, orphan acceptable.
+}
 ```
 
 Replace with:
 
 ```ts
-  if (row?.art_image_path) {
-    const { error: storageErr } = await db.storage
-      .from("assets")
-      .remove([row.art_image_path]);
-    if (storageErr) {
-      console.error("storage delete failed", {
-        surface: "pshare",
-        path: row.art_image_path,
-        error: storageErr.message,
-      });
-    }
+if (row?.art_image_path) {
+  const { error: storageErr } = await db.storage
+    .from("assets")
+    .remove([row.art_image_path]);
+  if (storageErr) {
+    console.error("storage delete failed", {
+      surface: "pshare",
+      path: row.art_image_path,
+      error: storageErr.message,
+    });
   }
+}
 ```
 
 - [ ] **Step 2: Update `deleteProject`**
@@ -1077,26 +1085,26 @@ Replace with:
 In `app/admin/portfolio/actions.ts`, around line 187–189 (current):
 
 ```ts
-  if (row?.image_path) {
-    await db.storage.from("assets").remove([row.image_path]);
-  }
+if (row?.image_path) {
+  await db.storage.from("assets").remove([row.image_path]);
+}
 ```
 
 Replace with:
 
 ```ts
-  if (row?.image_path) {
-    const { error: storageErr } = await db.storage
-      .from("assets")
-      .remove([row.image_path]);
-    if (storageErr) {
-      console.error("storage delete failed", {
-        surface: "portfolio",
-        path: row.image_path,
-        error: storageErr.message,
-      });
-    }
+if (row?.image_path) {
+  const { error: storageErr } = await db.storage
+    .from("assets")
+    .remove([row.image_path]);
+  if (storageErr) {
+    console.error("storage delete failed", {
+      surface: "portfolio",
+      path: row.image_path,
+      error: storageErr.message,
+    });
   }
+}
 ```
 
 - [ ] **Step 3: Type-check**

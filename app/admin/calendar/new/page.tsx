@@ -121,7 +121,9 @@ export default function NewEventPage() {
           </label>
 
           <div className="md:col-span-2">
-            <Btn type="submit" variant="primary">Save event →</Btn>
+            <Btn type="submit" variant="primary">
+              Save event →
+            </Btn>
           </div>
         </form>
       </Card>
