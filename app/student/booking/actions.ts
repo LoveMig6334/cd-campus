@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { findConflictingBooking } from "@/lib/queries/bookings";
 import { checkAnonRateLimit } from "@/lib/rateLimit";
@@ -76,7 +77,9 @@ export async function bookRoom(
   }
 
   revalidatePath("/student/booking");
-  revalidatePath("/admin/bookings");
-  revalidatePath("/admin");
+  after(() => {
+    revalidatePath("/admin/bookings");
+    revalidatePath("/admin");
+  });
   return { ok: true };
 }
