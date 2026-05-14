@@ -154,7 +154,16 @@ export async function deleteProject(formData: FormData): Promise<void> {
   if (error) throw new Error(error.message);
 
   if (row?.image_path) {
-    await db.storage.from("assets").remove([row.image_path]);
+    const { error: storageErr } = await db.storage
+      .from("assets")
+      .remove([row.image_path]);
+    if (storageErr) {
+      console.error("storage delete failed", {
+        surface: "portfolio",
+        path: row.image_path,
+        error: storageErr.message,
+      });
+    }
   }
 
   revalidatePath("/admin/portfolio");

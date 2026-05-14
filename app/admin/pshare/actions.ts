@@ -172,8 +172,16 @@ export async function deletePost(formData: FormData): Promise<void> {
   if (error) throw new Error(error.message);
 
   if (row?.art_image_path) {
-    await db.storage.from("assets").remove([row.art_image_path]);
-    // Ignore storage delete failures — row is gone, orphan acceptable.
+    const { error: storageErr } = await db.storage
+      .from("assets")
+      .remove([row.art_image_path]);
+    if (storageErr) {
+      console.error("storage delete failed", {
+        surface: "pshare",
+        path: row.art_image_path,
+        error: storageErr.message,
+      });
+    }
   }
 
   revalidatePath("/admin/pshare");
