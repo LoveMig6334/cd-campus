@@ -126,15 +126,24 @@ export async function findConflictingBooking(
 export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
   const db = await createClient();
   const nextDay = addDays(dateISO, 1);
-  const { data, error } = await db
-    .from("bookings")
-    .select(
-      "user_label, starts_at, ends_at, bar_variant, purpose, rooms!inner(name_en, name_th, sort_order)",
-    )
-    .gte("starts_at", `${dateISO}T00:00:00+07:00`)
-    .lt("starts_at", `${nextDay}T00:00:00+07:00`)
-    .order("starts_at", { ascending: true });
-  if (error) throw new Error(`getGanttRooms: ${error.message}`);
+
+  const [bookingsRes, roomsRes] = await Promise.all([
+    db
+      .from("bookings")
+      .select(
+        "user_label, starts_at, ends_at, bar_variant, purpose, rooms!inner(name_en, name_th, sort_order)",
+      )
+      .gte("starts_at", `${dateISO}T00:00:00+07:00`)
+      .lt("starts_at", `${nextDay}T00:00:00+07:00`)
+      .order("starts_at", { ascending: true }),
+    db
+      .from("rooms")
+      .select("name_en, name_th, sort_order")
+      .order("sort_order", { ascending: true }),
+  ]);
+
+  if (bookingsRes.error) throw new Error(`getGanttRooms: ${bookingsRes.error.message}`);
+  if (roomsRes.error) throw new Error(`getGanttRooms rooms: ${roomsRes.error.message}`);
 
   type Row = {
     user_label: string;
@@ -148,7 +157,7 @@ export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
       sort_order: number | null;
     } | null;
   };
-  const rows = (data ?? []) as unknown as Row[];
+  const rows = (bookingsRes.data ?? []) as unknown as Row[];
 
   const byRoom = new Map<string, GanttRoom>();
   for (const r of rows) {
@@ -173,21 +182,14 @@ export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
     };
     room.bars.push(bar);
   }
-  // Also surface rooms with no bookings (for visual parity with the static GANTT_ROOMS).
-  const allRoomsRes = await db
-    .from("rooms")
-    .select("name_en, name_th, sort_order")
-    .order("sort_order", { ascending: true });
-  if (allRoomsRes.error) {
-    throw new Error(`getGanttRooms rooms: ${allRoomsRes.error.message}`);
-  }
-  for (const r of allRoomsRes.data ?? []) {
+
+  for (const r of roomsRes.data ?? []) {
     if (!byRoom.has(r.name_en)) {
       byRoom.set(r.name_en, { nameEn: r.name_en, nameTh: r.name_th, bars: [] });
     }
   }
   const sortMap = new Map(
-    (allRoomsRes.data ?? []).map((r) => [r.name_en, r.sort_order ?? 0]),
+    (roomsRes.data ?? []).map((r) => [r.name_en, r.sort_order ?? 0]),
   );
   return [...byRoom.values()].sort(
     (a, b) => (sortMap.get(a.nameEn) ?? 0) - (sortMap.get(b.nameEn) ?? 0),
@@ -203,23 +205,26 @@ export async function getWeekBookings(
 }> {
   const db = await createClient();
   const nextDay = addDays(weekEnd, 1);
-  const { data, error } = await db
-    .from("bookings")
-    .select("id, starts_at, bar_variant, room_id")
-    .gte("starts_at", `${weekStart}T00:00:00+07:00`)
-    .lt("starts_at", `${nextDay}T00:00:00+07:00`)
-    .order("starts_at", { ascending: true });
-  if (error) throw new Error(`getWeekBookings: ${error.message}`);
 
-  const { data: roomRows, error: roomsErr } = await db
-    .from("rooms")
-    .select("id, name_en, name_th, sort_order")
-    .eq("is_active", true)
-    .order("sort_order", { ascending: true });
-  if (roomsErr) throw new Error(`getWeekBookings rooms: ${roomsErr.message}`);
+  const [bookingsRes, roomsRes] = await Promise.all([
+    db
+      .from("bookings")
+      .select("id, starts_at, bar_variant, room_id")
+      .gte("starts_at", `${weekStart}T00:00:00+07:00`)
+      .lt("starts_at", `${nextDay}T00:00:00+07:00`)
+      .order("starts_at", { ascending: true }),
+    db
+      .from("rooms")
+      .select("id, name_en, name_th, sort_order")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true }),
+  ]);
+
+  if (bookingsRes.error) throw new Error(`getWeekBookings: ${bookingsRes.error.message}`);
+  if (roomsRes.error) throw new Error(`getWeekBookings rooms: ${roomsRes.error.message}`);
 
   const bookingsByRoomDay: Record<string, Record<string, WeekChip[]>> = {};
-  for (const b of data ?? []) {
+  for (const b of bookingsRes.data ?? []) {
     const dayISO = b.starts_at.slice(0, 10);
     const startHHMM = timeFromTimestamp(b.starts_at);
     const room = (bookingsByRoomDay[b.room_id] ??= {});
@@ -231,7 +236,7 @@ export async function getWeekBookings(
   }
 
   return {
-    rooms: (roomRows ?? []).map((r) => ({
+    rooms: (roomsRes.data ?? []).map((r) => ({
       id: r.id,
       nameEn: r.name_en,
       nameTh: r.name_th,
