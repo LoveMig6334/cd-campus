@@ -4,7 +4,7 @@ import { Pill } from "@/components/admin/Pill";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { requireRootAdmin } from "@/lib/auth";
 import { getAdmins } from "@/lib/queries/admins";
-import { createAdmin, disableAdmin } from "./actions";
+import { createAdmin, deleteAdmin, disableAdmin } from "./actions";
 
 export default async function AdminAdminsPage() {
   const self = await requireRootAdmin();
@@ -37,7 +37,7 @@ export default async function AdminAdminsPage() {
               className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
           </label>
-          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
+          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase md:col-span-2">
             Password (≥ 12 chars)
             <input
               name="password"
@@ -46,17 +46,6 @@ export default async function AdminAdminsPage() {
               minLength={12}
               className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
             />
-          </label>
-          <label className="text-mute-700 flex flex-col gap-1 font-mono text-[10px] tracking-[0.14em] uppercase">
-            Tier
-            <select
-              name="tier"
-              defaultValue="normal"
-              className="border-line bg-paper text-ink border-[1.5px] px-3 py-2 font-sans text-[13px] tracking-normal normal-case"
-            >
-              <option value="normal">normal</option>
-              <option value="root">root</option>
-            </select>
           </label>
           <div className="md:col-span-2">
             <Btn type="submit" variant="primary">
@@ -115,11 +104,21 @@ export default async function AdminAdminsPage() {
                     )}
                   </td>
                   <td className={td}>
-                    {a.is_active && a.id !== self.id && (
-                      <form action={disableAdmin}>
-                        <input type="hidden" name="id" value={a.id} />
-                        <Btn type="submit">Disable</Btn>
-                      </form>
+                    {a.id !== self.id && (
+                      <div className="flex flex-wrap gap-2">
+                        {a.is_active && (
+                          <form action={disableAdmin}>
+                            <input type="hidden" name="id" value={a.id} />
+                            <Btn type="submit">Disable</Btn>
+                          </form>
+                        )}
+                        <form action={deleteAdmin}>
+                          <input type="hidden" name="id" value={a.id} />
+                          <Btn type="submit" variant="ink">
+                            Delete
+                          </Btn>
+                        </form>
+                      </div>
                     )}
                   </td>
                 </tr>

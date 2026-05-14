@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import "server-only";
+import { getSupabaseServiceRole } from "@/lib/supabase/serviceRole";
 import type { Database } from "@/lib/supabase/database.types";
 
 export type AdminListRow = Pick<
@@ -6,8 +7,11 @@ export type AdminListRow = Pick<
   "id" | "email" | "display_name" | "tier" | "is_active" | "created_at"
 >;
 
+// Service-role: the admins RLS policy only exposes the caller's own row
+// (admins_select_self), so listing every admin requires bypassing RLS.
+// Safe because the sole caller (/admin/admins) gates on requireRootAdmin().
 export async function getAdmins(): Promise<AdminListRow[]> {
-  const db = await createClient();
+  const db = getSupabaseServiceRole();
   const { data, error } = await db
     .from("admins")
     .select("id, email, display_name, tier, is_active, created_at")

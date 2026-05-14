@@ -23,8 +23,8 @@ export default function AdminOverview() {
         actions={
           <>
             <AdminSearch />
-            <Btn>Export ↓</Btn>
-            <Btn variant="primary">+ New Event</Btn>
+            <Btn type="button">Export ↓</Btn>
+            <Btn type="button" variant="primary">+ New Event</Btn>
           </>
         }
       />

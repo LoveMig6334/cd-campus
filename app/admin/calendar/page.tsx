@@ -18,9 +18,9 @@ export default async function AdminCalendar() {
         eyebrow="Calendar · May 2026"
         actions={
           <>
-            <Btn>◀ Apr</Btn>
-            <Btn>May 2026</Btn>
-            <Btn>Jun ▶</Btn>
+            <Btn type="button">◀ Apr</Btn>
+            <Btn type="button">May 2026</Btn>
+            <Btn type="button">Jun ▶</Btn>
             <Link
               href="/admin/calendar/new"
               className="border-line bg-blue hover:bg-blue-deep inline-block border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)] transition-all hover:-translate-x-px hover:-translate-y-px hover:[box-shadow:4px_4px_0_var(--color-ink)]"

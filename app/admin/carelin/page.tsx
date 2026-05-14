@@ -28,7 +28,7 @@ export default async function AdminCarelin() {
         actions={
           <>
             <AdminSearch />
-            <Btn>Export ↓</Btn>
+            <Btn type="button">Export ↓</Btn>
           </>
         }
       />

@@ -110,7 +110,7 @@ export default async function AdminBookings({
             <Link href={`?date=${prevWeek}`} className={LINK_BTN}>
               ◀ Last week
             </Link>
-            <Btn variant="ink">{fmtWeekRange(weekStart, weekEnd)}</Btn>
+            <Btn type="button" variant="ink">{fmtWeekRange(weekStart, weekEnd)}</Btn>
             <Link href={`?date=${nextWeek}`} className={LINK_BTN}>
               Next week ▶
             </Link>

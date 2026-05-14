@@ -19,11 +19,12 @@ export function Btn({
   variant = "default",
   className,
   children,
+  type = "submit",
   ...rest
 }: Props) {
   return (
     <button
-      type="button"
+      type={type}
       className={cn(
         "border-line border-[1.5px] px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] uppercase transition-all",
         VARIANT[variant],
