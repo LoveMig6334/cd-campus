@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { checkAnonRateLimit } from "@/lib/rateLimit";
 import type { ActionResult } from "@/lib/actions";
 
 const ID_RE = /^[0-9]{4}$/;
@@ -11,6 +12,14 @@ export async function postCarelinRequest(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  const limit = await checkAnonRateLimit("carelin");
+  if (!limit.ok) {
+    return {
+      ok: false,
+      error: "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
+    };
+  }
+
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   const who_name = String(formData.get("who_name") ?? "").trim();

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { findConflictingBooking } from "@/lib/queries/bookings";
+import { checkAnonRateLimit } from "@/lib/rateLimit";
 import { PERIOD_HOURS, type PeriodId } from "@/lib/ui/booking";
 import type { ActionResult } from "@/lib/actions";
 
@@ -16,6 +17,14 @@ export async function bookRoom(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  const limit = await checkAnonRateLimit("booking");
+  if (!limit.ok) {
+    return {
+      ok: false,
+      error: "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
+    };
+  }
+
   const room_id = String(formData.get("room") ?? "").trim();
   const date = String(formData.get("date") ?? "").trim();
   const period = String(formData.get("period") ?? "").trim();
