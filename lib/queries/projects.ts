@@ -10,6 +10,8 @@ import type {
 
 export type ProjectFull = Database["public"]["Tables"]["projects"]["Row"];
 
+const SUBMITTED_RE = /^(\d{4})-(\d{2})-(\d{2})/;
+
 function trimAuthor(line: string): string {
   // "ธรรศ์ × นนท์ — Y9 / 2025" → "ธรรศ์ × นนท์"
   const idx = line.indexOf("—");
@@ -18,8 +20,7 @@ function trimAuthor(line: string): string {
 
 function fmtSubmitted(d: string | null): string {
   if (!d) return "—";
-  // "2026-03-14" → "14 Mar"
-  const m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const m = d.match(SUBMITTED_RE);
   if (!m) return d;
   const monthMap: Record<string, string> = {
     "01": "Jan",

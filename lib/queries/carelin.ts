@@ -1,13 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import type { CarelinDeskRow, CarelinRequest } from "@/lib/types";
 
+const RELATIVE_WHEN_RE = /-(\d{2})-(\d{2})T(\d{2}:\d{2})/;
+
 function relativeWhen(ts: string): string {
-  // For the prototype: derive a Thai-friendly relative time from `created_at`.
-  // Without real elapsed time, prefer a deterministic label derived from the date:
-  // - same day as 2026-05-12 → "HH:MM"
-  // - one day before     → "เมื่อวาน"
-  // - otherwise          → ISO date stripped
-  const m = ts.match(/-(\d{2})-(\d{2})T(\d{2}:\d{2})/);
+  const m = ts.match(RELATIVE_WHEN_RE);
   if (!m) return ts;
   const day = parseInt(m[2], 10);
   const hhmm = m[3];

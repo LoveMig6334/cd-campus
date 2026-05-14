@@ -42,6 +42,9 @@ type EventRow = {
   highlight: boolean;
 };
 
+const DAY_RE = /-\d{2}-(\d{2})T/;
+const TIME_RE = /T(\d{2}:\d{2})/;
+
 function monthRange(year: number, month: number) {
   const start = `${year}-${String(month).padStart(2, "0")}-01T00:00:00+07:00`;
   const next =
@@ -52,14 +55,12 @@ function monthRange(year: number, month: number) {
 }
 
 function dayOf(starts_at: string): number {
-  // Asia/Bangkok-anchored ISO; we parse the day digits directly to avoid TZ drift.
-  // Example: "2026-05-13T15:30:00+07:00" → 13
-  const match = starts_at.match(/-\d{2}-(\d{2})T/);
+  const match = starts_at.match(DAY_RE);
   return match ? parseInt(match[1], 10) : 0;
 }
 
 function timeOf(starts_at: string): string {
-  const match = starts_at.match(/T(\d{2}:\d{2})/);
+  const match = starts_at.match(TIME_RE);
   return match ? match[1] : "00:00";
 }
 

@@ -8,6 +8,10 @@ import type {
   GanttRoom,
 } from "@/lib/types";
 
+const TIME_FROM_TS_RE = /T(\d{2}:\d{2})/;
+const FORMAT_START_TIME_RE = /-(\d{2})T(\d{2}:\d{2})/;
+const FORMAT_START_DAY_RE = /-(\d{2})-(\d{2})T/;
+
 export type BookingFull = Database["public"]["Tables"]["bookings"]["Row"];
 
 export type WeekChip = {
@@ -39,7 +43,7 @@ export function weekDaysOf(weekStart: string): string[] {
 }
 
 function timeFromTimestamp(ts: string): string {
-  const match = ts.match(/T(\d{2}:\d{2})/);
+  const match = ts.match(TIME_FROM_TS_RE);
   return match ? match[1] : "00:00";
 }
 
@@ -255,11 +259,10 @@ const ROOM_TH_BY_EN: Record<string, string> = {
 };
 
 function formatStart(ts: string): string {
-  // "2026-05-13T11:30:00+07:00" → "13 May · 11:30"
-  const match = ts.match(/-(\d{2})T(\d{2}:\d{2})/);
+  const match = ts.match(FORMAT_START_TIME_RE);
   if (!match) return ts;
   const monthMap: Record<string, string> = { "05": "May" };
-  const dayMatch = ts.match(/-(\d{2})-(\d{2})T/);
+  const dayMatch = ts.match(FORMAT_START_DAY_RE);
   if (!dayMatch) return ts;
   return `${parseInt(dayMatch[2], 10)} ${monthMap[dayMatch[1]] ?? dayMatch[1]} · ${match[2]}`;
 }
