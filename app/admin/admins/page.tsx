@@ -59,7 +59,7 @@ export default async function AdminAdminsPage() {
             </select>
           </label>
           <div className="md:col-span-2">
-            <Btn variant="primary">Create admin →</Btn>
+            <Btn type="submit" variant="primary">Create admin →</Btn>
           </div>
         </form>
       </Card>
@@ -116,7 +116,7 @@ export default async function AdminAdminsPage() {
                     {a.is_active && a.id !== self.id && (
                       <form action={disableAdmin}>
                         <input type="hidden" name="id" value={a.id} />
-                        <Btn>Disable</Btn>
+                        <Btn type="submit">Disable</Btn>
                       </form>
                     )}
                   </td>
