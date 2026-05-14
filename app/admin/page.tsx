@@ -1,29 +1,20 @@
+import { Suspense } from "react";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { AdminSearch } from "@/components/admin/AdminSearch";
 import { Btn } from "@/components/admin/Btn";
-import { Card, CardTitle } from "@/components/admin/Card";
-import { GreetingBanner } from "@/components/admin/GreetingBanner";
-import { KpiCard } from "@/components/admin/KpiCard";
-import { RecentBookingsTable } from "@/components/admin/RecentBookingsTable";
-import { TodayEventsCard } from "@/components/admin/TodayEventsCard";
-import { TrendChart } from "@/components/admin/TrendChart";
-import { requireAdmin } from "@/lib/auth";
-import { getRecentBookings } from "@/lib/queries/bookings";
-import { getAdminTodayEvents } from "@/lib/queries/events";
-import { getOverviewKpis, getTrendChart } from "@/lib/queries/siteConfig";
+import {
+  GreetingCard,
+  GreetingSkeleton,
+  KpiGrid,
+  KpiGridSkeleton,
+  RecentBookings,
+  TableCardSkeleton,
+  TallCardSkeleton,
+  TodayEvents,
+  TrendCard,
+} from "@/components/admin/cards/OverviewCards";
 
-export default async function AdminOverview() {
-  const [admin, kpis, trend, todayEvents, recentBookings] = await Promise.all([
-    requireAdmin(),
-    getOverviewKpis(),
-    getTrendChart(),
-    getAdminTodayEvents(),
-    getRecentBookings(),
-  ]);
-  const greeting = {
-    th: `สวัสดี อาจารย์${admin.display_name}`,
-    en: `Hello, ${admin.display_name}`,
-  };
+export default function AdminOverview() {
   return (
     <>
       <AdminTopbar
@@ -38,30 +29,26 @@ export default async function AdminOverview() {
         }
       />
 
-      <GreetingBanner th={greeting.th} en={greeting.en} />
+      <Suspense fallback={<GreetingSkeleton />}>
+        <GreetingCard />
+      </Suspense>
 
-      <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        {kpis.map((kpi) => (
-          <KpiCard key={kpi.label} kpi={kpi} />
-        ))}
-      </div>
+      <Suspense fallback={<KpiGridSkeleton />}>
+        <KpiGrid />
+      </Suspense>
 
       <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-[2fr_1fr]">
-        <Card accent>
-          <CardTitle
-            th="กิจกรรม 12 เดือน"
-            en="12-month trend"
-            menu="↗ View report"
-          />
-          <TrendChart data={trend} />
-        </Card>
-        <TodayEventsCard events={todayEvents} />
+        <Suspense fallback={<TallCardSkeleton />}>
+          <TrendCard />
+        </Suspense>
+        <Suspense fallback={<TallCardSkeleton />}>
+          <TodayEvents />
+        </Suspense>
       </div>
 
-      <Card className="mt-[18px]">
-        <CardTitle th="การจองล่าสุด" en="Recent bookings" menu="View all →" />
-        <RecentBookingsTable rows={recentBookings} />
-      </Card>
+      <Suspense fallback={<TableCardSkeleton />}>
+        <RecentBookings />
+      </Suspense>
     </>
   );
 }
