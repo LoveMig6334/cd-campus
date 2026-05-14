@@ -143,12 +143,25 @@ export async function getCarelinTabCounts(): Promise<{
   answered: number;
 }> {
   const db = await createClient();
-  const { data, error } = await db.from("carelin_requests").select("status");
-  if (error) throw new Error(`getCarelinTabCounts: ${error.message}`);
-  const rows = (data ?? []) as Array<{ status: "open" | "answered" }>;
+  const [allRes, openRes, answeredRes] = await Promise.all([
+    db.from("carelin_requests").select("*", { count: "exact", head: true }),
+    db
+      .from("carelin_requests")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "open"),
+    db
+      .from("carelin_requests")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "answered"),
+  ]);
+  if (allRes.error) throw new Error(`getCarelinTabCounts: ${allRes.error.message}`);
+  if (openRes.error) throw new Error(`getCarelinTabCounts: ${openRes.error.message}`);
+  if (answeredRes.error) {
+    throw new Error(`getCarelinTabCounts: ${answeredRes.error.message}`);
+  }
   return {
-    all: rows.length,
-    open: rows.filter((r) => r.status === "open").length,
-    answered: rows.filter((r) => r.status === "answered").length,
+    all: allRes.count ?? 0,
+    open: openRes.count ?? 0,
+    answered: answeredRes.count ?? 0,
   };
 }
