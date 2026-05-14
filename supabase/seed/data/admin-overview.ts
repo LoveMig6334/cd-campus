@@ -5,11 +5,6 @@ import {
   type AdminKpi,
 } from "@/lib/types";
 
-export const ADMIN_GREETING = {
-  th: "สวัสดี อ.อาทรง",
-  en: "good morning",
-} as const;
-
 export const ADMIN_KPIS: AdminKpi[] = [
   {
     label: "Students",

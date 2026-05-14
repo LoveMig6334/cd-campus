@@ -20,10 +20,6 @@ export async function getHomeHero(): Promise<HomeHero> {
   return getValue<HomeHero>("home_hero");
 }
 
-export async function getAdminGreeting(): Promise<{ th: string; en: string }> {
-  return getValue<{ th: string; en: string }>("admin_greeting");
-}
-
 export async function getOverviewKpis(): Promise<AdminKpi[]> {
   return getValue<AdminKpi[]>("overview_kpis");
 }

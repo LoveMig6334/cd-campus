@@ -7,23 +7,23 @@ import { KpiCard } from "@/components/admin/KpiCard";
 import { RecentBookingsTable } from "@/components/admin/RecentBookingsTable";
 import { TodayEventsCard } from "@/components/admin/TodayEventsCard";
 import { TrendChart } from "@/components/admin/TrendChart";
+import { requireAdmin } from "@/lib/auth";
 import { getRecentBookings } from "@/lib/queries/bookings";
 import { getAdminTodayEvents } from "@/lib/queries/events";
-import {
-  getAdminGreeting,
-  getOverviewKpis,
-  getTrendChart,
-} from "@/lib/queries/siteConfig";
+import { getOverviewKpis, getTrendChart } from "@/lib/queries/siteConfig";
 
 export default async function AdminOverview() {
-  const [greeting, kpis, trend, todayEvents, recentBookings] =
-    await Promise.all([
-      getAdminGreeting(),
-      getOverviewKpis(),
-      getTrendChart(),
-      getAdminTodayEvents(),
-      getRecentBookings(),
-    ]);
+  const [admin, kpis, trend, todayEvents, recentBookings] = await Promise.all([
+    requireAdmin(),
+    getOverviewKpis(),
+    getTrendChart(),
+    getAdminTodayEvents(),
+    getRecentBookings(),
+  ]);
+  const greeting = {
+    th: `สวัสดี อาจารย์${admin.display_name}`,
+    en: `Hello, ${admin.display_name}`,
+  };
   return (
     <>
       <AdminTopbar
