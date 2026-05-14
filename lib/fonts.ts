@@ -14,7 +14,7 @@ export const instrumentSerif = Instrument_Serif({
 
 export const ibmPlexThai = IBM_Plex_Sans_Thai({
   variable: "--font-ibm-plex-thai",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   subsets: ["latin", "thai"],
   display: "swap",
 });
