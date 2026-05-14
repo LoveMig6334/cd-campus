@@ -1,7 +1,6 @@
 import type { AdminKpi, PortfolioAdminRow } from "@/lib/types";
 
-// Seed rows live before the DB assigns a UUID, so the `id` field on
-// PortfolioAdminRow is irrelevant here. Strip it for the seed fixtures.
+// The DB assigns UUIDs at insert time; seed fixtures deliberately omit `id`.
 type PortfolioSeedRow = Omit<PortfolioAdminRow, "id">;
 
 export const PORTFOLIO_KPIS: AdminKpi[] = [

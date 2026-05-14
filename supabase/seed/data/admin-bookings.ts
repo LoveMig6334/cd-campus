@@ -101,9 +101,8 @@ export const GANTT_ROOMS: GanttRoom[] = [
   },
 ];
 
-export const ADMIN_TODAY_BOOKINGS: AdminTodayBookingRow[] = [
+export const ADMIN_TODAY_BOOKINGS: Omit<AdminTodayBookingRow, "id">[] = [
   {
-    id: "seed-1",
     room: "Music Room 1",
     user: "ธรรศ์ ภัทรกุล",
     start: "11:30",
@@ -112,7 +111,6 @@ export const ADMIN_TODAY_BOOKINGS: AdminTodayBookingRow[] = [
     status: "Confirmed",
   },
   {
-    id: "seed-2",
     room: "Music Room 1",
     user: "ภูริ บ.",
     start: "15:30",
@@ -121,7 +119,6 @@ export const ADMIN_TODAY_BOOKINGS: AdminTodayBookingRow[] = [
     status: "Confirmed",
   },
   {
-    id: "seed-3",
     room: "Music Room 2",
     user: "String Ensemble",
     start: "09:00",
@@ -130,7 +127,6 @@ export const ADMIN_TODAY_BOOKINGS: AdminTodayBookingRow[] = [
     status: "Confirmed",
   },
   {
-    id: "seed-4",
     room: "Music Room 3",
     user: "School Orchestra",
     start: "08:00",
@@ -139,7 +135,6 @@ export const ADMIN_TODAY_BOOKINGS: AdminTodayBookingRow[] = [
     status: "Confirmed",
   },
   {
-    id: "seed-5",
     room: "Studio Room",
     user: "นพดล ส.",
     start: "10:30",
@@ -148,7 +143,6 @@ export const ADMIN_TODAY_BOOKINGS: AdminTodayBookingRow[] = [
     status: "Confirmed",
   },
   {
-    id: "seed-6",
     room: "Conference 2",
     user: "Sci Club",
     start: "15:30",
@@ -157,7 +151,6 @@ export const ADMIN_TODAY_BOOKINGS: AdminTodayBookingRow[] = [
     status: "Pending",
   },
   {
-    id: "seed-7",
     room: "Conference 3",
     user: "Curriculum committee",
     start: "14:00",
