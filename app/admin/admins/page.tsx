@@ -1,7 +1,7 @@
-import { AdminTopbar } from "@/components/layout/AdminTopbar";
+import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Pill } from "@/components/admin/Pill";
-import { Btn } from "@/components/admin/Btn";
+import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { requireRootAdmin } from "@/lib/auth";
 import { getAdmins } from "@/lib/queries/admins";
 import { createAdmin, disableAdmin } from "./actions";
@@ -13,7 +13,7 @@ export default async function AdminAdminsPage() {
     <>
       <AdminTopbar titleTh="แอดมิน" eyebrow="Admins · root-only" />
 
-      <Card className="mb-[18px]">
+      <Card className="mb-4.5">
         <CardTitle th="เพิ่มแอดมิน" en="New admin" />
         <form
           action={createAdmin}

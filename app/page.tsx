@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { BrandMark } from "@/components/layout/BrandMark";
 import { cn } from "@/lib/cn";
+import Link from "next/link";
 
 type ViewCardProps = {
   href: string;
@@ -27,7 +27,7 @@ function ViewCard({
       className={cn(
         "group bg-paper border-line relative block border-[1.5px] p-6 sm:p-8",
         "transition-transform duration-150 ease-out",
-        "hover:-translate-x-[2px] hover:-translate-y-[2px]",
+        "hover:-translate-x-0.5 hover:-translate-y-0.5",
         "active:translate-x-0 active:translate-y-0",
         accent === "blue"
           ? "shadow-[5px_5px_0_var(--color-blue)] hover:shadow-[7px_7px_0_var(--color-blue)] active:shadow-[0_0_0_var(--color-blue)]"

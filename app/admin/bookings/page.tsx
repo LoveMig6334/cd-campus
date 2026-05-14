@@ -1,10 +1,9 @@
-import Link from "next/link";
-import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { AdminTodayBookingsTable } from "@/components/admin/AdminTodayBookingsTable";
 import { BookingsWeekGrid } from "@/components/admin/BookingsWeekGrid";
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Gantt } from "@/components/admin/Gantt";
+import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import {
   addDays,
@@ -15,6 +14,7 @@ import {
   weekDaysOf,
 } from "@/lib/queries/bookings";
 import { GANTT_HOURS } from "@/lib/ui/admin";
+import Link from "next/link";
 
 const TODAY = "2026-05-12";
 const MONTHS = [
@@ -132,11 +132,11 @@ export default async function AdminBookings({
         bookingsByRoomDay={week.bookingsByRoomDay}
       />
 
-      <div className="mt-[18px]">
+      <div className="mt-4.5">
         <Gantt hours={GANTT_HOURS} rooms={ganttRooms} />
       </div>
 
-      <Card className="mt-[18px]">
+      <Card className="mt-4.5">
         <CardTitle
           th={`รายการจอง ${fmtTh(selectedDate)}`}
           en={`Bookings on ${fmtEnShort(selectedDate)}`}
