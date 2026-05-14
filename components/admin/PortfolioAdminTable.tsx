@@ -48,7 +48,7 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
           return (
             <tr
               key={i}
-              className="hover:bg-cream transition-colors [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
+              className="cv-row hover:bg-cream transition-colors [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
             >
               <td className={td}>
                 {row.imagePath ? (

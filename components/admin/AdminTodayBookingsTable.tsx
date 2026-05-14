@@ -39,7 +39,7 @@ export function AdminTodayBookingsTable({
           return (
             <tr
               key={i}
-              className="hover:bg-cream transition-colors [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
+              className="cv-row hover:bg-cream transition-colors [&_td]:px-2.5 [&_td]:py-3 [&_td]:align-middle"
             >
               <td className={td}>
                 <span className="font-display text-[15px] italic">
