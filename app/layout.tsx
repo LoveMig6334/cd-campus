@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { preconnect } from "react-dom";
 import { ibmPlexMono, ibmPlexThai, instrumentSerif } from "@/lib/fonts";
 import { cn } from "@/lib/cn";
 import "./globals.css";
@@ -8,11 +9,14 @@ export const metadata: Metadata = {
   description: "Chitralada 2026 smart-campus prototype",
 };
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (SUPABASE_URL) preconnect(SUPABASE_URL);
   return (
     <html
       lang="th"
