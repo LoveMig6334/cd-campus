@@ -39,14 +39,9 @@ function fmtSubmitted(d: string | null): string {
   return `${parseInt(m[3], 10)} ${monthMap[m[2]] ?? m[2]}`;
 }
 
-// Student card uses a different (and smaller) icon registry than the admin
-// thumb registry. The 3 student-facing projects map to specific student icons.
-const STUDENT_PROJECT_TITLES = [
-  "CropPlanner",
-  "Solar Lab Monitor",
-  "SHM Visualizer",
-] as const;
-
+// The 3 legacy demo titles keep their bespoke hero icons; every other
+// portfolio (admin-created via /admin/portfolio/new) shows the profile
+// silhouette.
 const STUDENT_ICON_BY_TITLE: Record<string, PortfolioIconKey> = {
   CropPlanner: "crop",
   "Solar Lab Monitor": "solar",
@@ -63,16 +58,21 @@ export async function getStudentProjects(): Promise<Project[]> {
   const db = await createClient();
   const { data, error } = await db
     .from("projects")
-    .select("title_en, title_th, desc_long, author_line, tags")
-    .in("title_en", [...STUDENT_PROJECT_TITLES]);
+    .select(
+      "title_en, title_th, desc_long, author_line, klass, applied_to, pdf_path, author_image_path, tags, created_at",
+    )
+    .eq("status", "Published");
   if (error) throw new Error(`getStudentProjects: ${error.message}`);
   return (data ?? [])
     .slice()
-    .sort(
-      (a, b) =>
-        (STUDENT_TITLE_ORDER[a.title_en] ?? 99) -
-        (STUDENT_TITLE_ORDER[b.title_en] ?? 99),
-    )
+    .sort((a, b) => {
+      const legacyA = STUDENT_TITLE_ORDER[a.title_en];
+      const legacyB = STUDENT_TITLE_ORDER[b.title_en];
+      if (legacyA !== undefined || legacyB !== undefined) {
+        return (legacyA ?? 99) - (legacyB ?? 99);
+      }
+      return b.created_at.localeCompare(a.created_at);
+    })
     .map<Project>((p) => {
       const tags = (p.tags as PortfolioTagPill[] | null) ?? [];
       return {
@@ -80,8 +80,12 @@ export async function getStudentProjects(): Promise<Project[]> {
         titleTh: p.title_th ?? "",
         desc: p.desc_long ?? "",
         authorLine: p.author_line ?? "",
+        klass: p.klass ?? undefined,
+        appliedTo: p.applied_to ?? undefined,
+        pdfPath: p.pdf_path ?? undefined,
+        authorImagePath: p.author_image_path ?? undefined,
         tags: tags.map((t) => t.label),
-        iconKey: STUDENT_ICON_BY_TITLE[p.title_en] ?? "crop",
+        iconKey: STUDENT_ICON_BY_TITLE[p.title_en] ?? "profile",
       };
     });
 }

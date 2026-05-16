@@ -16,7 +16,6 @@ type DraftFields = {
   author_alias: string | null;
   art_halftone: string | null;
   art_bg: string | null;
-  art_num_color: string | null;
   tags: string[];
 };
 
@@ -36,8 +35,6 @@ function parseDraft(
   const art_halftone =
     String(formData.get("art_halftone") ?? "").trim() || null;
   const art_bg = String(formData.get("art_bg") ?? "").trim() || null;
-  const art_num_color =
-    String(formData.get("art_num_color") ?? "").trim() || null;
   const tagsRaw = String(formData.get("tags") ?? "").trim();
   const tags =
     tagsRaw === ""
@@ -58,7 +55,6 @@ function parseDraft(
       author_alias,
       art_halftone,
       art_bg,
-      art_num_color,
       tags,
     },
   };
@@ -72,8 +68,16 @@ export async function saveDraft(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   const db = await createClient();
   let rowId = id;
+  let previousPath: string | null = null;
 
   if (id) {
+    const { data: existing } = await db
+      .from("pshare_posts")
+      .select("art_image_path")
+      .eq("id", id)
+      .maybeSingle();
+    previousPath = existing?.art_image_path ?? null;
+
     const { error } = await db
       .from("pshare_posts")
       .update({ ...parsed.data, status: "draft" })
@@ -93,16 +97,17 @@ export async function saveDraft(formData: FormData): Promise<void> {
     rowId = data.id;
   }
 
-  const newPath = await uploadAsset(formData, "pshare", rowId);
+  const newPath = await uploadAsset(formData, "pshare", rowId, previousPath);
+  if (newPath) {
+    const { error: updErr } = await db
+      .from("pshare_posts")
+      .update({ art_image_path: newPath })
+      .eq("id", rowId);
+    if (updErr) throw new Error(updErr.message);
+  }
 
   revalidatePath("/admin/pshare");
   after(async () => {
-    if (newPath) {
-      await db
-        .from("pshare_posts")
-        .update({ art_image_path: newPath })
-        .eq("id", rowId);
-    }
     revalidatePath("/student/pshare");
   });
   redirect("/admin/pshare");
@@ -117,8 +122,16 @@ export async function publishPost(formData: FormData): Promise<void> {
   const db = await createClient();
   const publishedAt = new Date().toISOString();
   let rowId = id;
+  let previousPath: string | null = null;
 
   if (id) {
+    const { data: existing } = await db
+      .from("pshare_posts")
+      .select("art_image_path")
+      .eq("id", id)
+      .maybeSingle();
+    previousPath = existing?.art_image_path ?? null;
+
     const { error } = await db
       .from("pshare_posts")
       .update({
@@ -143,16 +156,17 @@ export async function publishPost(formData: FormData): Promise<void> {
     rowId = data.id;
   }
 
-  const newPath = await uploadAsset(formData, "pshare", rowId);
+  const newPath = await uploadAsset(formData, "pshare", rowId, previousPath);
+  if (newPath) {
+    const { error: updErr } = await db
+      .from("pshare_posts")
+      .update({ art_image_path: newPath })
+      .eq("id", rowId);
+    if (updErr) throw new Error(updErr.message);
+  }
 
   revalidatePath("/admin/pshare");
   after(async () => {
-    if (newPath) {
-      await db
-        .from("pshare_posts")
-        .update({ art_image_path: newPath })
-        .eq("id", rowId);
-    }
     revalidatePath("/student/pshare");
   });
   redirect("/admin/pshare");

@@ -4,7 +4,8 @@ import { Pill } from "@/components/admin/Pill";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { requireRootAdmin } from "@/lib/auth";
 import { getAdmins } from "@/lib/queries/admins";
-import { createAdmin, deleteAdmin, disableAdmin } from "./actions";
+import { createAdmin, disableAdmin } from "./actions";
+import { DeleteAdminButton } from "./DeleteAdminButton";
 
 export default async function AdminAdminsPage() {
   const self = await requireRootAdmin();
@@ -112,12 +113,11 @@ export default async function AdminAdminsPage() {
                             <Btn type="submit">Disable</Btn>
                           </form>
                         )}
-                        <form action={deleteAdmin}>
-                          <input type="hidden" name="id" value={a.id} />
-                          <Btn type="submit" variant="ink">
-                            Delete
-                          </Btn>
-                        </form>
+                        <DeleteAdminButton
+                          id={a.id}
+                          displayName={a.display_name}
+                          email={a.email}
+                        />
                       </div>
                     )}
                   </td>

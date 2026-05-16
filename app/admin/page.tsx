@@ -24,7 +24,9 @@ export default function AdminOverview() {
           <>
             <AdminSearch />
             <Btn type="button">Export ↓</Btn>
-            <Btn type="button" variant="primary">+ New Event</Btn>
+            <Btn type="button" variant="primary">
+              + New Event
+            </Btn>
           </>
         }
       />

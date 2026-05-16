@@ -74,7 +74,7 @@ export const PORTFOLIO_ROWS: PortfolioSeedRow[] = [
     klass: "Y9 / 2025",
     tags: [{ label: "Physics", ...TAG_PURPLE }],
     submitted: "22 Apr",
-    status: "Under Review",
+    status: "Draft",
   },
   {
     thumb: { iconKey: "cube", bg: "var(--color-house-green)" },
@@ -107,6 +107,6 @@ export const PORTFOLIO_ROWS: PortfolioSeedRow[] = [
     klass: "Y8 / 2025",
     tags: [{ label: "Chemistry", ...TAG_ORANGE }],
     submitted: "3 May",
-    status: "Under Review",
+    status: "Draft",
   },
 ];

@@ -298,6 +298,8 @@ export type Database = {
       }
       projects: {
         Row: {
+          applied_to: string | null
+          author_image_path: string | null
           author_line: string | null
           created_at: string
           created_by_admin_id: string | null
@@ -307,6 +309,7 @@ export type Database = {
           image_path: string | null
           is_featured: boolean
           klass: string | null
+          pdf_path: string | null
           status: Database["public"]["Enums"]["project_status"]
           submitted_at: string | null
           tags: Json | null
@@ -316,6 +319,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          applied_to?: string | null
+          author_image_path?: string | null
           author_line?: string | null
           created_at?: string
           created_by_admin_id?: string | null
@@ -325,6 +330,7 @@ export type Database = {
           image_path?: string | null
           is_featured?: boolean
           klass?: string | null
+          pdf_path?: string | null
           status: Database["public"]["Enums"]["project_status"]
           submitted_at?: string | null
           tags?: Json | null
@@ -334,6 +340,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          applied_to?: string | null
+          author_image_path?: string | null
           author_line?: string | null
           created_at?: string
           created_by_admin_id?: string | null
@@ -343,6 +351,7 @@ export type Database = {
           image_path?: string | null
           is_featured?: boolean
           klass?: string | null
+          pdf_path?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           submitted_at?: string | null
           tags?: Json | null
@@ -566,7 +575,7 @@ export type Database = {
       booking_status: "Confirmed" | "Pending" | "Review"
       carelin_status: "open" | "answered"
       event_category: "sport" | "tradition" | "music" | "admin" | "academic"
-      project_status: "Published" | "Under Review" | "Draft"
+      project_status: "Published" | "Draft"
       pshare_status: "draft" | "published" | "review"
       room_kind: "music" | "meeting"
       sport_result_category: "Track" | "Team"
@@ -705,7 +714,7 @@ export const Constants = {
       booking_status: ["Confirmed", "Pending", "Review"],
       carelin_status: ["open", "answered"],
       event_category: ["sport", "tradition", "music", "admin", "academic"],
-      project_status: ["Published", "Under Review", "Draft"],
+      project_status: ["Published", "Draft"],
       pshare_status: ["draft", "published", "review"],
       room_kind: ["music", "meeting"],
       sport_result_category: ["Track", "Team"],

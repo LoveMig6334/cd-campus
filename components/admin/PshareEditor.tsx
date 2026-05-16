@@ -2,6 +2,7 @@ import Image from "next/image";
 import { getAssetUrl } from "@/lib/storage";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { saveDraft, publishPost } from "@/app/admin/pshare/actions";
+import { UnsplashPicker } from "@/app/admin/pshare/UnsplashPicker";
 
 type Defaults = {
   id?: string;
@@ -13,12 +14,20 @@ type Defaults = {
   author_alias?: string | null;
   art_halftone?: string | null;
   art_bg?: string | null;
-  art_num_color?: string | null;
   art_image_path?: string | null;
   tags?: string[];
 };
 
 const HALFTONES = ["halftone-bl", "halftone-bk", "halftone-soft"] as const;
+
+const ART_BG_OPTIONS = [
+  { label: "Cream", value: "var(--color-cream)", swatch: "#f6f3e7" },
+  { label: "Cream 2", value: "var(--color-cream-2)", swatch: "#efebd9" },
+  { label: "Yellow", value: "var(--color-yellow)", swatch: "#f7e33a" },
+  { label: "Green", value: "var(--color-house-green)", swatch: "#3fae6c" },
+  { label: "Orange", value: "var(--color-house-orange)", swatch: "#f2843b" },
+  { label: "Pink", value: "var(--color-house-pink)", swatch: "#e94d8f" },
+] as const;
 
 const PRIMARY_BTN =
   "inline-block border-[1.5px] border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] transition-all bg-blue text-white [box-shadow:3px_3px_0_var(--color-ink)] hover:[box-shadow:4px_4px_0_var(--color-ink)] hover:-translate-x-px hover:-translate-y-px hover:bg-blue-deep";
@@ -31,10 +40,7 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
   return (
     <Card>
       <CardTitle th="แก้ไขโพสต์" en={d.id ? "Edit post" : "New post"} />
-      <form
-        className="grid grid-cols-1 gap-3 md:grid-cols-2"
-        encType="multipart/form-data"
-      >
+      <form className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {d.id && <input type="hidden" name="id" value={d.id} />}
 
         <label className="block">
@@ -136,30 +142,43 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
 
         <label className="block">
           <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
-            Art background (CSS color, optional)
+            Art background
           </span>
-          <input
-            name="art_bg"
-            type="text"
-            maxLength={40}
-            placeholder="var(--color-cream)"
-            defaultValue={d.art_bg ?? ""}
-            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
-          />
-        </label>
-
-        <label className="block">
-          <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
-            Num color (CSS color, optional)
+          {(() => {
+            const current = d.art_bg ?? "";
+            const isLegacy =
+              current !== "" &&
+              !ART_BG_OPTIONS.some((o) => o.value === current);
+            return (
+              <select
+                name="art_bg"
+                defaultValue={current || "var(--color-cream)"}
+                className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
+              >
+                {ART_BG_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {`■ ${o.label} — ${o.value}`}
+                  </option>
+                ))}
+                {isLegacy && (
+                  <option value={current}>{`◇ Custom — ${current}`}</option>
+                )}
+              </select>
+            );
+          })()}
+          <span
+            aria-hidden
+            className="border-line bg-paper mt-1.5 flex gap-1.5 border-[1.5px] p-1.5"
+          >
+            {ART_BG_OPTIONS.map((o) => (
+              <span
+                key={o.value}
+                title={o.label}
+                className="h-5 flex-1"
+                style={{ background: o.swatch }}
+              />
+            ))}
           </span>
-          <input
-            name="art_num_color"
-            type="text"
-            maxLength={40}
-            placeholder="var(--color-ink)"
-            defaultValue={d.art_num_color ?? ""}
-            className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-mono text-[13px]"
-          />
         </label>
 
         <div className="md:col-span-2">
@@ -183,9 +202,11 @@ export function PshareEditor({ defaults }: { defaults: Defaults }) {
             accept="image/jpeg,image/png,image/webp"
             className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[13px]"
           />
+          <UnsplashPicker />
           {d.art_image_path && (
             <p className="text-mute-500 mt-1 font-mono text-[10px]">
-              Leave empty to keep current image.
+              Leave empty to keep current image. Uploading a file or picking
+              from Unsplash will replace it.
             </p>
           )}
         </div>

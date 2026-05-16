@@ -126,13 +126,17 @@ export type Room = {
 /* Portfolio */
 /* ------------------------------------------------------------------ */
 
-export type PortfolioIconKey = "crop" | "solar" | "shm";
+export type PortfolioIconKey = "crop" | "solar" | "shm" | "profile";
 
 export type Project = {
   title: string;
   titleTh: string;
   desc: string;
   authorLine: string;
+  klass?: string;
+  appliedTo?: string;
+  pdfPath?: string;
+  authorImagePath?: string;
   tags: string[];
   iconKey: PortfolioIconKey;
 };
@@ -296,7 +300,8 @@ export type PortfolioThumbIcon =
   | "wave"
   | "cube"
   | "calendar"
-  | "beakers";
+  | "beakers"
+  | "profile";
 
 export type PortfolioTagPill = {
   label: string;
@@ -315,7 +320,7 @@ export type PortfolioAdminRow = {
   klass: string;
   tags: PortfolioTagPill[];
   submitted: string;
-  status: "Published" | "Under Review" | "Draft";
+  status: "Published" | "Draft";
 };
 
 /* ------------------------------------------------------------------ */

@@ -7,12 +7,8 @@ import { PROJECT_STATUSES, STATUS_LABEL } from "@/lib/ui/portfolio";
 import { Pill } from "./Pill";
 import { PortfolioThumbIconRender } from "./PortfolioThumbIcons";
 
-const STATUS_VARIANT: Record<
-  PortfolioAdminRow["status"],
-  "ok" | "rev" | "pend"
-> = {
+const STATUS_VARIANT: Record<PortfolioAdminRow["status"], "ok" | "pend"> = {
   Published: "ok",
-  "Under Review": "rev",
   Draft: "pend",
 };
 
@@ -116,12 +112,7 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
                           value={s}
                           className="border-line bg-paper text-mute-700 hover:bg-cream border-[1.5px] px-2 py-1"
                         >
-                          →{" "}
-                          {s === "Published"
-                            ? "Pub"
-                            : s === "Under Review"
-                              ? "Rev"
-                              : "Drf"}
+                          → {s === "Published" ? "Pub" : "Drf"}
                         </button>
                       ),
                     )}

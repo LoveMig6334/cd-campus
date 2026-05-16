@@ -62,6 +62,15 @@ function Beakers() {
   );
 }
 
+function Profile() {
+  return (
+    <svg {...SVG_PROPS}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" />
+    </svg>
+  );
+}
+
 const REGISTRY: Record<PortfolioThumbIcon, () => React.ReactElement> = {
   trend: Trend,
   sun: Sun,
@@ -69,6 +78,7 @@ const REGISTRY: Record<PortfolioThumbIcon, () => React.ReactElement> = {
   cube: Cube,
   calendar: CalendarSm,
   beakers: Beakers,
+  profile: Profile,
 };
 
 export function PortfolioThumbIconRender({

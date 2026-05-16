@@ -44,10 +44,21 @@ function ShmIcon() {
   );
 }
 
+function ProfileIcon() {
+  return (
+    <svg {...SVG_PROPS}>
+      <rect x="10" y="10" width="44" height="44" fill="#FFF" />
+      <circle cx="32" cy="26" r="8" fill="#1E2EE4" stroke="#0A0A0A" />
+      <path d="M16 52 Q22 38 32 38 T48 52 Z" fill="#F7E33A" stroke="#0A0A0A" />
+    </svg>
+  );
+}
+
 const REGISTRY: Record<PortfolioIconKey, () => React.ReactElement> = {
   crop: CropIcon,
   solar: SolarIcon,
   shm: ShmIcon,
+  profile: ProfileIcon,
 };
 
 export function PortfolioIcon({ icon }: { icon: PortfolioIconKey }) {

@@ -7,6 +7,13 @@ if (!supabaseUrl) {
 const supabaseHost = new URL(supabaseUrl).hostname;
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      // Fits a 10 MB portfolio PDF + 5 MB author profile image + form overhead
+      // in a single submit. Default is 1 MB, which rejects every upload.
+      bodySizeLimit: "16mb",
+    },
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
@@ -14,6 +21,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: supabaseHost,
         pathname: "/storage/v1/object/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
       },
     ],
   },

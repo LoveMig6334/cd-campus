@@ -4,12 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
-import {
-  normalizeTags,
-  PROJECT_STATUSES,
-  type ProjectStatus,
-} from "@/lib/ui/portfolio";
-import { uploadAsset } from "@/lib/uploads";
+import { PROJECT_STATUSES, type ProjectStatus } from "@/lib/ui/portfolio";
+import { uploadAuthorImage, uploadPdfAsset } from "@/lib/uploads";
 
 function isProjectStatus(v: string): v is ProjectStatus {
   return (PROJECT_STATUSES as readonly string[]).includes(v);
@@ -32,15 +28,10 @@ export async function setProjectStatus(formData: FormData): Promise<void> {
 
 type ProjectFields = {
   title_en: string;
-  title_th: string | null;
   author_line: string | null;
   klass: string | null;
+  applied_to: string | null;
   desc_long: string | null;
-  icon_key: string | null;
-  thumb_bg: string | null;
-  status: ProjectStatus;
-  submitted_at: string | null;
-  tags: ReturnType<typeof normalizeTags>;
 };
 
 function parseProject(
@@ -49,43 +40,14 @@ function parseProject(
   const title_en = String(formData.get("title_en") ?? "").trim();
   if (!title_en) return { ok: false };
 
-  const status = String(formData.get("status") ?? "");
-  if (!isProjectStatus(status)) return { ok: false };
-
-  const title_th = String(formData.get("title_th") ?? "").trim() || null;
   const author_line = String(formData.get("author_line") ?? "").trim() || null;
   const klass = String(formData.get("klass") ?? "").trim() || null;
+  const applied_to = String(formData.get("applied_to") ?? "").trim() || null;
   const desc_long = String(formData.get("desc_long") ?? "").trim() || null;
-  const icon_key = String(formData.get("icon_key") ?? "").trim() || null;
-  const thumb_bg = String(formData.get("thumb_bg") ?? "").trim() || null;
-  const submitted_at_raw = String(formData.get("submitted_at") ?? "").trim();
-  const submitted_at = submitted_at_raw || null;
-
-  const tagsRaw = String(formData.get("tags") ?? "");
-  let tagsParsed: unknown = [];
-  if (tagsRaw) {
-    try {
-      tagsParsed = JSON.parse(tagsRaw);
-    } catch {
-      tagsParsed = [];
-    }
-  }
-  const tags = normalizeTags(tagsParsed);
 
   return {
     ok: true,
-    data: {
-      title_en,
-      title_th,
-      author_line,
-      klass,
-      desc_long,
-      icon_key,
-      thumb_bg,
-      status,
-      submitted_at,
-      tags,
-    },
+    data: { title_en, author_line, klass, applied_to, desc_long },
   };
 }
 
@@ -97,16 +59,26 @@ export async function createProject(formData: FormData): Promise<void> {
   const db = await createClient();
   const { data, error } = await db
     .from("projects")
-    .insert(parsed.data)
+    .insert({
+      ...parsed.data,
+      status: "Draft" as ProjectStatus,
+      icon_key: "profile",
+    })
     .select("id")
     .single();
   if (error) throw new Error(error.message);
 
-  const path = await uploadAsset(formData, "portfolio", data.id);
-  if (path) {
+  const [pdfPath, authorImagePath] = await Promise.all([
+    uploadPdfAsset(formData, "portfolio", data.id),
+    uploadAuthorImage(formData, "portfolio", data.id),
+  ]);
+  const fileUpdate: { pdf_path?: string; author_image_path?: string } = {};
+  if (pdfPath) fileUpdate.pdf_path = pdfPath;
+  if (authorImagePath) fileUpdate.author_image_path = authorImagePath;
+  if (Object.keys(fileUpdate).length > 0) {
     const { error: updErr } = await db
       .from("projects")
-      .update({ image_path: path })
+      .update(fileUpdate)
       .eq("id", data.id);
     if (updErr) throw new Error(updErr.message);
   }
@@ -124,14 +96,28 @@ export async function updateProject(formData: FormData): Promise<void> {
   if (!parsed.ok) return;
 
   const db = await createClient();
+  const { data: existing } = await db
+    .from("projects")
+    .select("pdf_path, author_image_path")
+    .eq("id", id)
+    .maybeSingle();
+  const previousPdf = existing?.pdf_path ?? null;
+  const previousAuthorImage = existing?.author_image_path ?? null;
+
   const { error } = await db.from("projects").update(parsed.data).eq("id", id);
   if (error) throw new Error(error.message);
 
-  const path = await uploadAsset(formData, "portfolio", id);
-  if (path) {
+  const [pdfPath, authorImagePath] = await Promise.all([
+    uploadPdfAsset(formData, "portfolio", id, previousPdf),
+    uploadAuthorImage(formData, "portfolio", id, previousAuthorImage),
+  ]);
+  const fileUpdate: { pdf_path?: string; author_image_path?: string } = {};
+  if (pdfPath) fileUpdate.pdf_path = pdfPath;
+  if (authorImagePath) fileUpdate.author_image_path = authorImagePath;
+  if (Object.keys(fileUpdate).length > 0) {
     const { error: updErr } = await db
       .from("projects")
-      .update({ image_path: path })
+      .update(fileUpdate)
       .eq("id", id);
     if (updErr) throw new Error(updErr.message);
   }
@@ -150,21 +136,26 @@ export async function deleteProject(formData: FormData): Promise<void> {
 
   const { data: row } = await db
     .from("projects")
-    .select("image_path")
+    .select("image_path, pdf_path, author_image_path")
     .eq("id", id)
     .maybeSingle();
 
   const { error } = await db.from("projects").delete().eq("id", id);
   if (error) throw new Error(error.message);
 
-  if (row?.image_path) {
+  const toRemove = [
+    row?.image_path,
+    row?.pdf_path,
+    row?.author_image_path,
+  ].filter((p): p is string => !!p);
+  if (toRemove.length > 0) {
     const { error: storageErr } = await db.storage
       .from("assets")
-      .remove([row.image_path]);
+      .remove(toRemove);
     if (storageErr) {
       console.error("storage delete failed", {
         surface: "portfolio",
-        path: row.image_path,
+        paths: toRemove,
         error: storageErr.message,
       });
     }
