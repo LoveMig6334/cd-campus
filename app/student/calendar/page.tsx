@@ -5,6 +5,7 @@ import { CalendarEventCard } from "@/components/student/CalendarEventCard";
 import { CalendarGrid } from "@/components/student/CalendarGrid";
 import { CalendarMonthRow } from "@/components/student/CalendarMonthRow";
 import { IconButton } from "@/components/ui/IconButton";
+import { getStudentMonthBookingDots } from "@/lib/queries/bookings";
 import { getStudentDayEvents, getStudentMonth } from "@/lib/queries/events";
 import { CALENDAR_CHIPS, buildCalendarSkeleton } from "@/lib/ui/calendar";
 import {
@@ -17,14 +18,18 @@ export default async function StudentCalendar() {
   const { year, month, thaiLabel, enLabel } = currentYearMonth();
   const todayISO = today();
   const todayDay = Number(todayISO.slice(-2));
-  const [monthDays, events] = await Promise.all([
+  const [monthDays, events, bookingDots] = await Promise.all([
     getStudentMonth(year, month),
     getStudentDayEvents(year, month, todayDay),
+    getStudentMonthBookingDots(year, month),
   ]);
   const skeleton = buildCalendarSkeleton(year, month, todayISO);
   const days = skeleton.map((cell, i) => {
-    const dots = monthDays[i]?.dots;
-    return dots && dots.length ? { ...cell, dots } : cell;
+    if (!cell.inMonth) return cell;
+    const eventDots = monthDays[i]?.dots ?? [];
+    const bDots = bookingDots.get(cell.num) ?? [];
+    const merged = [...eventDots, ...bDots];
+    return merged.length ? { ...cell, dots: merged } : cell;
   });
   const selectedLabel = `Events on ${todayDay} ${EN_MONTHS_ABBR[month - 1]}`;
 

@@ -98,6 +98,59 @@ export async function getMonthlyBookings(
   );
 }
 
+/**
+ * Map of day-of-month → ordered dot colors for confirmed bookings in
+ * (year, month). Each period that has at least one confirmed booking adds a
+ * dot in canonical order (morning → midday → evening) using the period's
+ * color token. Returned days have at least one dot.
+ */
+const BOOKING_PERIOD_DOTS = [
+  { start: "08:00", color: "var(--color-yellow)" },
+  { start: "11:30", color: "var(--color-blue)" },
+  { start: "15:00", color: "var(--color-house-pink)" },
+] as const;
+
+const DAY_OF_MONTH_RE = /-(\d{2})T/;
+
+export async function getStudentMonthBookingDots(
+  year: number,
+  month: number,
+): Promise<Map<number, string[]>> {
+  const db = await createClient();
+  const { start, next } = monthRange(year, month);
+  const { data, error } = await db
+    .from("bookings")
+    .select("starts_at")
+    .eq("status", "Confirmed")
+    .gte("starts_at", start)
+    .lt("starts_at", next);
+  if (error) throw new Error(`getStudentMonthBookingDots: ${error.message}`);
+
+  const byDay = new Map<number, Set<string>>();
+  for (const b of data ?? []) {
+    const dayMatch = b.starts_at.match(DAY_OF_MONTH_RE);
+    const timeMatch = b.starts_at.match(TIME_FROM_TS_RE);
+    if (!dayMatch || !timeMatch) continue;
+    const day = parseInt(dayMatch[1], 10);
+    const time = timeMatch[1];
+    let set = byDay.get(day);
+    if (!set) {
+      set = new Set<string>();
+      byDay.set(day, set);
+    }
+    set.add(time);
+  }
+
+  const result = new Map<number, string[]>();
+  for (const [day, times] of byDay) {
+    const dots = BOOKING_PERIOD_DOTS.filter((p) => times.has(p.start)).map(
+      (p) => p.color,
+    );
+    if (dots.length > 0) result.set(day, dots);
+  }
+  return result;
+}
+
 export async function getPendingBookings(): Promise<AdminBookingListRow[]> {
   const db = await createClient();
   const { data, error } = await db

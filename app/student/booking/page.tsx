@@ -8,11 +8,12 @@ import { RoomList } from "@/components/student/RoomList";
 import { BookingConfirmForm } from "@/components/student/BookingConfirmForm";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import { getMeetingRooms, getMusicRooms } from "@/lib/queries/rooms";
+import { getRoomsAndBookings } from "@/lib/queries/rooms";
 import type { BookingPeriod, BookingTab, CalendarDay, Room } from "@/lib/types";
 import {
   BOOKING_PERIODS,
   BOOKING_TABS,
+  PERIOD_HOURS,
   buildBookingMonthDays,
   type PeriodId,
 } from "@/lib/ui/booking";
@@ -98,16 +99,40 @@ export default async function StudentBooking({
   const room = String(sp.room ?? "");
   const ok = sp.ok === "1";
 
-  const rooms =
-    tab === "music"
-      ? await getMusicRooms(date || undefined)
-      : await getMeetingRooms(date || undefined);
+  const { rooms, bookingsByRoom } = await getRoomsAndBookings(
+    tab === "music" ? "music" : "meeting",
+    date || undefined,
+  );
   // Music tab shows a single room (the instrument subtitle is dropped) and
   // it's auto-selected so students don't have to pick.
   const visibleRooms = tab === "music" ? rooms.slice(0, 1) : rooms;
   const autoMusicRoom =
     tab === "music" && visibleRooms[0] ? visibleRooms[0].id : "";
   const effectiveRoom = room || autoMusicRoom;
+  const selectedPeriodStart = period ? PERIOD_HOURS[period].start : "";
+
+  // Period is "booked" if the selected room (or every visible room when none
+  // is selected) has that period taken.
+  function isPeriodBooked(periodStart: string): boolean {
+    if (!date) return false;
+    if (effectiveRoom) {
+      return bookingsByRoom.get(effectiveRoom)?.has(periodStart) ?? false;
+    }
+    if (visibleRooms.length === 0) return false;
+    return visibleRooms.every(
+      (r) => bookingsByRoom.get(r.id)?.has(periodStart) ?? false,
+    );
+  }
+
+  // Room is "full" for the selection: if a period is picked, only that
+  // specific period needs to be booked; otherwise fall back to day-level.
+  function isRoomFull(roomId: string): boolean {
+    if (!date) return false;
+    const booked = bookingsByRoom.get(roomId);
+    if (!booked) return false;
+    if (selectedPeriodStart) return booked.has(selectedPeriodStart);
+    return booked.size >= Object.keys(PERIOD_HOURS).length;
+  }
 
   const currentParams: Record<string, string> = {};
   if (tab !== "music") currentParams.tab = tab;
@@ -147,18 +172,32 @@ export default async function StudentBooking({
     },
   );
 
-  const periods: BookingPeriod[] = BOOKING_PERIODS.map((p) => ({
-    ...p,
-    href: buildHref(currentParams, { period: p.id }),
-    status: p.id === period ? ("selected" as const) : "available",
-  }));
+  const periods: BookingPeriod[] = BOOKING_PERIODS.map((p) => {
+    const booked = isPeriodBooked(PERIOD_HOURS[p.id].start);
+    const status: BookingPeriod["status"] = booked
+      ? "booked"
+      : p.id === period
+        ? "selected"
+        : "available";
+    return {
+      ...p,
+      // Omit the href on booked periods so the cell is no longer clickable.
+      href: booked ? undefined : buildHref(currentParams, { period: p.id }),
+      status,
+    };
+  });
 
-  const roomList: Room[] = visibleRooms.map((r) => ({
-    ...r,
-    nameTh: tab === "music" ? "" : r.nameTh,
-    href: buildHref(currentParams, { room: r.id }),
-    selected: r.id === effectiveRoom,
-  }));
+  const roomList: Room[] = visibleRooms.map((r) => {
+    const full = isRoomFull(r.id);
+    return {
+      ...r,
+      status: full ? ("full" as const) : ("free" as const),
+      nameTh: tab === "music" ? "" : r.nameTh,
+      // Full rooms aren't clickable — any new booking would conflict anyway.
+      href: full ? undefined : buildHref(currentParams, { room: r.id }),
+      selected: r.id === effectiveRoom,
+    };
+  });
 
   const eyebrow = buildEyebrow(
     date,

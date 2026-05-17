@@ -13,23 +13,23 @@ const PERIOD_START_TIMES: readonly string[] = Object.values(PERIOD_HOURS).map(
 const TIME_RE = /T(\d{2}:\d{2})/;
 
 /**
- * Returns the set of room IDs whose bookings on `dateISO` cover every
- * configured period (morning/midday/evening). All booking writers go through
- * `PERIOD_HOURS[period].start`, so `starts_at` always matches one of the
- * canonical period times — counting distinct period starts per room is
- * sufficient.
+ * For `dateISO`, returns `Map<roomId, Set<periodStart>>` listing which period
+ * start times each room has at least one booking for. All booking writers go
+ * through `PERIOD_HOURS[period].start`, so `starts_at` always matches one of
+ * the canonical period times. Counts every status — pending requests block a
+ * slot just like confirmed ones.
  */
-async function getFullyBookedRoomIds(
+async function getPeriodBookingsByRoom(
   db: DB,
   dateISO: string,
-): Promise<Set<string>> {
+): Promise<Map<string, Set<string>>> {
   const nextDay = addDays(dateISO, 1);
   const { data, error } = await db
     .from("bookings")
     .select("room_id, starts_at")
     .gte("starts_at", `${dateISO}T00:00:00+07:00`)
     .lt("starts_at", `${nextDay}T00:00:00+07:00`);
-  if (error) throw new Error(`getFullyBookedRoomIds: ${error.message}`);
+  if (error) throw new Error(`getPeriodBookingsByRoom: ${error.message}`);
 
   const periodsByRoom = new Map<string, Set<string>>();
   for (const b of data ?? []) {
@@ -42,19 +42,13 @@ async function getFullyBookedRoomIds(
     }
     set.add(time);
   }
-
-  const full = new Set<string>();
-  for (const [roomId, times] of periodsByRoom) {
-    if (times.size >= PERIOD_START_TIMES.length) full.add(roomId);
-  }
-  return full;
+  return periodsByRoom;
 }
 
-async function getRoomsByKind(
+async function fetchRoomsByKind(
+  db: DB,
   kind: "music" | "meeting",
-  dateISO?: string,
-): Promise<Room[]> {
-  const db = await createClient();
+): Promise<{ id: string; name_en: string; name_th: string }[]> {
   const { data, error } = await db
     .from("rooms")
     .select("id, name_en, name_th, kind, sort_order")
@@ -62,23 +56,47 @@ async function getRoomsByKind(
     .eq("is_active", true)
     .order("sort_order", { ascending: true });
   if (error) throw new Error(`getRooms(${kind}): ${error.message}`);
+  return data ?? [];
+}
 
-  const fullSet = dateISO
-    ? await getFullyBookedRoomIds(db, dateISO)
-    : new Set<string>();
+/**
+ * Rooms of `kind` with a day-level Free/Full status overlay AND the raw
+ * per-room booked-period map (so callers can compute per-period status
+ * without a second query). Day-level "full" = every PERIOD_HOURS slot is
+ * booked on `dateISO`.
+ */
+export async function getRoomsAndBookings(
+  kind: "music" | "meeting",
+  dateISO?: string,
+): Promise<{
+  rooms: Room[];
+  bookingsByRoom: Map<string, Set<string>>;
+}> {
+  const db = await createClient();
+  const roomsData = await fetchRoomsByKind(db, kind);
+  const bookingsByRoom = dateISO
+    ? await getPeriodBookingsByRoom(db, dateISO)
+    : new Map<string, Set<string>>();
 
-  return (data ?? []).map((r) => ({
-    id: r.id,
-    nameEn: r.name_en,
-    nameTh: r.name_th,
-    status: fullSet.has(r.id) ? "full" : "free",
-  }));
+  const rooms = roomsData.map<Room>((r) => {
+    const booked = bookingsByRoom.get(r.id);
+    const isDayFull =
+      !!booked && booked.size >= PERIOD_START_TIMES.length;
+    return {
+      id: r.id,
+      nameEn: r.name_en,
+      nameTh: r.name_th,
+      status: isDayFull ? "full" : "free",
+    };
+  });
+
+  return { rooms, bookingsByRoom };
 }
 
 export async function getMusicRooms(dateISO?: string): Promise<Room[]> {
-  return getRoomsByKind("music", dateISO);
+  return (await getRoomsAndBookings("music", dateISO)).rooms;
 }
 
 export async function getMeetingRooms(dateISO?: string): Promise<Room[]> {
-  return getRoomsByKind("meeting", dateISO);
+  return (await getRoomsAndBookings("meeting", dateISO)).rooms;
 }
