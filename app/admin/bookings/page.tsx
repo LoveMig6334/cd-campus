@@ -13,10 +13,10 @@ import {
   mondayOf,
   weekDaysOf,
 } from "@/lib/queries/bookings";
+import { today } from "@/lib/time";
 import { GANTT_HOURS } from "@/lib/ui/admin";
 import Link from "next/link";
 
-const TODAY = "2026-05-12";
 const MONTHS = [
   "Jan",
   "Feb",
@@ -81,7 +81,8 @@ export default async function AdminBookings({
   searchParams: Promise<{ date?: string }>;
 }) {
   const params = await searchParams;
-  const selectedDate = isValidDate(params.date) ? params.date : TODAY;
+  const todayISO = today();
+  const selectedDate = isValidDate(params.date) ? params.date : todayISO;
   const weekStart = mondayOf(selectedDate);
   const weekEnd = addDays(weekStart, 6);
   const days = weekDaysOf(weekStart);
@@ -129,7 +130,7 @@ export default async function AdminBookings({
       <BookingsWeekGrid
         weekDays={days}
         selectedDate={selectedDate}
-        today={TODAY}
+        today={todayISO}
         rooms={week.rooms}
         bookingsByRoomDay={week.bookingsByRoomDay}
       />
