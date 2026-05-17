@@ -13,6 +13,8 @@ export async function toggleFeature(formData: FormData): Promise<void> {
 
   const svc = getSupabaseServiceRole();
 
+  // Read-modify-write is safe here because only the root admin can toggle and
+  // concurrent flips are not a real concern. Avoids a custom RPC.
   const { data: current, error: readErr } = await svc
     .from("feature_flags")
     .select("enabled")
