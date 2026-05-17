@@ -2,7 +2,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../lib/supabase/database.types";
 import { HOME_HERO } from "./data/home-hero";
 import {
-  ADMIN_KPIS,
   ADMIN_TREND_MONTHS,
   ADMIN_TREND_PATH,
   ADMIN_TREND_POINTS,
@@ -26,11 +25,6 @@ export async function seedSiteConfig(
   const done = logStep("site_config");
   const rows: Insert[] = [
     { key: "home_hero", value: json(HOME_HERO), updated_by_admin_id: adminId },
-    {
-      key: "overview_kpis",
-      value: json(ADMIN_KPIS),
-      updated_by_admin_id: adminId,
-    },
     {
       key: "trend_chart",
       value: json({

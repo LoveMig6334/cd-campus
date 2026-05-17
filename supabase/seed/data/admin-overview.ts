@@ -2,35 +2,7 @@ import {
   CATEGORY_COLOR,
   type AdminBookingRow,
   type AdminEvent,
-  type AdminKpi,
 } from "@/lib/types";
-
-export const ADMIN_KPIS: AdminKpi[] = [
-  {
-    label: "Students",
-    th: "นักเรียนทั้งหมด",
-    num: "2,184",
-    delta: { kind: "up", text: "▲ 38 this term" },
-  },
-  {
-    label: "Events",
-    th: "กิจกรรมเดือนนี้",
-    num: "47",
-    delta: { kind: "up", text: "▲ 12 vs Apr" },
-  },
-  {
-    label: "Bookings · today",
-    th: "การจองวันนี้",
-    num: "28",
-    delta: { kind: "flat", text: "— same as yesterday" },
-  },
-  {
-    label: "Lost & Found",
-    th: "ของหาย",
-    num: "14",
-    delta: { kind: "down", text: "▼ 3 returned" },
-  },
-];
 
 const C = CATEGORY_COLOR;
 
