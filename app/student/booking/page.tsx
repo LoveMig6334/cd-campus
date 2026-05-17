@@ -11,11 +11,17 @@ import { SectionDivider } from "@/components/ui/SectionDivider";
 import { getMeetingRooms, getMusicRooms } from "@/lib/queries/rooms";
 import type { BookingPeriod, BookingTab, CalendarDay, Room } from "@/lib/types";
 import {
-  BOOKING_MAY_DAYS,
   BOOKING_PERIODS,
   BOOKING_TABS,
+  buildBookingMonthDays,
   type PeriodId,
 } from "@/lib/ui/booking";
+import {
+  EN_MONTHS_ABBR,
+  currentYearMonth,
+  monthDateSet,
+  today,
+} from "@/lib/time";
 
 const TABS = ["music", "meeting"] as const;
 type TabId = (typeof TABS)[number];
@@ -28,12 +34,6 @@ function isPeriodId(v: string): v is PeriodId {
   return v === "morning" || v === "midday" || v === "evening";
 }
 
-const MAY_DATES = new Set(
-  Array.from(
-    { length: 31 },
-    (_, i) => `2026-05-${String(i + 1).padStart(2, "0")}`,
-  ),
-);
 
 function buildHref(
   current: Record<string, string>,
@@ -60,10 +60,11 @@ function buildEyebrow(
   date: string,
   periodText: string,
   roomName: string,
+  monthAbbr: string,
 ): string {
   if (!date && !periodText && !roomName) return "";
   const day = date ? Number(date.slice(-2)) : "·";
-  return `${day} MAY · ${periodText ? periodText.toUpperCase() : "·"} · ${roomName ? roomName.toUpperCase() : "·"}`;
+  return `${day} ${monthAbbr.toUpperCase()} · ${periodText ? periodText.toUpperCase() : "·"} · ${roomName ? roomName.toUpperCase() : "·"}`;
 }
 
 export default async function StudentBooking({
@@ -72,10 +73,15 @@ export default async function StudentBooking({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
+  const { year, month, enLabel } = currentYearMonth();
+  const todayISO = today();
+  const validDates = monthDateSet(year, month);
+  const enMonthAbbr = EN_MONTHS_ABBR[month - 1];
+  const monthStr = String(month).padStart(2, "0");
   const tabRaw = String(sp.tab ?? "music");
   const tab: TabId = isTab(tabRaw) ? tabRaw : "music";
   const dateRaw = String(sp.date ?? "");
-  const date = MAY_DATES.has(dateRaw) ? dateRaw : "";
+  const date = validDates.has(dateRaw) ? dateRaw : "";
   const periodRaw = String(sp.period ?? "");
   const period = isPeriodId(periodRaw) ? periodRaw : "";
   const room = String(sp.room ?? "");
@@ -98,15 +104,17 @@ export default async function StudentBooking({
     }),
   }));
 
-  const days: CalendarDay[] = BOOKING_MAY_DAYS.map((d) => {
-    if (!d.inMonth || d.state === "closed") return d;
-    const iso = `2026-05-${String(d.num).padStart(2, "0")}`;
-    return {
-      ...d,
-      href: buildHref(currentParams, { date: iso }),
-      state: iso === date ? ("selected" as const) : d.state,
-    };
-  });
+  const days: CalendarDay[] = buildBookingMonthDays(year, month, todayISO).map(
+    (d) => {
+      if (!d.inMonth || d.state === "closed") return d;
+      const iso = `${year}-${monthStr}-${String(d.num).padStart(2, "0")}`;
+      return {
+        ...d,
+        href: buildHref(currentParams, { date: iso }),
+        state: iso === date ? ("selected" as const) : d.state,
+      };
+    },
+  );
 
   const periods: BookingPeriod[] = BOOKING_PERIODS.map((p) => ({
     ...p,
@@ -124,6 +132,7 @@ export default async function StudentBooking({
     date,
     period ? periodLabel(period) : "",
     roomLabel(rooms, room),
+    enMonthAbbr,
   );
 
   return (
@@ -157,7 +166,7 @@ export default async function StudentBooking({
         )}
         <BookingTabs tabs={tabs} activeId={tab} />
 
-        <CalendarMonthRow titleTh="May 2026" subEn="เลือกวันที่จอง" compact />
+        <CalendarMonthRow titleTh={enLabel} subEn="เลือกวันที่จอง" compact />
         <CalendarGrid days={days} compact />
 
         <SectionDivider>★ Time period · ช่วงเวลา ★</SectionDivider>

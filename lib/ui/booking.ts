@@ -1,4 +1,5 @@
 import type { BookingPeriod, BookingTab, CalendarDay } from "@/lib/types";
+import { buildMonthGrid } from "@/lib/time";
 
 export const BOOKING_TABS: BookingTab[] = [
   { id: "music", labelEn: "Music", labelTh: "ห้องดนตรี" },
@@ -24,58 +25,32 @@ export const BOOKING_PERIODS: (BookingPeriod & { id: PeriodId })[] = [
   { id: "evening", label: "Evening", time: "15:00 — 18:00", status: "booked" },
 ];
 
-const make = (
-  num: number,
-  opts: Partial<Omit<CalendarDay, "num">> = {},
-): CalendarDay => ({ num, inMonth: true, ...opts });
-
-const other = (num: number): CalendarDay => ({ num, inMonth: false });
-
-/** May 2026 with 1, 6, 21 closed, 12 today, 13 selected — booking variant has no dots. */
-export const BOOKING_MAY_DAYS: CalendarDay[] = [
-  other(26),
-  other(27),
-  other(28),
-  other(29),
-  other(30),
-  make(1, { state: "closed" }),
-  make(2),
-  make(3),
-  make(4),
-  make(5),
-  make(6, { state: "closed" }),
-  make(7),
-  make(8),
-  make(9),
-  make(10),
-  make(11),
-  make(12, { state: "today" }),
-  make(13, { state: "selected" }),
-  make(14),
-  make(15),
-  make(16),
-  make(17),
-  make(18),
-  make(19),
-  make(20),
-  make(21, { state: "closed" }),
-  make(22),
-  make(23),
-  make(24),
-  make(25),
-  make(26),
-  make(27),
-  make(28),
-  make(29),
-  make(30),
-  make(31),
-  other(1),
-  other(2),
-  other(3),
-  other(4),
-  other(5),
-  other(6),
-];
+/**
+ * Booking-grid days for (year, month). Marks today; marks Saturday & Sunday
+ * as `closed`. Replaces the old static `BOOKING_MAY_DAYS` whose 1/6/21
+ * closed-days were decorative — weekends are a more sensible default.
+ */
+export function buildBookingMonthDays(
+  year: number,
+  month: number,
+  todayISO: string,
+): CalendarDay[] {
+  const [todayY, todayM, todayD] = todayISO.split("-").map(Number);
+  const todayInMonth = todayY === year && todayM === month;
+  // Cell index 0 = Monday of the first row; weekday = i % 7 (0=Mon … 6=Sun).
+  return buildMonthGrid(year, month).map<CalendarDay>((cell, i) => {
+    if (!cell.inMonth) return { num: cell.num, inMonth: false };
+    const weekday = i % 7;
+    const isWeekend = weekday === 5 || weekday === 6;
+    if (todayInMonth && cell.num === todayD) {
+      return { num: cell.num, inMonth: true, state: "today" };
+    }
+    if (isWeekend) {
+      return { num: cell.num, inMonth: true, state: "closed" };
+    }
+    return { num: cell.num, inMonth: true };
+  });
+}
 
 /** Demo "free/full" overlay for the 4 student-facing music rooms. */
 export const BOOKING_ROOM_STATUS_BY_NAME: Record<string, "free" | "full"> = {
