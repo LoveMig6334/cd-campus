@@ -34,6 +34,8 @@ function compareDelta(
 }
 
 function newThisMonthDelta(n: number, noun: string): AdminKpi["delta"] {
+  // kind stays "flat" so the badge renders cream; the ▲ glyph is informational,
+  // not directional — a running total has no "good/bad" polarity.
   if (n > 0) return { kind: "flat", text: `▲ ${fmt(n)} ${noun} this month` };
   return { kind: "flat", text: `— none this month` };
 }
