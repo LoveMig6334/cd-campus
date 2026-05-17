@@ -10,7 +10,7 @@ import {
   type CalendarDay,
   type CalendarEvent,
 } from "@/lib/types";
-import { MAY_2026_SKELETON } from "@/lib/ui/calendar";
+import { buildMonthGrid } from "@/lib/time";
 
 /**
  * Tag-based discriminator for which "view" each event belongs to:
@@ -91,10 +91,13 @@ export async function getStudentMonth(
     }
   }
 
-  return MAY_2026_SKELETON.map((cell) => {
-    if (!cell.inMonth) return cell;
+  return buildMonthGrid(year, month).map<CalendarDay>((cell) => {
+    if (!cell.inMonth) return { num: cell.num, inMonth: false };
     const dots = dotsByDay.get(cell.num);
-    return dots && dots.length ? { ...cell, dots } : cell;
+    if (dots && dots.length) {
+      return { num: cell.num, inMonth: true, dots };
+    }
+    return { num: cell.num, inMonth: true };
   });
 }
 
@@ -151,56 +154,11 @@ export async function getAdminMonth(
     });
   }
 
-  const make = (
-    num: number,
-    rest: Partial<Omit<BigCalDay, "num">> = {},
-  ): BigCalDay => ({ num, inMonth: true, ...rest });
-  const other = (num: number): BigCalDay => ({ num, inMonth: false });
-
-  const grid: BigCalDay[] = [
-    other(26),
-    other(27),
-    other(28),
-    other(29),
-    other(30),
-    make(1),
-    make(2),
-    make(3),
-    make(4),
-    make(5),
-    make(6),
-    make(7),
-    make(8),
-    make(9),
-    make(10),
-    make(11),
-    make(12, { isToday: true }),
-    make(13),
-    make(14),
-    make(15),
-    make(16),
-    make(17),
-    make(18),
-    make(19),
-    make(20),
-    make(21),
-    make(22),
-    make(23),
-    make(24),
-    make(25),
-    make(26),
-    make(27),
-    make(28),
-    make(29),
-    make(30),
-    make(31),
-    other(1),
-    other(2),
-    other(3),
-    other(4),
-    other(5),
-    other(6),
-  ];
+  const grid: BigCalDay[] = buildMonthGrid(year, month).map((cell) =>
+    cell.inMonth
+      ? { num: cell.num, inMonth: true }
+      : { num: cell.num, inMonth: false },
+  );
   return grid.map((cell) => {
     if (!cell.inMonth) return cell;
     const events = byDay.get(cell.num);

@@ -6,13 +6,28 @@ import { CalendarGrid } from "@/components/student/CalendarGrid";
 import { CalendarMonthRow } from "@/components/student/CalendarMonthRow";
 import { IconButton } from "@/components/ui/IconButton";
 import { getStudentDayEvents, getStudentMonth } from "@/lib/queries/events";
-import { CALENDAR_CHIPS, SELECTED_DAY_LABEL } from "@/lib/ui/calendar";
+import { CALENDAR_CHIPS, buildCalendarSkeleton } from "@/lib/ui/calendar";
+import {
+  EN_MONTHS_ABBR,
+  currentYearMonth,
+  today,
+} from "@/lib/time";
 
 export default async function StudentCalendar() {
-  const [days, events] = await Promise.all([
-    getStudentMonth(2026, 5),
-    getStudentDayEvents(2026, 5, 13),
+  const { year, month, thaiLabel, enLabel } = currentYearMonth();
+  const todayISO = today();
+  const todayDay = Number(todayISO.slice(-2));
+  const [monthDays, events] = await Promise.all([
+    getStudentMonth(year, month),
+    getStudentDayEvents(year, month, todayDay),
   ]);
+  const skeleton = buildCalendarSkeleton(year, month, todayISO);
+  const days = skeleton.map((cell, i) => {
+    const dots = monthDays[i]?.dots;
+    return dots && dots.length ? { ...cell, dots } : cell;
+  });
+  const selectedLabel = `Events on ${todayDay} ${EN_MONTHS_ABBR[month - 1]}`;
+
   return (
     <>
       <PageHead
@@ -36,12 +51,12 @@ export default async function StudentCalendar() {
         }
       />
       <MobileBody className="space-y-3.5">
-        <CalendarMonthRow titleTh="พฤษภาคม" subEn="May 2026" />
+        <CalendarMonthRow titleTh={thaiLabel} subEn={enLabel} />
         <CalendarChipRow chips={CALENDAR_CHIPS} activeId="all" />
         <CalendarGrid days={days} />
 
         <div className="flex items-center gap-2 pt-1 font-mono text-[10px] tracking-[0.18em] uppercase">
-          <span>{SELECTED_DAY_LABEL}</span>
+          <span>{selectedLabel}</span>
           <span aria-hidden className="bg-line h-px flex-1" />
         </div>
         <div className="space-y-2">
