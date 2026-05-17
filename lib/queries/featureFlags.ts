@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { FEATURE_KEYS, type FeatureKey } from "@/lib/ui/features";
+import { FEATURE_KEYS, isFeatureKey, type FeatureKey } from "@/lib/ui/features";
 
 export type FeatureFlags = Record<FeatureKey, boolean>;
 
@@ -15,13 +15,13 @@ export async function getFeatureFlags(): Promise<FeatureFlags> {
     FEATURE_KEYS.map((k) => [k, true]),
   ) as FeatureFlags;
   for (const row of data ?? []) {
-    if ((FEATURE_KEYS as readonly string[]).includes(row.key)) {
-      out[row.key as FeatureKey] = row.enabled;
-    }
+    if (isFeatureKey(row.key)) out[row.key] = row.enabled;
   }
   return out;
 }
 
+// Fetches the full table; if you need to check several keys at once, call
+// getFeatureFlags() and read from the result instead of calling this repeatedly.
 export async function isFeatureEnabled(key: FeatureKey): Promise<boolean> {
   const flags = await getFeatureFlags();
   return flags[key];
