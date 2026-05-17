@@ -28,7 +28,6 @@ export async function toggleFeature(formData: FormData): Promise<void> {
     .from("feature_flags")
     .update({
       enabled: !current.enabled,
-      updated_at: new Date().toISOString(),
       updated_by: self.id,
     })
     .eq("key", key);
