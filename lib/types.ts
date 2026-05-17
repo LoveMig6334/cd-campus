@@ -257,31 +257,17 @@ export type SportResultRow = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Admin Bookings (Gantt) */
+/* Admin Bookings */
 /* ------------------------------------------------------------------ */
 
+/** Booking chip variant used by the week-view grid. */
 export type GanttBarVariant = "default" | "y" | "p" | "g" | "o";
 
-export type GanttBar = {
-  /** Display name in italic */
-  who: string;
-  /** Trailing meta line */
-  meta: string;
-  /** Left % within the cell (0–100) */
-  leftPct: number;
-  /** Width % within the cell (0–100) */
-  widthPct: number;
-  variant?: GanttBarVariant;
-};
-
-export type GanttRoom = {
-  nameEn: string;
-  nameTh: string;
-  bars: GanttBar[];
-};
-
-export type AdminTodayBookingRow = {
+/** Row used by the monthly + pending booking lists on /admin/bookings. */
+export type AdminBookingListRow = {
   id: string;
+  /** e.g. "17 May" */
+  date: string;
   room: string;
   user: string;
   start: string;

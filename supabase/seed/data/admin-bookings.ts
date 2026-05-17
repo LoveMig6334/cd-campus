@@ -1,6 +1,29 @@
-import type { AdminTodayBookingRow, GanttRoom } from "@/lib/types";
+// Seed-only fixtures. Types are inlined here because the consumer is the
+// `supabase/seed/bookings.ts` script, not the app — keeping the shapes local
+// avoids pulling app types into the seed layer.
+type SeedBarVariant = "default" | "y" | "p" | "g" | "o";
+type SeedGanttBar = {
+  who: string;
+  meta: string;
+  leftPct: number;
+  widthPct: number;
+  variant?: SeedBarVariant;
+};
+type SeedGanttRoom = {
+  nameEn: string;
+  nameTh: string;
+  bars: SeedGanttBar[];
+};
+type SeedTodayBookingRow = {
+  room: string;
+  user: string;
+  start: string;
+  end: string;
+  purpose: string;
+  status: "Confirmed" | "Pending" | "Review";
+};
 
-export const GANTT_ROOMS: GanttRoom[] = [
+export const GANTT_ROOMS: SeedGanttRoom[] = [
   {
     nameEn: "Music Room 1",
     nameTh: "เปียโน · กลอง",
@@ -101,7 +124,7 @@ export const GANTT_ROOMS: GanttRoom[] = [
   },
 ];
 
-export const ADMIN_TODAY_BOOKINGS: Omit<AdminTodayBookingRow, "id">[] = [
+export const ADMIN_TODAY_BOOKINGS: SeedTodayBookingRow[] = [
   {
     room: "Music Room 1",
     user: "ธรรศ์ ภัทรกุล",

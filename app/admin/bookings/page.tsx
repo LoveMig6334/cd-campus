@@ -1,50 +1,19 @@
-import { AdminTodayBookingsTable } from "@/components/admin/AdminTodayBookingsTable";
+import { AdminBookingsListTable } from "@/components/admin/AdminBookingsListTable";
 import { BookingsWeekGrid } from "@/components/admin/BookingsWeekGrid";
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
-import { Gantt } from "@/components/admin/Gantt";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import {
   addDays,
-  getDayBookings,
-  getGanttRooms,
+  getMonthlyBookings,
+  getPendingBookings,
   getWeekBookings,
   mondayOf,
   weekDaysOf,
 } from "@/lib/queries/bookings";
-import { today } from "@/lib/time";
-import { GANTT_HOURS } from "@/lib/ui/admin";
+import { EN_MONTHS_ABBR, EN_MONTHS_FULL, today } from "@/lib/time";
 import Link from "next/link";
-
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-const MONTHS_TH = [
-  "ม.ค.",
-  "ก.พ.",
-  "มี.ค.",
-  "เม.ย.",
-  "พ.ค.",
-  "มิ.ย.",
-  "ก.ค.",
-  "ส.ค.",
-  "ก.ย.",
-  "ต.ค.",
-  "พ.ย.",
-  "ธ.ค.",
-];
 
 function isValidDate(s: string | undefined): s is string {
   return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
@@ -52,24 +21,14 @@ function isValidDate(s: string | undefined): s is string {
 
 function fmtEn(dateISO: string): string {
   const [y, m, d] = dateISO.split("-").map(Number);
-  return `${d} ${MONTHS[m - 1]} ${y}`;
-}
-
-function fmtEnShort(dateISO: string): string {
-  const [, m, d] = dateISO.split("-").map(Number);
-  return `${d} ${MONTHS[m - 1]}`;
-}
-
-function fmtTh(dateISO: string): string {
-  const [, m, d] = dateISO.split("-").map(Number);
-  return `${d} ${MONTHS_TH[m - 1]}`;
+  return `${d} ${EN_MONTHS_ABBR[m - 1]} ${y}`;
 }
 
 function fmtWeekRange(start: string, end: string): string {
   const [, sm, sd] = start.split("-").map(Number);
   const [, em, ed] = end.split("-").map(Number);
-  if (sm === em) return `Week of ${sd}–${ed} ${MONTHS[sm - 1]}`;
-  return `Week of ${sd} ${MONTHS[sm - 1]} – ${ed} ${MONTHS[em - 1]}`;
+  if (sm === em) return `Week of ${sd}–${ed} ${EN_MONTHS_ABBR[sm - 1]}`;
+  return `Week of ${sd} ${EN_MONTHS_ABBR[sm - 1]} – ${ed} ${EN_MONTHS_ABBR[em - 1]}`;
 }
 
 const LINK_BTN =
@@ -89,16 +48,14 @@ export default async function AdminBookings({
   const prevWeek = addDays(weekStart, -7);
   const nextWeek = addDays(weekStart, 7);
 
-  const [week, ganttRooms, dayBookings] = await Promise.all([
-    getWeekBookings(weekStart, weekEnd),
-    getGanttRooms(selectedDate),
-    getDayBookings(selectedDate),
-  ]);
+  const [selYear, selMonth] = selectedDate.split("-").map(Number);
+  const monthLabel = `${EN_MONTHS_FULL[selMonth - 1]} ${selYear}`;
 
-  const activeCount = dayBookings.filter(
-    (b) => b.status === "Confirmed",
-  ).length;
-  const pendingCount = dayBookings.filter((b) => b.status === "Pending").length;
+  const [week, monthlyBookings, pendingBookings] = await Promise.all([
+    getWeekBookings(weekStart, weekEnd),
+    getMonthlyBookings(selYear, selMonth),
+    getPendingBookings(),
+  ]);
 
   return (
     <>
@@ -135,17 +92,28 @@ export default async function AdminBookings({
         bookingsByRoomDay={week.bookingsByRoomDay}
       />
 
-      <div className="mt-4.5">
-        <Gantt hours={GANTT_HOURS} rooms={ganttRooms} />
-      </div>
+      <Card className="mt-4.5">
+        <CardTitle
+          th="การจองทั้งเดือน"
+          en={`Monthly bookings · ${monthLabel}`}
+          menu={`${monthlyBookings.length} bookings`}
+        />
+        <AdminBookingsListTable
+          rows={monthlyBookings}
+          emptyHint="No bookings this month yet"
+        />
+      </Card>
 
       <Card className="mt-4.5">
         <CardTitle
-          th={`รายการจอง ${fmtTh(selectedDate)}`}
-          en={`Bookings on ${fmtEnShort(selectedDate)}`}
-          menu={`${activeCount} active · ${pendingCount} pending`}
+          th="รออนุมัติ"
+          en="Pending approval"
+          menu={`${pendingBookings.length} pending`}
         />
-        <AdminTodayBookingsTable rows={dayBookings} />
+        <AdminBookingsListTable
+          rows={pendingBookings}
+          emptyHint="No pending bookings"
+        />
       </Card>
     </>
   );

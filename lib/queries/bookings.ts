@@ -1,14 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
+  AdminBookingListRow,
   AdminBookingRow,
-  AdminTodayBookingRow,
-  GanttBar,
   GanttBarVariant,
-  GanttRoom,
 } from "@/lib/types";
+import { monthRange } from "@/lib/queries/util";
+import { EN_MONTHS_ABBR } from "@/lib/time";
 
 const TIME_FROM_TS_RE = /T(\d{2}:\d{2})/;
+const DATE_PARTS_RE = /(\d{4})-(\d{2})-(\d{2})/;
 const FORMAT_START_TIME_RE = /-(\d{2})T(\d{2}:\d{2})/;
 const FORMAT_START_DAY_RE = /-(\d{2})-(\d{2})T/;
 
@@ -47,48 +48,67 @@ function timeFromTimestamp(ts: string): string {
   return match ? match[1] : "00:00";
 }
 
-function ganttPctFromTime(
-  time: string,
-  dir: "left" | "width",
-  end?: string,
-): number {
-  // Gantt spans 08:00 → 18:00 → 10 hours of width.
-  const span = 10 * 60; // minutes
-  const [hh, mm] = time.split(":").map(Number);
-  const startMin = hh * 60 + mm - 8 * 60;
-  if (dir === "left") return Math.round((startMin / span) * 100);
-  if (!end) return 0;
-  const [eh, em] = end.split(":").map(Number);
-  const endMin = eh * 60 + em - 8 * 60;
-  return Math.round(((endMin - startMin) / span) * 100);
+function dateShortFromTimestamp(ts: string): string {
+  const m = ts.match(DATE_PARTS_RE);
+  if (!m) return "";
+  const day = parseInt(m[3], 10);
+  const month = parseInt(m[2], 10);
+  return `${day} ${EN_MONTHS_ABBR[month - 1]}`;
 }
 
-export async function getDayBookings(
-  dateISO: string,
-): Promise<AdminTodayBookingRow[]> {
+const LIST_SELECT =
+  "id, user_label, purpose, starts_at, ends_at, status, rooms!inner(name_en)";
+
+function rowToListRow(b: {
+  id: string;
+  user_label: string;
+  purpose: string | null;
+  starts_at: string;
+  ends_at: string;
+  status: string;
+  rooms: { name_en: string } | null;
+}): AdminBookingListRow {
+  return {
+    id: b.id,
+    date: dateShortFromTimestamp(b.starts_at),
+    room: b.rooms?.name_en ?? "",
+    user: b.user_label,
+    start: timeFromTimestamp(b.starts_at),
+    end: timeFromTimestamp(b.ends_at),
+    purpose: b.purpose ?? "",
+    status: b.status as AdminBookingListRow["status"],
+  };
+}
+
+export async function getMonthlyBookings(
+  year: number,
+  month: number,
+): Promise<AdminBookingListRow[]> {
   const db = await createClient();
-  const nextDay = addDays(dateISO, 1);
+  const { start, next } = monthRange(year, month);
   const { data, error } = await db
     .from("bookings")
-    .select(
-      "id, user_label, purpose, starts_at, ends_at, status, rooms!inner(name_en)",
-    )
-    .gte("starts_at", `${dateISO}T00:00:00+07:00`)
-    .lt("starts_at", `${nextDay}T00:00:00+07:00`)
+    .select(LIST_SELECT)
+    .gte("starts_at", start)
+    .lt("starts_at", next)
     .order("starts_at", { ascending: true });
-  if (error) throw new Error(`getDayBookings: ${error.message}`);
-  return (data ?? []).map<AdminTodayBookingRow>((b) => {
-    const room = b.rooms as unknown as { name_en: string } | null;
-    return {
-      id: b.id,
-      room: room?.name_en ?? "",
-      user: b.user_label,
-      start: timeFromTimestamp(b.starts_at),
-      end: timeFromTimestamp(b.ends_at),
-      purpose: b.purpose ?? "",
-      status: b.status as AdminTodayBookingRow["status"],
-    };
-  });
+  if (error) throw new Error(`getMonthlyBookings: ${error.message}`);
+  return (data ?? []).map((b) =>
+    rowToListRow(b as unknown as Parameters<typeof rowToListRow>[0]),
+  );
+}
+
+export async function getPendingBookings(): Promise<AdminBookingListRow[]> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("bookings")
+    .select(LIST_SELECT)
+    .eq("status", "Pending")
+    .order("starts_at", { ascending: true });
+  if (error) throw new Error(`getPendingBookings: ${error.message}`);
+  return (data ?? []).map((b) =>
+    rowToListRow(b as unknown as Parameters<typeof rowToListRow>[0]),
+  );
 }
 
 export async function getBookingById(id: string): Promise<BookingFull | null> {
@@ -125,81 +145,6 @@ export async function findConflictingBooking(
   const { data, error } = await query;
   if (error) throw new Error(`findConflictingBooking: ${error.message}`);
   return data && data.length > 0 ? data[0] : null;
-}
-
-export async function getGanttRooms(dateISO: string): Promise<GanttRoom[]> {
-  const db = await createClient();
-  const nextDay = addDays(dateISO, 1);
-
-  const [bookingsRes, roomsRes] = await Promise.all([
-    db
-      .from("bookings")
-      .select(
-        "user_label, starts_at, ends_at, bar_variant, purpose, rooms!inner(name_en, name_th, sort_order)",
-      )
-      .gte("starts_at", `${dateISO}T00:00:00+07:00`)
-      .lt("starts_at", `${nextDay}T00:00:00+07:00`)
-      .order("starts_at", { ascending: true }),
-    db
-      .from("rooms")
-      .select("name_en, name_th, sort_order")
-      .order("sort_order", { ascending: true }),
-  ]);
-
-  if (bookingsRes.error)
-    throw new Error(`getGanttRooms: ${bookingsRes.error.message}`);
-  if (roomsRes.error)
-    throw new Error(`getGanttRooms rooms: ${roomsRes.error.message}`);
-
-  type Row = {
-    user_label: string;
-    starts_at: string;
-    ends_at: string;
-    bar_variant: GanttBarVariant;
-    purpose: string | null;
-    rooms: {
-      name_en: string;
-      name_th: string;
-      sort_order: number | null;
-    } | null;
-  };
-  const rows = (bookingsRes.data ?? []) as unknown as Row[];
-
-  const byRoom = new Map<string, GanttRoom>();
-  for (const r of rows) {
-    if (!r.rooms) continue;
-    const key = r.rooms.name_en;
-    if (!byRoom.has(key)) {
-      byRoom.set(key, {
-        nameEn: r.rooms.name_en,
-        nameTh: r.rooms.name_th,
-        bars: [],
-      });
-    }
-    const room = byRoom.get(key)!;
-    const start = timeFromTimestamp(r.starts_at);
-    const end = timeFromTimestamp(r.ends_at);
-    const bar: GanttBar = {
-      who: r.user_label,
-      meta: `${start} — ${end}${r.purpose ? ` · ${r.purpose}` : ""}`,
-      leftPct: ganttPctFromTime(start, "left"),
-      widthPct: ganttPctFromTime(start, "width", end),
-      variant: r.bar_variant === "default" ? undefined : r.bar_variant,
-    };
-    room.bars.push(bar);
-  }
-
-  for (const r of roomsRes.data ?? []) {
-    if (!byRoom.has(r.name_en)) {
-      byRoom.set(r.name_en, { nameEn: r.name_en, nameTh: r.name_th, bars: [] });
-    }
-  }
-  const sortMap = new Map(
-    (roomsRes.data ?? []).map((r) => [r.name_en, r.sort_order ?? 0]),
-  );
-  return [...byRoom.values()].sort(
-    (a, b) => (sortMap.get(a.nameEn) ?? 0) - (sortMap.get(b.nameEn) ?? 0),
-  );
 }
 
 export async function getWeekBookings(
