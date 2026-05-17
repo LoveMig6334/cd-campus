@@ -50,9 +50,9 @@ export default async function EditConfigPage({
           <input type="hidden" name="key" value={key} />
 
           {key === "home_hero" && <HomeHeroFields />}
-          {(key === "overview_kpis" ||
-            key === "portfolio_kpis" ||
-            key === "carelin_kpis") && <KpiArrayFields configKey={key} />}
+          {(key === "portfolio_kpis" || key === "carelin_kpis") && (
+            <KpiArrayFields configKey={key} />
+          )}
           {key === "portfolio_stats" && <PortfolioStatsFields />}
           {key === "trend_chart" && <TrendChartFields />}
 
@@ -181,7 +181,7 @@ async function HomeHeroFields() {
 async function KpiArrayFields({
   configKey,
 }: {
-  configKey: "overview_kpis" | "portfolio_kpis" | "carelin_kpis";
+  configKey: "portfolio_kpis" | "carelin_kpis";
 }) {
   const v = await getConfigByKey<AdminKpi[]>(configKey);
   return (

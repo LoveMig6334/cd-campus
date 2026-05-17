@@ -21,7 +21,7 @@ function revalidateFor(key: EditableKey): void {
     revalidatePath("/student");
     return;
   }
-  if (key === "overview_kpis" || key === "trend_chart") {
+  if (key === "trend_chart") {
     revalidatePath("/admin");
     return;
   }
@@ -148,7 +148,6 @@ export async function updateSiteConfig(formData: FormData): Promise<void> {
     case "home_hero":
       value = parseHomeHero(formData) as unknown as Json;
       break;
-    case "overview_kpis":
     case "portfolio_kpis":
     case "carelin_kpis":
       value = parseKpiArray(formData) as unknown as Json;

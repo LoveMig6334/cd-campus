@@ -2,7 +2,6 @@ import type { House } from "@/lib/types";
 
 export const EDITABLE_KEYS = [
   "home_hero",
-  "overview_kpis",
   "trend_chart",
   "portfolio_stats",
   "portfolio_kpis",
@@ -17,7 +16,6 @@ export function isEditableKey(k: string): k is EditableKey {
 
 export const KEY_LABELS: Record<EditableKey, { en: string; th: string }> = {
   home_hero: { en: "Home hero", th: "หน้าจอแรกของนักเรียน" },
-  overview_kpis: { en: "Overview KPIs", th: "ตัวเลขสรุปหน้าหลัก" },
   trend_chart: { en: "Trend chart", th: "กราฟแนวโน้ม" },
   portfolio_stats: { en: "Portfolio stats", th: "ตัวเลขโครงงาน · นักเรียน" },
   portfolio_kpis: { en: "Portfolio KPIs", th: "ตัวเลขโครงงาน · ครู" },
