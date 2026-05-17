@@ -8,6 +8,7 @@ import { RoomList } from "@/components/student/RoomList";
 import { BookingConfirmForm } from "@/components/student/BookingConfirmForm";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
+import { getStudentMonthBookingDots } from "@/lib/queries/bookings";
 import { getRoomsAndBookings } from "@/lib/queries/rooms";
 import type { BookingPeriod, BookingTab, CalendarDay, Room } from "@/lib/types";
 import {
@@ -99,10 +100,13 @@ export default async function StudentBooking({
   const room = String(sp.room ?? "");
   const ok = sp.ok === "1";
 
-  const { rooms, bookingsByRoom } = await getRoomsAndBookings(
-    tab === "music" ? "music" : "meeting",
-    date || undefined,
-  );
+  const [{ rooms, bookingsByRoom }, bookingDots] = await Promise.all([
+    getRoomsAndBookings(
+      tab === "music" ? "music" : "meeting",
+      date || undefined,
+    ),
+    getStudentMonthBookingDots(year, month),
+  ]);
   // Music tab shows a single room (the instrument subtitle is dropped) and
   // it's auto-selected so students don't have to pick.
   const visibleRooms = tab === "music" ? rooms.slice(0, 1) : rooms;
@@ -162,12 +166,15 @@ export default async function StudentBooking({
 
   const days: CalendarDay[] = buildBookingMonthDays(year, month, todayISO).map(
     (d) => {
-      if (!d.inMonth || d.state === "closed") return d;
+      if (!d.inMonth) return d;
+      const dots = bookingDots.get(d.num);
+      const withDots = dots && dots.length ? { ...d, dots } : d;
+      if (withDots.state === "closed") return withDots;
       const iso = `${year}-${monthStr}-${String(d.num).padStart(2, "0")}`;
       return {
-        ...d,
+        ...withDots,
         href: buildHref(currentParams, { date: iso }),
-        state: iso === date ? ("selected" as const) : d.state,
+        state: iso === date ? ("selected" as const) : withDots.state,
       };
     },
   );
