@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
+import { monthRange } from "@/lib/queries/util";
 import {
   CATEGORY_COLOR,
   type AdminEvent,
@@ -44,15 +45,6 @@ type EventRow = {
 
 const DAY_RE = /-\d{2}-(\d{2})T/;
 const TIME_RE = /T(\d{2}:\d{2})/;
-
-function monthRange(year: number, month: number) {
-  const start = `${year}-${String(month).padStart(2, "0")}-01T00:00:00+07:00`;
-  const next =
-    month === 12
-      ? `${year + 1}-01-01T00:00:00+07:00`
-      : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
-  return { start, next };
-}
 
 function dayOf(starts_at: string): number {
   const match = starts_at.match(DAY_RE);
