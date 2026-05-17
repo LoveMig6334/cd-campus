@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IconButton } from "@/components/ui/IconButton";
 
 type Props = {
@@ -5,9 +6,27 @@ type Props = {
   subEn: string;
   /** Set true to render month-name in 20px instead of 26px (used by booking) */
   compact?: boolean;
+  /** When set, the previous-month button becomes a Link to this href. */
+  prevHref?: string;
+  /** When set, the next-month button becomes a Link to this href. */
+  nextHref?: string;
+  /** When true (and no href), render a greyed-out button (boundary state). */
+  prevDisabled?: boolean;
+  nextDisabled?: boolean;
 };
 
-export function CalendarMonthRow({ titleTh, subEn, compact }: Props) {
+const ICON_BTN_BASE =
+  "border-line bg-paper grid h-9 w-9 place-items-center rounded-full border-[1.5px]";
+
+export function CalendarMonthRow({
+  titleTh,
+  subEn,
+  compact,
+  prevHref,
+  nextHref,
+  prevDisabled,
+  nextDisabled,
+}: Props) {
   return (
     <div className="flex items-center justify-between">
       <div
@@ -23,14 +42,60 @@ export function CalendarMonthRow({ titleTh, subEn, compact }: Props) {
         </small>
       </div>
       <div className="flex gap-1.5">
-        <IconButton label="Previous month · เดือนก่อนหน้า">
-          <Chevron dir="left" />
-        </IconButton>
-        <IconButton label="Next month · เดือนถัดไป">
-          <Chevron dir="right" />
-        </IconButton>
+        <NavButton
+          dir="left"
+          href={prevHref}
+          disabled={prevDisabled}
+          label="Previous month · เดือนก่อนหน้า"
+        />
+        <NavButton
+          dir="right"
+          href={nextHref}
+          disabled={nextDisabled}
+          label="Next month · เดือนถัดไป"
+        />
       </div>
     </div>
+  );
+}
+
+function NavButton({
+  dir,
+  href,
+  disabled,
+  label,
+}: {
+  dir: "left" | "right";
+  href?: string;
+  disabled?: boolean;
+  label: string;
+}) {
+  if (href) {
+    return (
+      <Link
+        href={href}
+        aria-label={label}
+        className={`${ICON_BTN_BASE} hover:bg-yellow transition-colors`}
+      >
+        <Chevron dir={dir} />
+      </Link>
+    );
+  }
+  if (disabled) {
+    return (
+      <span
+        aria-label={label}
+        aria-disabled="true"
+        className={`${ICON_BTN_BASE} pointer-events-none opacity-40`}
+      >
+        <Chevron dir={dir} />
+      </span>
+    );
+  }
+  return (
+    <IconButton label={label}>
+      <Chevron dir={dir} />
+    </IconButton>
   );
 }
 

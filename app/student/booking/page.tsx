@@ -18,6 +18,7 @@ import {
 } from "@/lib/ui/booking";
 import {
   EN_MONTHS_ABBR,
+  EN_MONTHS_FULL,
   currentYearMonth,
   monthDateSet,
   today,
@@ -73,7 +74,17 @@ export default async function StudentBooking({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  const { year, month, enLabel } = currentYearMonth();
+  const cur = currentYearMonth();
+  const nextMonth = cur.month === 12 ? 1 : cur.month + 1;
+  const nextMonthYear = cur.month === 12 ? cur.year + 1 : cur.year;
+  const nextMonthParam = `${nextMonthYear}-${String(nextMonth).padStart(2, "0")}`;
+  const monthRaw = String(sp.month ?? "");
+  const onNext = monthRaw === nextMonthParam;
+  const year = onNext ? nextMonthYear : cur.year;
+  const month = onNext ? nextMonth : cur.month;
+  const enLabel = onNext
+    ? `${EN_MONTHS_FULL[month - 1]} ${year}`
+    : cur.enLabel;
   const todayISO = today();
   const validDates = monthDateSet(year, month);
   const enMonthAbbr = EN_MONTHS_ABBR[month - 1];
@@ -95,6 +106,18 @@ export default async function StudentBooking({
   if (date) currentParams.date = date;
   if (period) currentParams.period = period;
   if (room) currentParams.room = room;
+  if (onNext) currentParams.month = nextMonthParam;
+
+  // Month nav strips date/period/room so navigating to a sibling month
+  // doesn't drag a now-invalid selection across.
+  const monthNavBase: Record<string, string> = {};
+  if (tab !== "music") monthNavBase.tab = tab;
+  const nextMonthHref = onNext
+    ? undefined
+    : buildHref(monthNavBase, { month: nextMonthParam });
+  const prevMonthHref = onNext
+    ? buildHref(monthNavBase, { month: undefined })
+    : undefined;
 
   const tabs: BookingTab[] = BOOKING_TABS.map((t) => ({
     ...t,
@@ -166,7 +189,15 @@ export default async function StudentBooking({
         )}
         <BookingTabs tabs={tabs} activeId={tab} />
 
-        <CalendarMonthRow titleTh={enLabel} subEn="เลือกวันที่จอง" compact />
+        <CalendarMonthRow
+          titleTh={enLabel}
+          subEn="เลือกวันที่จอง"
+          compact
+          prevHref={prevMonthHref}
+          nextHref={nextMonthHref}
+          prevDisabled={!onNext}
+          nextDisabled={onNext}
+        />
         <CalendarGrid days={days} compact />
 
         <SectionDivider>★ Time period · ช่วงเวลา ★</SectionDivider>
