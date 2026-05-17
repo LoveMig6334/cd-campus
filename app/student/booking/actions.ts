@@ -5,6 +5,7 @@ import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { findConflictingBooking } from "@/lib/queries/bookings";
 import { checkAnonRateLimit } from "@/lib/rateLimit";
+import { isFeatureEnabled } from "@/lib/queries/featureFlags";
 import { PERIOD_HOURS, type PeriodId } from "@/lib/ui/booking";
 import type { ActionResult } from "@/lib/actions";
 
@@ -24,6 +25,14 @@ export async function bookRoom(
       ok: false,
       error:
         "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
+    };
+  }
+
+  if (!(await isFeatureEnabled("booking"))) {
+    return {
+      ok: false,
+      error:
+        "ฟีเจอร์นี้ปิดให้บริการชั่วคราว / This feature is not currently available.",
     };
   }
 
