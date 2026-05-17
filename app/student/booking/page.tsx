@@ -100,6 +100,12 @@ export default async function StudentBooking({
 
   const rooms =
     tab === "music" ? await getMusicRooms() : await getMeetingRooms();
+  // Music tab shows a single room (the instrument subtitle is dropped) and
+  // it's auto-selected so students don't have to pick.
+  const visibleRooms = tab === "music" ? rooms.slice(0, 1) : rooms;
+  const autoMusicRoom =
+    tab === "music" && visibleRooms[0] ? visibleRooms[0].id : "";
+  const effectiveRoom = room || autoMusicRoom;
 
   const currentParams: Record<string, string> = {};
   if (tab !== "music") currentParams.tab = tab;
@@ -145,16 +151,17 @@ export default async function StudentBooking({
     status: p.id === period ? ("selected" as const) : "available",
   }));
 
-  const roomList: Room[] = rooms.map((r) => ({
+  const roomList: Room[] = visibleRooms.map((r) => ({
     ...r,
+    nameTh: tab === "music" ? "" : r.nameTh,
     href: buildHref(currentParams, { room: r.id }),
-    selected: r.id === room,
+    selected: r.id === effectiveRoom,
   }));
 
   const eyebrow = buildEyebrow(
     date,
     period ? periodLabel(period) : "",
-    roomLabel(rooms, room),
+    roomLabel(rooms, effectiveRoom),
     enMonthAbbr,
   );
 
@@ -210,7 +217,7 @@ export default async function StudentBooking({
         <BookingConfirmForm
           date={date}
           period={period}
-          room={room}
+          room={effectiveRoom}
           eyebrow={eyebrow}
         />
       </MobileBody>

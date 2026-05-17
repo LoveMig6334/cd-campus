@@ -17,9 +17,11 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
               <div className="font-display text-[17px] leading-none italic">
                 {room.nameEn}
               </div>
-              <div className="text-mute-500 mt-0.5 font-mono text-[9px] tracking-[0.14em] uppercase">
-                {room.nameTh}
-              </div>
+              {room.nameTh && (
+                <div className="text-mute-500 mt-0.5 font-mono text-[9px] tracking-[0.14em] uppercase">
+                  {room.nameTh}
+                </div>
+              )}
             </div>
             <span
               className={cn(
