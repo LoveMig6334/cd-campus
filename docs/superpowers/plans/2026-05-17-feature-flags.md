@@ -40,6 +40,7 @@
 ## Task 1: Migration, seed, generated types
 
 **Files:**
+
 - Create: `supabase/migrations/0009_feature_flags.sql`
 - Modify (by regeneration): `lib/supabase/database.types.ts`
 
@@ -132,6 +133,7 @@ git commit -m "feat: feature_flags table + seed + types"
 ## Task 2: UI labels module
 
 **Files:**
+
 - Create: `lib/ui/features.ts`
 
 - [ ] **Step 1: Create the labels module**
@@ -186,6 +188,7 @@ git commit -m "feat: FEATURE_KEYS + bilingual labels"
 ## Task 3: Query helper
 
 **Files:**
+
 - Create: `lib/queries/featureFlags.ts`
 
 - [ ] **Step 1: Create the helper**
@@ -245,6 +248,7 @@ git commit -m "feat: feature flags query helper"
 ## Task 4: FeatureUnavailable component
 
 **Files:**
+
 - Create: `components/student/FeatureUnavailable.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -319,6 +323,7 @@ git commit -m "feat: FeatureUnavailable student notice"
 The same three-line layout, repeated for each of the six features. Same shape every time — repeated rather than abstracted because the per-feature key has to be a literal so the type-check actually catches typos.
 
 **Files:**
+
 - Create: `app/student/calendar/layout.tsx`
 - Create: `app/student/booking/layout.tsx`
 - Create: `app/student/sport/layout.tsx`
@@ -472,6 +477,7 @@ git commit -m "feat: gate student feature routes on feature_flags"
 ## Task 6: Carelin write guard
 
 **Files:**
+
 - Modify: `app/student/carelin/actions.ts`
 
 - [ ] **Step 1: Add the guard**
@@ -485,24 +491,24 @@ import { isFeatureEnabled } from "@/lib/queries/featureFlags";
 Then, inside `postCarelinRequest`, add the guard immediately AFTER the rate-limit block and BEFORE the `title`/`body`/`who_name` reads. The relevant region should look like:
 
 ```ts
-  const limit = await checkAnonRateLimit("carelin");
-  if (!limit.ok) {
-    return {
-      ok: false,
-      error:
-        "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
-    };
-  }
+const limit = await checkAnonRateLimit("carelin");
+if (!limit.ok) {
+  return {
+    ok: false,
+    error:
+      "มีคำขอมากเกินไป ลองใหม่ใน 1 นาที / Too many requests, try again in a minute.",
+  };
+}
 
-  if (!(await isFeatureEnabled("carelin"))) {
-    return {
-      ok: false,
-      error:
-        "ฟีเจอร์นี้ปิดให้บริการชั่วคราว / This feature is not currently available.",
-    };
-  }
+if (!(await isFeatureEnabled("carelin"))) {
+  return {
+    ok: false,
+    error:
+      "ฟีเจอร์นี้ปิดให้บริการชั่วคราว / This feature is not currently available.",
+  };
+}
 
-  const title = String(formData.get("title") ?? "").trim();
+const title = String(formData.get("title") ?? "").trim();
 ```
 
 - [ ] **Step 2: Type-check**
@@ -535,6 +541,7 @@ git commit -m "feat: block postCarelinRequest when carelin disabled"
 ## Task 7: Admin sidebar entry
 
 **Files:**
+
 - Modify: `app/admin/layout.tsx`
 
 - [ ] **Step 1: Add the FEATURES_NAV item**
@@ -615,6 +622,7 @@ git commit -m "feat: features link in admin sidebar (root only)"
 ## Task 8: Admin features page + toggle action
 
 **Files:**
+
 - Create: `app/admin/features/actions.ts`
 - Create: `app/admin/features/page.tsx`
 
@@ -730,9 +738,7 @@ export default async function AdminFeaturesPage() {
                   <td className={td}>
                     <form action={toggleFeature}>
                       <input type="hidden" name="key" value={key} />
-                      <Btn type="submit">
-                        {enabled ? "Disable" : "Enable"}
-                      </Btn>
+                      <Btn type="submit">{enabled ? "Disable" : "Enable"}</Btn>
                     </form>
                   </td>
                 </tr>

@@ -72,7 +72,12 @@ After applying: `npm run gen:types`, commit `lib/supabase/database.types.ts`.
 
 ```ts
 export const FEATURE_KEYS = [
-  "calendar", "booking", "sport", "portfolio", "pshare", "carelin",
+  "calendar",
+  "booking",
+  "sport",
+  "portfolio",
+  "pshare",
+  "carelin",
 ] as const;
 export type FeatureKey = (typeof FEATURE_KEYS)[number];
 
@@ -81,12 +86,12 @@ export function isFeatureKey(v: string): v is FeatureKey {
 }
 
 export const FEATURE_LABELS: Record<FeatureKey, { en: string; th: string }> = {
-  calendar:  { en: "Calendar",   th: "ปฏิทินกิจกรรม" },
-  booking:   { en: "Booking",    th: "จองห้อง" },
-  sport:     { en: "Sport Day",  th: "กีฬาสี" },
-  portfolio: { en: "Portfolio",  th: "รุ่นพี่ · Alumni" },
-  pshare:    { en: "P'share",    th: "พี่แชร์ น้องชัวร์" },
-  carelin:   { en: "CD Carelin", th: "เรื่องที่อยากเล่า" },
+  calendar: { en: "Calendar", th: "ปฏิทินกิจกรรม" },
+  booking: { en: "Booking", th: "จองห้อง" },
+  sport: { en: "Sport Day", th: "กีฬาสี" },
+  portfolio: { en: "Portfolio", th: "รุ่นพี่ · Alumni" },
+  pshare: { en: "P'share", th: "พี่แชร์ น้องชัวร์" },
+  carelin: { en: "CD Carelin", th: "เรื่องที่อยากเล่า" },
 };
 ```
 
@@ -103,7 +108,9 @@ export async function getFeatureFlags(): Promise<FeatureFlags> {
   const { data, error } = await db.from("feature_flags").select("key, enabled");
   if (error) throw new Error(`feature_flags: ${error.message}`);
   // Default any missing row to true so a partial table never dark-fails a feature.
-  const out = Object.fromEntries(FEATURE_KEYS.map((k) => [k, true])) as FeatureFlags;
+  const out = Object.fromEntries(
+    FEATURE_KEYS.map((k) => [k, true]),
+  ) as FeatureFlags;
   for (const row of data) {
     if ((FEATURE_KEYS as readonly string[]).includes(row.key)) {
       out[row.key as FeatureKey] = row.enabled;
@@ -135,8 +142,13 @@ Add one `layout.tsx` per feature route group (`app/student/<feature>/layout.tsx`
 import { FeatureUnavailable } from "@/components/student/FeatureUnavailable";
 import { isFeatureEnabled } from "@/lib/queries/featureFlags";
 
-export default async function CarelinLayout({ children }: { children: React.ReactNode }) {
-  if (!(await isFeatureEnabled("carelin"))) return <FeatureUnavailable feature="carelin" />;
+export default async function CarelinLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  if (!(await isFeatureEnabled("carelin")))
+    return <FeatureUnavailable feature="carelin" />;
   return <>{children}</>;
 }
 ```
@@ -163,7 +175,10 @@ Only one public-anon write surface exists today: the Carelin request form action
 
 ```ts
 if (!(await isFeatureEnabled("carelin"))) {
-  return { ok: false, error: "Feature unavailable / ฟีเจอร์นี้ปิดให้บริการชั่วคราว" };
+  return {
+    ok: false,
+    error: "Feature unavailable / ฟีเจอร์นี้ปิดให้บริการชั่วคราว",
+  };
 }
 ```
 
@@ -211,12 +226,19 @@ export async function toggleFeature(formData: FormData): Promise<void> {
 
   const svc = getSupabaseServiceRole();
   const { data: current, error: readErr } = await svc
-    .from("feature_flags").select("enabled").eq("key", key).single();
+    .from("feature_flags")
+    .select("enabled")
+    .eq("key", key)
+    .single();
   if (readErr || !current) throw new Error(readErr?.message ?? "Flag missing.");
 
   const { error } = await svc
     .from("feature_flags")
-    .update({ enabled: !current.enabled, updated_at: new Date().toISOString(), updated_by: self.id })
+    .update({
+      enabled: !current.enabled,
+      updated_at: new Date().toISOString(),
+      updated_by: self.id,
+    })
     .eq("key", key);
   if (error) throw new Error(error.message);
 

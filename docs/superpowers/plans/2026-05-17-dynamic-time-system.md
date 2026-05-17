@@ -33,6 +33,7 @@ Verification: `npx tsc --noEmit && npm run lint` after every task. Manual browse
 ### Task 1: Create `lib/time.ts`
 
 **Files:**
+
 - Create: `lib/time.ts`
 
 **Rationale:** Pure additive module. No existing consumers. All later tasks import from here.
@@ -213,7 +214,9 @@ export function monthDateSet(year: number, month: number): Set<string> {
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const out = new Set<string>();
   for (let d = 1; d <= daysInMonth; d++) {
-    out.add(`${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
+    out.add(
+      `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
+    );
   }
   return out;
 }
@@ -251,6 +254,7 @@ git commit -m "feat: add lib/time module for Bangkok-resolved date helpers"
 ### Task 2: Convert calendar UI + both calendar pages
 
 **Files:**
+
 - Modify: `lib/ui/calendar.ts`
 - Modify: `app/student/calendar/page.tsx`
 - Modify: `app/admin/calendar/page.tsx`
@@ -310,11 +314,7 @@ import { CalendarMonthRow } from "@/components/student/CalendarMonthRow";
 import { IconButton } from "@/components/ui/IconButton";
 import { getStudentDayEvents, getStudentMonth } from "@/lib/queries/events";
 import { CALENDAR_CHIPS, buildCalendarSkeleton } from "@/lib/ui/calendar";
-import {
-  EN_MONTHS_ABBR,
-  currentYearMonth,
-  today,
-} from "@/lib/time";
+import { EN_MONTHS_ABBR, currentYearMonth, today } from "@/lib/time";
 
 export default async function StudentCalendar() {
   const { year, month, thaiLabel, enLabel } = currentYearMonth();
@@ -446,24 +446,24 @@ import { buildMonthGrid } from "@/lib/time";
 Find the use site at the bottom of `getStudentMonth`:
 
 ```ts
-  return MAY_2026_SKELETON.map((cell) => {
-    if (!cell.inMonth) return cell;
-    const dots = dotsByDay.get(cell.num);
-    return dots && dots.length ? { ...cell, dots } : cell;
-  });
+return MAY_2026_SKELETON.map((cell) => {
+  if (!cell.inMonth) return cell;
+  const dots = dotsByDay.get(cell.num);
+  return dots && dots.length ? { ...cell, dots } : cell;
+});
 ```
 
 Replace with:
 
 ```ts
-  return buildMonthGrid(year, month).map<CalendarDay>((cell) => {
-    if (!cell.inMonth) return { num: cell.num, inMonth: false };
-    const dots = dotsByDay.get(cell.num);
-    if (dots && dots.length) {
-      return { num: cell.num, inMonth: true, dots };
-    }
-    return { num: cell.num, inMonth: true };
-  });
+return buildMonthGrid(year, month).map<CalendarDay>((cell) => {
+  if (!cell.inMonth) return { num: cell.num, inMonth: false };
+  const dots = dotsByDay.get(cell.num);
+  if (dots && dots.length) {
+    return { num: cell.num, inMonth: true, dots };
+  }
+  return { num: cell.num, inMonth: true };
+});
 ```
 
 `CalendarDay` is already imported at the top of `events.ts` (line 9 imports it from `@/lib/types`); no new import needed.
@@ -475,9 +475,11 @@ Find the block in `getAdminMonth` that constructs `grid: BigCalDay[]` (currently
 Replace the entire `const make = ... ; const other = ... ; const grid: BigCalDay[] = [ /* 42 hardcoded cells */ ];` block with:
 
 ```ts
-  const grid: BigCalDay[] = buildMonthGrid(year, month).map((cell) =>
-    cell.inMonth ? { num: cell.num, inMonth: true } : { num: cell.num, inMonth: false },
-  );
+const grid: BigCalDay[] = buildMonthGrid(year, month).map((cell) =>
+  cell.inMonth
+    ? { num: cell.num, inMonth: true }
+    : { num: cell.num, inMonth: false },
+);
 ```
 
 The `isToday: true` marker on day 12 is dropped from `getAdminMonth` — instead, the admin calendar page overlays it. `BigCalGrid` reads `day.isToday` for the blue cell styling (`components/admin/BigCalGrid.tsx:41`), so the overlay below is required.
@@ -485,12 +487,14 @@ The `isToday: true` marker on day 12 is dropped from `getAdminMonth` — instead
 Add this overlay in `app/admin/calendar/page.tsx` after the `getAdminMonth` call (before passing to `BigCalGrid`):
 
 ```ts
-  const todayISO = today();
-  const [todayY, todayM, todayD] = todayISO.split("-").map(Number);
-  const todayInMonth = todayY === year && todayM === month;
-  const daysWithToday = todayInMonth
-    ? days.map((d) => (d.inMonth && d.num === todayD ? { ...d, isToday: true } : d))
-    : days;
+const todayISO = today();
+const [todayY, todayM, todayD] = todayISO.split("-").map(Number);
+const todayInMonth = todayY === year && todayM === month;
+const daysWithToday = todayInMonth
+  ? days.map((d) =>
+      d.inMonth && d.num === todayD ? { ...d, isToday: true } : d,
+    )
+  : days;
 ```
 
 …and pass `daysWithToday` (instead of `days`) to `<BigCalGrid>`. Add `import { today } from "@/lib/time";` to the admin calendar page imports.
@@ -515,6 +519,7 @@ git commit -m "feat: dynamic calendar grid for student and admin pages"
 ### Task 3: Convert booking UI + student booking page
 
 **Files:**
+
 - Modify: `lib/ui/booking.ts`
 - Modify: `app/student/booking/page.tsx`
 
@@ -626,53 +631,53 @@ const MAY_DATES = new Set(
 Inside `StudentBooking()`, immediately after `const sp = await searchParams;`, add:
 
 ```ts
-  const { year, month } = currentYearMonth();
-  const todayISO = today();
-  const validDates = monthDateSet(year, month);
-  const enMonthAbbr = EN_MONTHS_ABBR[month - 1];
-  const monthStr = String(month).padStart(2, "0");
+const { year, month } = currentYearMonth();
+const todayISO = today();
+const validDates = monthDateSet(year, month);
+const enMonthAbbr = EN_MONTHS_ABBR[month - 1];
+const monthStr = String(month).padStart(2, "0");
 ```
 
 Change the `date` validation to use the new set. Find:
 
 ```ts
-  const date = MAY_DATES.has(dateRaw) ? dateRaw : "";
+const date = MAY_DATES.has(dateRaw) ? dateRaw : "";
 ```
 
 Replace with:
 
 ```ts
-  const date = validDates.has(dateRaw) ? dateRaw : "";
+const date = validDates.has(dateRaw) ? dateRaw : "";
 ```
 
 Change the `days` mapping (currently uses `BOOKING_MAY_DAYS`). Find:
 
 ```ts
-  const days: CalendarDay[] = BOOKING_MAY_DAYS.map((d) => {
-    if (!d.inMonth || d.state === "closed") return d;
-    const iso = `2026-05-${String(d.num).padStart(2, "0")}`;
-    return {
-      ...d,
-      href: buildHref(currentParams, { date: iso }),
-      state: iso === date ? ("selected" as const) : d.state,
-    };
-  });
+const days: CalendarDay[] = BOOKING_MAY_DAYS.map((d) => {
+  if (!d.inMonth || d.state === "closed") return d;
+  const iso = `2026-05-${String(d.num).padStart(2, "0")}`;
+  return {
+    ...d,
+    href: buildHref(currentParams, { date: iso }),
+    state: iso === date ? ("selected" as const) : d.state,
+  };
+});
 ```
 
 Replace with:
 
 ```ts
-  const days: CalendarDay[] = buildBookingMonthDays(year, month, todayISO).map(
-    (d) => {
-      if (!d.inMonth || d.state === "closed") return d;
-      const iso = `${year}-${monthStr}-${String(d.num).padStart(2, "0")}`;
-      return {
-        ...d,
-        href: buildHref(currentParams, { date: iso }),
-        state: iso === date ? ("selected" as const) : d.state,
-      };
-    },
-  );
+const days: CalendarDay[] = buildBookingMonthDays(year, month, todayISO).map(
+  (d) => {
+    if (!d.inMonth || d.state === "closed") return d;
+    const iso = `${year}-${monthStr}-${String(d.num).padStart(2, "0")}`;
+    return {
+      ...d,
+      href: buildHref(currentParams, { date: iso }),
+      state: iso === date ? ("selected" as const) : d.state,
+    };
+  },
+);
 ```
 
 Change the `buildEyebrow` call site's hardcoded month. Find the `buildEyebrow` function (currently lines 59–67):
@@ -707,40 +712,40 @@ function buildEyebrow(
 Update the `buildEyebrow` call site. Find:
 
 ```ts
-  const eyebrow = buildEyebrow(
-    date,
-    period ? periodLabel(period) : "",
-    roomLabel(rooms, room),
-  );
+const eyebrow = buildEyebrow(
+  date,
+  period ? periodLabel(period) : "",
+  roomLabel(rooms, room),
+);
 ```
 
 Replace with:
 
 ```ts
-  const eyebrow = buildEyebrow(
-    date,
-    period ? periodLabel(period) : "",
-    roomLabel(rooms, room),
-    enMonthAbbr,
-  );
+const eyebrow = buildEyebrow(
+  date,
+  period ? periodLabel(period) : "",
+  roomLabel(rooms, room),
+  enMonthAbbr,
+);
 ```
 
 Change the `CalendarMonthRow` props. Find:
 
 ```tsx
-        <CalendarMonthRow titleTh="May 2026" subEn="เลือกวันที่จอง" compact />
+<CalendarMonthRow titleTh="May 2026" subEn="เลือกวันที่จอง" compact />
 ```
 
 Replace with — pull the Thai label from `currentYearMonth()` (already destructured): change the `currentYearMonth()` destructure at the top of the component to include `thaiLabel`:
 
 ```ts
-  const { year, month, thaiLabel, enLabel } = currentYearMonth();
+const { year, month, thaiLabel, enLabel } = currentYearMonth();
 ```
 
 (`thaiLabel` and `enLabel` added.) Then the row:
 
 ```tsx
-        <CalendarMonthRow titleTh={enLabel} subEn="เลือกวันที่จอง" compact />
+<CalendarMonthRow titleTh={enLabel} subEn="เลือกวันที่จอง" compact />
 ```
 
 (The prototype's `titleTh="May 2026"` is actually English text — the prop name is misleading. Keep using `enLabel` to match the original visual. If you want Thai-style instead, use `thaiLabel` — but the original used English in the `titleTh` slot, so keep `enLabel` for prototype fidelity.)
@@ -765,6 +770,7 @@ git commit -m "feat: dynamic booking calendar for student page"
 ### Task 4: Wire admin bookings page to live today
 
 **Files:**
+
 - Modify: `app/admin/bookings/page.tsx`
 
 - [ ] **Step 1: Replace the hardcoded TODAY constant with a call to `today()`**
@@ -786,31 +792,31 @@ const TODAY = "2026-05-12";
 Inside `AdminBookings()`, immediately after `const params = await searchParams;`, add:
 
 ```ts
-  const todayISO = today();
+const todayISO = today();
 ```
 
 Change `selectedDate` (currently line 84):
 
 ```ts
-  const selectedDate = isValidDate(params.date) ? params.date : TODAY;
+const selectedDate = isValidDate(params.date) ? params.date : TODAY;
 ```
 
 to:
 
 ```ts
-  const selectedDate = isValidDate(params.date) ? params.date : todayISO;
+const selectedDate = isValidDate(params.date) ? params.date : todayISO;
 ```
 
 Change the `BookingsWeekGrid` prop (currently line 132):
 
 ```tsx
-        today={TODAY}
+today = { TODAY };
 ```
 
 to:
 
 ```tsx
-        today={todayISO}
+today = { todayISO };
 ```
 
 - [ ] **Step 2: Verify types and lint**
@@ -833,6 +839,7 @@ git commit -m "feat: admin bookings defaults to real today"
 ### Task 5: Form defaults for new event + new booking
 
 **Files:**
+
 - Modify: `app/admin/calendar/new/page.tsx`
 - Modify: `app/admin/bookings/new/page.tsx`
 
@@ -851,19 +858,19 @@ import { today } from "@/lib/time";
 Inside the component body (at the very top, before the `return`), compute the default:
 
 ```ts
-  const startsAtDefault = `${today()}T09:00`;
+const startsAtDefault = `${today()}T09:00`;
 ```
 
 Change the `starts_at` input's `defaultValue` (currently line 99):
 
 ```tsx
-              defaultValue="2026-05-12T09:00"
+defaultValue = "2026-05-12T09:00";
 ```
 
 to:
 
 ```tsx
-              defaultValue={startsAtDefault}
+defaultValue = { startsAtDefault };
 ```
 
 - [ ] **Step 2: Update `app/admin/bookings/new/page.tsx`**
@@ -879,19 +886,19 @@ import { today } from "@/lib/time";
 Inside the component body, after `const rooms = await getMusicRooms();`, add:
 
 ```ts
-  const dateDefault = today();
+const dateDefault = today();
 ```
 
 Change the `date` input's `defaultValue` (currently line 81):
 
 ```tsx
-              defaultValue="2026-05-13"
+defaultValue = "2026-05-13";
 ```
 
 to:
 
 ```tsx
-              defaultValue={dateDefault}
+defaultValue = { dateDefault };
 ```
 
 - [ ] **Step 3: Verify types and lint**
@@ -914,6 +921,7 @@ git commit -m "feat: form defaults use today instead of pinned dates"
 ### Task 6: Wire `getAdminTodayEvents` and `relativeWhen` to lib/time
 
 **Files:**
+
 - Modify: `lib/queries/events.ts`
 - Modify: `lib/queries/carelin.ts`
 
@@ -1078,7 +1086,7 @@ If you want to confirm the timezone handling, run:
 TZ=UTC npm run dev
 ```
 
-…between roughly 17:00 UTC and 24:00 UTC (which is 00:00 → 07:00 Bangkok the *next* day). `today()` should still return the Bangkok date, not the UTC date. Skip if it's not that time window — the `Intl.DateTimeFormat` approach is reliable.
+…between roughly 17:00 UTC and 24:00 UTC (which is 00:00 → 07:00 Bangkok the _next_ day). `today()` should still return the Bangkok date, not the UTC date. Skip if it's not that time window — the `Intl.DateTimeFormat` approach is reliable.
 
 - [ ] **Step 10: Final type + lint sweep**
 

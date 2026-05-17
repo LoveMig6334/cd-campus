@@ -81,8 +81,7 @@ export async function getRoomsAndBookings(
 
   const rooms = roomsData.map<Room>((r) => {
     const booked = bookingsByRoom.get(r.id);
-    const isDayFull =
-      !!booked && booked.size >= PERIOD_START_TIMES.length;
+    const isDayFull = !!booked && booked.size >= PERIOD_START_TIMES.length;
     return {
       id: r.id,
       nameEn: r.name_en,

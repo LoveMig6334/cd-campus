@@ -61,9 +61,7 @@ export default async function AdminFeaturesPage() {
                   <td className={td}>
                     <form action={toggleFeature}>
                       <input type="hidden" name="key" value={key} />
-                      <Btn type="submit">
-                        {enabled ? "Disable" : "Enable"}
-                      </Btn>
+                      <Btn type="submit">{enabled ? "Disable" : "Enable"}</Btn>
                     </form>
                   </td>
                 </tr>

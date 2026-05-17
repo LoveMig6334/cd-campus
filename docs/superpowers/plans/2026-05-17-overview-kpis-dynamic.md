@@ -29,6 +29,7 @@ Each task ends with `npx tsc --noEmit && npm run lint`, then a commit. Task 5 ad
 ### Task 1: Extract `monthRange` into shared util
 
 **Files:**
+
 - Modify: `lib/queries/util.ts`
 - Modify: `lib/queries/events.ts:48-55` (remove local function), `lib/queries/events.ts` top-of-file imports
 
@@ -104,6 +105,7 @@ git commit -m "refactor: extract monthRange helper to queries/util"
 ### Task 2: Create `lib/queries/overview.ts` with `getOverviewKpis()`
 
 **Files:**
+
 - Create: `lib/queries/overview.ts`
 
 **Rationale:** This is the single behavioral addition — the function the admin page will call. Build it complete in one task so the diff stays cohesive.
@@ -295,6 +297,7 @@ git commit -m "feat: add getOverviewKpis with live counts"
 ### Task 3: Swap import in `OverviewCards`, remove stale function from `siteConfig`
 
 **Files:**
+
 - Modify: `components/admin/cards/OverviewCards.tsx:10` (import line)
 - Modify: `lib/queries/siteConfig.ts:23-25` (remove function)
 
@@ -357,6 +360,7 @@ git commit -m "refactor: wire admin overview to live KPI query"
 ### Task 4: Remove `overview_kpis` from seed
 
 **Files:**
+
 - Modify: `supabase/seed/siteConfig.ts:29-33` (remove insert row)
 - Modify: `supabase/seed/data/admin-overview.ts:8-33` (remove `ADMIN_KPIS` export)
 
@@ -463,6 +467,7 @@ On `/admin`, the KPI grid (immediately under the greeting banner) should show fo
 4. `P-SHARE · PUBLISHED` / `เผยแพร่แล้ว` — a number (≥ 0).
 
 Each card has a colored chip at the bottom:
+
 - Cards 1 & 2: green (`up`), pink (`down`), or cream (`flat`) depending on comparison with the previous month, with text like `▲ 3 vs Apr`, `▼ 1 vs Apr`, or `— same as Apr`.
 - Cards 3 & 4: always cream (`flat`), with text like `▲ 2 new this month` / `▲ 1 published this month`, or `— none this month`.
 
@@ -473,6 +478,7 @@ Open a second browser tab to `http://localhost:3000/admin/calendar`, `/admin/boo
 - [ ] **Step 5: Trigger a live update**
 
 Pick the easiest of these to perform locally and confirm the KPI updates after a hard refresh:
+
 - Add an event via `/admin/calendar/new` dated in the current month → reload `/admin` → "Events · this month" increments by 1.
 - Add a booking via `/admin/bookings/new` dated in the current month → reload `/admin` → "Bookings · this month" increments by 1.
 - Submit a new Carelin request via `/student/carelin/new` (public) → reload `/admin` → "Carelin · open" and "▲ N new this month" both increment.

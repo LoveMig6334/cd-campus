@@ -64,25 +64,47 @@ const [
   pshareTotal,
   pshareNewThis,
 ] = await Promise.all([
-  db.from("events").select("*", { count: "exact", head: true })
+  db
+    .from("events")
+    .select("*", { count: "exact", head: true })
     .is("tag", null)
-    .gte("starts_at", thisStart).lt("starts_at", thisNext),
-  db.from("events").select("*", { count: "exact", head: true })
+    .gte("starts_at", thisStart)
+    .lt("starts_at", thisNext),
+  db
+    .from("events")
+    .select("*", { count: "exact", head: true })
     .is("tag", null)
-    .gte("starts_at", prevStart).lt("starts_at", prevNext),
-  db.from("bookings").select("*", { count: "exact", head: true })
-    .gte("starts_at", thisStart).lt("starts_at", thisNext),
-  db.from("bookings").select("*", { count: "exact", head: true })
-    .gte("starts_at", prevStart).lt("starts_at", prevNext),
-  db.from("carelin_requests").select("*", { count: "exact", head: true })
+    .gte("starts_at", prevStart)
+    .lt("starts_at", prevNext),
+  db
+    .from("bookings")
+    .select("*", { count: "exact", head: true })
+    .gte("starts_at", thisStart)
+    .lt("starts_at", thisNext),
+  db
+    .from("bookings")
+    .select("*", { count: "exact", head: true })
+    .gte("starts_at", prevStart)
+    .lt("starts_at", prevNext),
+  db
+    .from("carelin_requests")
+    .select("*", { count: "exact", head: true })
     .eq("status", "open"),
-  db.from("carelin_requests").select("*", { count: "exact", head: true })
-    .gte("created_at", thisStart).lt("created_at", thisNext),
-  db.from("pshare_posts").select("*", { count: "exact", head: true })
+  db
+    .from("carelin_requests")
+    .select("*", { count: "exact", head: true })
+    .gte("created_at", thisStart)
+    .lt("created_at", thisNext),
+  db
+    .from("pshare_posts")
+    .select("*", { count: "exact", head: true })
     .eq("status", "published"),
-  db.from("pshare_posts").select("*", { count: "exact", head: true })
+  db
+    .from("pshare_posts")
+    .select("*", { count: "exact", head: true })
     .eq("status", "published")
-    .gte("published_at", thisStart).lt("published_at", thisNext),
+    .gte("published_at", thisStart)
+    .lt("published_at", thisNext),
 ]);
 ```
 
@@ -103,12 +125,12 @@ type AdminKpi = {
 
 The four returned cards:
 
-| # | `label` | `th` | `num` | `delta.kind` | `delta.text` |
-|---|---|---|---|---|---|
-| 1 | `Events · this month` | `กิจกรรมเดือนนี้` | `eventsThis` | `up` if `eventsThis > eventsPrev`, `down` if `<`, `flat` if `=` | `▲ N vs <PrevMonthAbbr>` / `▼ N vs <PrevMonthAbbr>` / `— same as <PrevMonthAbbr>` |
-| 2 | `Bookings · this month` | `การจองเดือนนี้` | `bookingsThis` | same logic as #1 | same shape as #1 |
-| 3 | `Carelin · open` | `Carelin ค้างตอบ` | `carelinOpen` | always `flat` (backlog growth shouldn't render as "good/up green") | `▲ N new this month` if `carelinNewThis > 0`, else `— none this month` |
-| 4 | `P-Share · published` | `เผยแพร่แล้ว` | `pshareTotal` | always `flat` (cumulative total has no "down" meaning) | `▲ N published this month` if `pshareNewThis > 0`, else `— none this month` |
+| #   | `label`                 | `th`              | `num`          | `delta.kind`                                                       | `delta.text`                                                                      |
+| --- | ----------------------- | ----------------- | -------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| 1   | `Events · this month`   | `กิจกรรมเดือนนี้` | `eventsThis`   | `up` if `eventsThis > eventsPrev`, `down` if `<`, `flat` if `=`    | `▲ N vs <PrevMonthAbbr>` / `▼ N vs <PrevMonthAbbr>` / `— same as <PrevMonthAbbr>` |
+| 2   | `Bookings · this month` | `การจองเดือนนี้`  | `bookingsThis` | same logic as #1                                                   | same shape as #1                                                                  |
+| 3   | `Carelin · open`        | `Carelin ค้างตอบ` | `carelinOpen`  | always `flat` (backlog growth shouldn't render as "good/up green") | `▲ N new this month` if `carelinNewThis > 0`, else `— none this month`            |
+| 4   | `P-Share · published`   | `เผยแพร่แล้ว`     | `pshareTotal`  | always `flat` (cumulative total has no "down" meaning)             | `▲ N published this month` if `pshareNewThis > 0`, else `— none this month`       |
 
 `num` is formatted with `.toLocaleString("en-US")` for ≥1,000 (matches `"2,184"` in the existing static data).
 

@@ -81,7 +81,8 @@ function bangkokPartsOf(d: Date): {
     minute: "2-digit",
     hour12: false,
   }).formatToParts(d);
-  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  const get = (t: string) =>
+    Number(parts.find((p) => p.type === t)?.value ?? 0);
   return {
     y: get("year"),
     m: get("month"),
@@ -225,7 +226,9 @@ export function monthDateSet(year: number, month: number): Set<string> {
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const out = new Set<string>();
   for (let d = 1; d <= daysInMonth; d++) {
-    out.add(`${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`);
+    out.add(
+      `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`,
+    );
   }
   return out;
 }

@@ -8,11 +8,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { getStudentMonthBookingDots } from "@/lib/queries/bookings";
 import { getStudentDayEvents, getStudentMonth } from "@/lib/queries/events";
 import { CALENDAR_CHIPS, buildCalendarSkeleton } from "@/lib/ui/calendar";
-import {
-  EN_MONTHS_ABBR,
-  currentYearMonth,
-  today,
-} from "@/lib/time";
+import { EN_MONTHS_ABBR, currentYearMonth, today } from "@/lib/time";
 
 export default async function StudentCalendar() {
   const { year, month, thaiLabel, enLabel } = currentYearMonth();

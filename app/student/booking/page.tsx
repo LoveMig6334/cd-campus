@@ -37,7 +37,6 @@ function isPeriodId(v: string): v is PeriodId {
   return v === "morning" || v === "midday" || v === "evening";
 }
 
-
 function buildHref(
   current: Record<string, string>,
   patch: Record<string, string | undefined>,
@@ -84,9 +83,7 @@ export default async function StudentBooking({
   const onNext = monthRaw === nextMonthParam;
   const year = onNext ? nextMonthYear : cur.year;
   const month = onNext ? nextMonth : cur.month;
-  const enLabel = onNext
-    ? `${EN_MONTHS_FULL[month - 1]} ${year}`
-    : cur.enLabel;
+  const enLabel = onNext ? `${EN_MONTHS_FULL[month - 1]} ${year}` : cur.enLabel;
   const todayISO = today();
   const validDates = monthDateSet(year, month);
   const enMonthAbbr = EN_MONTHS_ABBR[month - 1];

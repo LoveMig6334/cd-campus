@@ -53,4 +53,3 @@ export function buildBookingMonthDays(
     return { num: cell.num, inMonth: true };
   });
 }
-

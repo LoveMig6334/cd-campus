@@ -83,7 +83,7 @@ export function buildMonthGrid(
 export function monthDateSet(year: number, month: number): Set<string>;
 ```
 
-(A weekday-index helper is needed *inside* `buildBookingMonthDays` to mark Sat/Sun as closed — it stays a local helper in `lib/ui/booking.ts` (or `lib/time.ts` as an internal), not part of the public API.)
+(A weekday-index helper is needed _inside_ `buildBookingMonthDays` to mark Sat/Sun as closed — it stays a local helper in `lib/ui/booking.ts` (or `lib/time.ts` as an internal), not part of the public API.)
 
 Thai month name constants (`THAI_MONTHS_FULL = ["มกราคม", …]` and `THAI_MONTHS_ABBR = ["ม.ค.", …]`) move into this module from `lib/queries/pshare.ts` / `lib/queries/carelin.ts` so there's one canonical list.
 
@@ -115,29 +115,29 @@ export function buildBookingMonthDays(
 
 ### Page changes (8 files)
 
-| File | Change |
-|---|---|
-| `app/student/calendar/page.tsx` | Replace `getStudentMonth(2026, 5)` / `getStudentDayEvents(2026, 5, 13)` with `currentYearMonth()` + `today()` derived values. `CalendarMonthRow titleTh/subEn` use the dynamic labels. |
-| `app/admin/calendar/page.tsx` | Same — `getAdminMonth(year, month)` and `getAdminMonthEventList(year, month)`. Topbar `eyebrow="Calendar · May 2026"` and `<Btn>May 2026</Btn>` become dynamic. |
-| `app/student/booking/page.tsx` | `MAY_DATES` set → `monthDateSet(year, month)`. `BOOKING_MAY_DAYS` → `buildBookingMonthDays(year, month, today())`. `iso = ${year}-${MM}-${dd}` in the day-mapping callback. `CalendarMonthRow titleTh="May 2026"` → dynamic label. `buildEyebrow` "MAY" → dynamic month abbr. |
-| `app/admin/bookings/page.tsx` | `TODAY = "2026-05-12"` → `today()`. Everything else (`?date=` parsing, default fallback, week grid) already takes any date as a string and works unchanged. |
-| `app/admin/calendar/new/page.tsx` | Form `defaultValue="2026-05-12T09:00"` → `` `${today()}T09:00` ``. |
-| `app/admin/calendar/[id]/edit/page.tsx` | No code change; the comment example uses 2026-05-12 but the actual value comes from the DB row. |
-| `app/admin/bookings/new/page.tsx` | Form `defaultValue="2026-05-13"` → `today()`. |
-| `app/admin/bookings/[id]/edit/page.tsx` | No code change; same as calendar edit. |
+| File                                    | Change                                                                                                                                                                                                                                                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/student/calendar/page.tsx`         | Replace `getStudentMonth(2026, 5)` / `getStudentDayEvents(2026, 5, 13)` with `currentYearMonth()` + `today()` derived values. `CalendarMonthRow titleTh/subEn` use the dynamic labels.                                                                                        |
+| `app/admin/calendar/page.tsx`           | Same — `getAdminMonth(year, month)` and `getAdminMonthEventList(year, month)`. Topbar `eyebrow="Calendar · May 2026"` and `<Btn>May 2026</Btn>` become dynamic.                                                                                                               |
+| `app/student/booking/page.tsx`          | `MAY_DATES` set → `monthDateSet(year, month)`. `BOOKING_MAY_DAYS` → `buildBookingMonthDays(year, month, today())`. `iso = ${year}-${MM}-${dd}` in the day-mapping callback. `CalendarMonthRow titleTh="May 2026"` → dynamic label. `buildEyebrow` "MAY" → dynamic month abbr. |
+| `app/admin/bookings/page.tsx`           | `TODAY = "2026-05-12"` → `today()`. Everything else (`?date=` parsing, default fallback, week grid) already takes any date as a string and works unchanged.                                                                                                                   |
+| `app/admin/calendar/new/page.tsx`       | Form `defaultValue="2026-05-12T09:00"` → `` `${today()}T09:00` ``.                                                                                                                                                                                                            |
+| `app/admin/calendar/[id]/edit/page.tsx` | No code change; the comment example uses 2026-05-12 but the actual value comes from the DB row.                                                                                                                                                                               |
+| `app/admin/bookings/new/page.tsx`       | Form `defaultValue="2026-05-13"` → `today()`.                                                                                                                                                                                                                                 |
+| `app/admin/bookings/[id]/edit/page.tsx` | No code change; same as calendar edit.                                                                                                                                                                                                                                        |
 
 ### Query / library changes (2 files)
 
-| File | Change |
-|---|---|
-| `lib/queries/events.ts` | `getAdminTodayEvents()` — drop the hardcoded `2026-05-12T00:00:00+07:00` / `2026-05-13T00:00:00+07:00` bounds. Replace with `today()` and a `nextDayISO(today())` helper inside the function. Comment "// Today in the prototype is 2026-05-12." is deleted. |
-| `lib/queries/carelin.ts` | `relativeWhen()` — currently checks `day === 12` / `day === 11`. Replace with calls to `relativeThaiDay(ts)` from `lib/time.ts`. Local `RELATIVE_WHEN_RE` regex and the inline logic are deleted. |
+| File                     | Change                                                                                                                                                                                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `lib/queries/events.ts`  | `getAdminTodayEvents()` — drop the hardcoded `2026-05-12T00:00:00+07:00` / `2026-05-13T00:00:00+07:00` bounds. Replace with `today()` and a `nextDayISO(today())` helper inside the function. Comment "// Today in the prototype is 2026-05-12." is deleted. |
+| `lib/queries/carelin.ts` | `relativeWhen()` — currently checks `day === 12` / `day === 11`. Replace with calls to `relativeThaiDay(ts)` from `lib/time.ts`. Local `RELATIVE_WHEN_RE` regex and the inline logic are deleted.                                                            |
 
-`lib/queries/pshare.ts` already has its own `THAI_MONTHS` and `thaiDate()` helper that doesn't depend on "today" — it stays as-is for now (the goal here is dynamic *today*, not refactoring all date formatters). Future cleanup: consolidate Thai month constants into `lib/time.ts`.
+`lib/queries/pshare.ts` already has its own `THAI_MONTHS` and `thaiDate()` helper that doesn't depend on "today" — it stays as-is for now (the goal here is dynamic _today_, not refactoring all date formatters). Future cleanup: consolidate Thai month constants into `lib/time.ts`.
 
 ### Bangkok-timezone computation
 
-`new Date()` returns a UTC-anchored instant; `.getFullYear()`/`.getMonth()`/`.getDate()` use the *server's* local timezone, which on Vercel is UTC. That means between 17:00 UTC and 24:00 UTC (00:00–07:00 Bangkok next day) we'd report "yesterday" as today for Bangkok users.
+`new Date()` returns a UTC-anchored instant; `.getFullYear()`/`.getMonth()`/`.getDate()` use the _server's_ local timezone, which on Vercel is UTC. That means between 17:00 UTC and 24:00 UTC (00:00–07:00 Bangkok next day) we'd report "yesterday" as today for Bangkok users.
 
 The fix:
 
@@ -247,13 +247,16 @@ function addBangkokDays(dateISO: string, n: number): string {
 ## What changes, file by file
 
 **New**
+
 - `lib/time.ts` — ~120 lines: `today`, `currentYearMonth`, `relativeThaiDay`, `buildMonthGrid`, `monthDateSet`, `weekdayIndex`, plus the two Thai month constant arrays and an English month abbr/full pair.
 
 **Modified — UI builders**
+
 - `lib/ui/calendar.ts` — delete `MAY_2026_SKELETON` and `SELECTED_DAY_LABEL`; add `buildCalendarSkeleton(year, month, todayISO)`.
 - `lib/ui/booking.ts` — delete `BOOKING_MAY_DAYS`; add `buildBookingMonthDays(year, month, todayISO)`.
 
 **Modified — pages (form + read)**
+
 - `app/student/calendar/page.tsx`
 - `app/admin/calendar/page.tsx`
 - `app/student/booking/page.tsx`
@@ -262,6 +265,7 @@ function addBangkokDays(dateISO: string, n: number): string {
 - `app/admin/bookings/new/page.tsx`
 
 **Modified — queries**
+
 - `lib/queries/events.ts` (`getAdminTodayEvents`)
 - `lib/queries/carelin.ts` (`relativeWhen` → use `relativeThaiDay`)
 
