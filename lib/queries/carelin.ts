@@ -1,17 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { CarelinDeskRow, CarelinRequest } from "@/lib/types";
-
-const RELATIVE_WHEN_RE = /-(\d{2})-(\d{2})T(\d{2}:\d{2})/;
-
-function relativeWhen(ts: string): string {
-  const m = ts.match(RELATIVE_WHEN_RE);
-  if (!m) return ts;
-  const day = parseInt(m[2], 10);
-  const hhmm = m[3];
-  if (day === 12) return hhmm;
-  if (day === 11) return "เมื่อวาน";
-  return `${day} พ.ค.`;
-}
+import { relativeThaiDay } from "@/lib/time";
 
 export async function getCarelinRequests(): Promise<CarelinRequest[]> {
   const db = await createClient();
@@ -37,13 +26,13 @@ export async function getCarelinRequests(): Promise<CarelinRequest[]> {
       body: r.body,
       who: r.who_name,
       studentId: r.student_id_4,
-      when: relativeWhen(r.created_at),
+      when: relativeThaiDay(r.created_at),
       status: r.status as CarelinRequest["status"],
       reply: reply
         ? {
             teacher: reply.teacher_name ?? "",
             role: reply.role_label ?? "",
-            when: relativeWhen(reply.created_at),
+            when: relativeThaiDay(reply.created_at),
             body: reply.body,
             avatar: reply.avatar_letter ?? "",
           }
@@ -63,7 +52,7 @@ export async function getCarelinDeskRows(): Promise<CarelinDeskRow[]> {
   if (error) throw new Error(`getCarelinDeskRows: ${error.message}`);
   return (data ?? []).map<CarelinDeskRow>((r) => ({
     id: r.id,
-    when: relativeWhen(r.created_at),
+    when: relativeThaiDay(r.created_at),
     requester: {
       name: r.who_name,
       studentId: r.student_id_4,
@@ -121,7 +110,7 @@ export async function getCarelinDetail(
     studentId: data.student_id_4,
     klass: data.klass ?? "",
     status: data.status as CarelinDetail["status"],
-    when: relativeWhen(data.created_at),
+    when: relativeThaiDay(data.created_at),
     replies: replies
       .sort((a, b) => a.created_at.localeCompare(b.created_at))
       .map((r) => ({
@@ -129,7 +118,7 @@ export async function getCarelinDetail(
         role: r.role_label ?? "",
         body: r.body,
         avatar: r.avatar_letter ?? "",
-        when: relativeWhen(r.created_at),
+        when: relativeThaiDay(r.created_at),
       })),
   };
 }

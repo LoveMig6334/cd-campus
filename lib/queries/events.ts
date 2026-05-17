@@ -10,7 +10,7 @@ import {
   type CalendarDay,
   type CalendarEvent,
 } from "@/lib/types";
-import { buildMonthGrid } from "@/lib/time";
+import { buildMonthGrid, today } from "@/lib/time";
 
 /**
  * Tag-based discriminator for which "view" each event belongs to:
@@ -167,15 +167,23 @@ export async function getAdminMonth(
 }
 
 export async function getAdminTodayEvents(): Promise<AdminEvent[]> {
-  // "Today" in the prototype is 2026-05-12. Today-card entries have tags
-  // starting with a CalendarCategory name; upcoming-sport entries have
-  // tag prefixes Team/Track/Show, which we explicitly exclude.
+  // Today-card entries have tags starting with a CalendarCategory name;
+  // upcoming-sport entries (Team/Track/Show prefixes) are excluded.
   const db = await createClient();
+  const todayISO = today();
+  const start = `${todayISO}T00:00:00+07:00`;
+  const [y, m, d] = todayISO.split("-").map(Number);
+  const tomorrow = new Date(Date.UTC(y, m - 1, d));
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const tYear = tomorrow.getUTCFullYear();
+  const tMonth = String(tomorrow.getUTCMonth() + 1).padStart(2, "0");
+  const tDay = String(tomorrow.getUTCDate()).padStart(2, "0");
+  const next = `${tYear}-${tMonth}-${tDay}T00:00:00+07:00`;
   const { data, error } = await db
     .from("events")
     .select("title_th, tag, category, starts_at")
-    .gte("starts_at", "2026-05-12T00:00:00+07:00")
-    .lt("starts_at", "2026-05-13T00:00:00+07:00")
+    .gte("starts_at", start)
+    .lt("starts_at", next)
     .eq("highlight", false)
     .not("tag", "is", null)
     .or(TODAY_TAG_FILTER)
