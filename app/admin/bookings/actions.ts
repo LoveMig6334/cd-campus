@@ -134,6 +134,23 @@ export async function updateBooking(formData: FormData): Promise<void> {
   redirect("/admin/bookings");
 }
 
+export async function approveBooking(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const db = await createClient();
+  const { error } = await db
+    .from("bookings")
+    .update({ status: "Confirmed" })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/bookings");
+  revalidatePath("/student/booking");
+  revalidatePath("/admin");
+}
+
 export async function cancelBooking(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");

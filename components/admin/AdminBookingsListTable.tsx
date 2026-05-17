@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { approveBooking } from "@/app/admin/bookings/actions";
 import type { AdminBookingListRow } from "@/lib/types";
 import { Pill } from "./Pill";
 
@@ -73,12 +74,25 @@ export function AdminBookingsListTable({
                 <Pill variant={STATUS_VARIANT[row.status]}>{row.status}</Pill>
               </td>
               <td className={td}>
-                <Link
-                  href={`/admin/bookings/${row.id}/edit`}
-                  className="text-blue hover:text-blue-deep font-mono text-[10px] tracking-[0.14em] uppercase"
-                >
-                  Edit →
-                </Link>
+                <div className="flex items-center gap-3">
+                  {row.status === "Pending" && (
+                    <form action={approveBooking}>
+                      <input type="hidden" name="id" value={row.id} />
+                      <button
+                        type="submit"
+                        className="text-house-green hover:text-ink font-mono text-[10px] tracking-[0.14em] uppercase"
+                      >
+                        ✓ Approve
+                      </button>
+                    </form>
+                  )}
+                  <Link
+                    href={`/admin/bookings/${row.id}/edit`}
+                    className="text-blue hover:text-blue-deep font-mono text-[10px] tracking-[0.14em] uppercase"
+                  >
+                    Edit →
+                  </Link>
+                </div>
               </td>
             </tr>
           );
