@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
+import { today } from "@/lib/time";
 import { addEvent } from "../actions";
 
 const CATEGORIES = [
@@ -12,7 +13,8 @@ const CATEGORIES = [
   { value: "academic", label: "Academic · วิชาการ" },
 ];
 
-export default function NewEventPage() {
+export default async function NewEventPage() {
+  const startsAtDefault = `${today()}T09:00`;
   return (
     <>
       <AdminTopbar
@@ -96,7 +98,7 @@ export default function NewEventPage() {
               name="starts_at"
               type="datetime-local"
               required
-              defaultValue="2026-05-12T09:00"
+              defaultValue={startsAtDefault}
               className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>

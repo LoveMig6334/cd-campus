@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
+import { today } from "@/lib/time";
 import { getMusicRooms } from "@/lib/queries/rooms";
 import { BOOKING_PERIODS } from "@/lib/ui/booking";
 import { createBooking } from "../actions";
@@ -14,6 +15,7 @@ const STATUSES = [
 
 export default async function NewBookingPage() {
   const rooms = await getMusicRooms();
+  const dateDefault = today();
 
   return (
     <>
@@ -78,7 +80,7 @@ export default async function NewBookingPage() {
               name="date"
               type="date"
               required
-              defaultValue="2026-05-13"
+              defaultValue={dateDefault}
               className="border-line bg-paper text-ink mt-1 w-full border-[1.5px] px-3 py-2 font-sans text-[14px]"
             />
           </label>
