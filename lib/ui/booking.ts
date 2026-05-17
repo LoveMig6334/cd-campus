@@ -54,10 +54,3 @@ export function buildBookingMonthDays(
   });
 }
 
-/** Demo "free/full" overlay for the 4 student-facing music rooms. */
-export const BOOKING_ROOM_STATUS_BY_NAME: Record<string, "free" | "full"> = {
-  "Music Room 1": "free",
-  "Music Room 2": "free",
-  "Music Room 3": "full",
-  "Studio Room": "free",
-};

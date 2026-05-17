@@ -99,7 +99,9 @@ export default async function StudentBooking({
   const ok = sp.ok === "1";
 
   const rooms =
-    tab === "music" ? await getMusicRooms() : await getMeetingRooms();
+    tab === "music"
+      ? await getMusicRooms(date || undefined)
+      : await getMeetingRooms(date || undefined);
   // Music tab shows a single room (the instrument subtitle is dropped) and
   // it's auto-selected so students don't have to pick.
   const visibleRooms = tab === "music" ? rooms.slice(0, 1) : rooms;
