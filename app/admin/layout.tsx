@@ -16,13 +16,26 @@ const ADMINS_NAV: NavItem = {
   ),
 };
 
+const FEATURES_NAV: NavItem = {
+  href: "/admin/features",
+  en: "Features",
+  th: "ฟีเจอร์",
+  icon: (
+    <>
+      <rect x="3" y="7" width="18" height="10" rx="5" />
+      <circle cx="9" cy="12" r="3" />
+    </>
+  ),
+};
+
 export default async function AdminLayout({
   children,
 }: {
   children: ReactNode;
 }) {
   const admin = await requireAdmin();
-  const extraItems: NavItem[] = admin.tier === "root" ? [ADMINS_NAV] : [];
+  const extraItems: NavItem[] =
+    admin.tier === "root" ? [ADMINS_NAV, FEATURES_NAV] : [];
   return (
     <div className="mx-auto flex max-w-[1440px] gap-6 px-6 py-6">
       <AdminSidebar extraItems={extraItems} />
