@@ -6,12 +6,13 @@ import type {
   GanttBarVariant,
 } from "@/lib/types";
 import { monthRange } from "@/lib/queries/util";
-import { EN_MONTHS_ABBR } from "@/lib/time";
-
-const TIME_FROM_TS_RE = /T(\d{2}:\d{2})/;
-const DATE_PARTS_RE = /(\d{4})-(\d{2})-(\d{2})/;
-const FORMAT_START_TIME_RE = /-(\d{2})T(\d{2}:\d{2})/;
-const FORMAT_START_DAY_RE = /-(\d{2})-(\d{2})T/;
+import {
+  EN_MONTHS_ABBR,
+  bangkokDateOf,
+  bangkokDayOf,
+  bangkokMonthOf,
+  bangkokTimeOf,
+} from "@/lib/time";
 
 export type BookingFull = Database["public"]["Tables"]["bookings"]["Row"];
 
@@ -44,15 +45,13 @@ export function weekDaysOf(weekStart: string): string[] {
 }
 
 function timeFromTimestamp(ts: string): string {
-  const match = ts.match(TIME_FROM_TS_RE);
-  return match ? match[1] : "00:00";
+  return bangkokTimeOf(ts);
 }
 
 function dateShortFromTimestamp(ts: string): string {
-  const m = ts.match(DATE_PARTS_RE);
-  if (!m) return "";
-  const day = parseInt(m[3], 10);
-  const month = parseInt(m[2], 10);
+  const day = bangkokDayOf(ts);
+  const month = bangkokMonthOf(ts);
+  if (!day || !month) return "";
   return `${day} ${EN_MONTHS_ABBR[month - 1]}`;
 }
 
@@ -110,8 +109,6 @@ const BOOKING_PERIOD_DOTS = [
   { start: "15:00", color: "var(--color-house-pink)" },
 ] as const;
 
-const DAY_OF_MONTH_RE = /-(\d{2})T/;
-
 export async function getStudentMonthBookingDots(
   year: number,
   month: number,
@@ -126,21 +123,11 @@ export async function getStudentMonthBookingDots(
     .lt("starts_at", next);
   if (error) throw new Error(`getStudentMonthBookingDots: ${error.message}`);
 
-  // DEBUG: temporary instrumentation. Remove once verified.
-  console.log(
-    `[DEBUG getStudentMonthBookingDots] ${year}-${String(month).padStart(2, "0")} rows=${data?.length ?? 0}`,
-  );
-  for (const b of data ?? []) {
-    console.log(`  starts_at=${b.starts_at} status=${b.status}`);
-  }
-
   const byDay = new Map<number, Set<string>>();
   for (const b of data ?? []) {
-    const dayMatch = b.starts_at.match(DAY_OF_MONTH_RE);
-    const timeMatch = b.starts_at.match(TIME_FROM_TS_RE);
-    if (!dayMatch || !timeMatch) continue;
-    const day = parseInt(dayMatch[1], 10);
-    const time = timeMatch[1];
+    const day = bangkokDayOf(b.starts_at);
+    const time = bangkokTimeOf(b.starts_at);
+    if (!day || !time) continue;
     let set = byDay.get(day);
     if (!set) {
       set = new Set<string>();
@@ -156,11 +143,6 @@ export async function getStudentMonthBookingDots(
     );
     if (dots.length > 0) result.set(day, dots);
   }
-  // DEBUG
-  console.log(
-    `[DEBUG getStudentMonthBookingDots] => byDay:`,
-    [...byDay.entries()].map(([d, v]) => `day${d}=[${[...v].join(",")}]`),
-  );
   return result;
 }
 
@@ -244,7 +226,10 @@ export async function getWeekBookings(
 
   const bookingsByRoomDay: Record<string, Record<string, WeekChip[]>> = {};
   for (const b of bookingsRes.data ?? []) {
-    const dayISO = b.starts_at.slice(0, 10);
+    // Bucket bookings by their Bangkok-local date — Supabase returns
+    // timestamps in UTC, so a slice() of the raw string would mis-bucket
+    // anything that crosses Bangkok midnight when expressed in UTC.
+    const dayISO = bangkokDateOf(b.starts_at);
     const startHHMM = timeFromTimestamp(b.starts_at);
     const room = (bookingsByRoomDay[b.room_id] ??= {});
     (room[dayISO] ??= []).push({
@@ -274,12 +259,11 @@ const ROOM_TH_BY_EN: Record<string, string> = {
 };
 
 function formatStart(ts: string): string {
-  const match = ts.match(FORMAT_START_TIME_RE);
-  if (!match) return ts;
-  const monthMap: Record<string, string> = { "05": "May" };
-  const dayMatch = ts.match(FORMAT_START_DAY_RE);
-  if (!dayMatch) return ts;
-  return `${parseInt(dayMatch[2], 10)} ${monthMap[dayMatch[1]] ?? dayMatch[1]} · ${match[2]}`;
+  const day = bangkokDayOf(ts);
+  const month = bangkokMonthOf(ts);
+  const time = bangkokTimeOf(ts);
+  if (!day || !month) return ts;
+  return `${day} ${EN_MONTHS_ABBR[month - 1]} · ${time}`;
 }
 
 export async function getRecentBookings(limit = 5): Promise<AdminBookingRow[]> {

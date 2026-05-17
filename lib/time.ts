@@ -61,18 +61,72 @@ const EN_MONTHS_ABBR = [
 export { THAI_MONTHS_FULL, THAI_MONTHS_ABBR, EN_MONTHS_FULL, EN_MONTHS_ABBR };
 
 /**
- * Bangkok-local Y/M/D parts for the current instant. Uses Intl so the
- * server's own TZ (UTC on Vercel) doesn't cause an off-by-one at midnight.
+ * Bangkok-local Y/M/D/H/min parts for a Date. Uses Intl so the server's own
+ * TZ (UTC on Vercel) doesn't cause an off-by-one at midnight, and Supabase's
+ * UTC-formatted timestamps map back to the right Bangkok wall-clock values.
  */
-function bangkokParts(): { y: number; m: number; d: number } {
+function bangkokPartsOf(d: Date): {
+  y: number;
+  m: number;
+  d: number;
+  h: number;
+  min: number;
+} {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Bangkok",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).formatToParts(new Date());
-  const get = (t: string) => Number(parts.find((p) => p.type === t)!.value);
-  return { y: get("year"), m: get("month"), d: get("day") };
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(d);
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  return {
+    y: get("year"),
+    m: get("month"),
+    d: get("day"),
+    h: get("hour"),
+    min: get("minute"),
+  };
+}
+
+function bangkokParts(): { y: number; m: number; d: number } {
+  return bangkokPartsOf(new Date());
+}
+
+function tsToDate(ts: string): Date | null {
+  if (!ts) return null;
+  const d = new Date(ts);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/** "HH:MM" in Asia/Bangkok for an ISO timestamp (e.g. one from Supabase). */
+export function bangkokTimeOf(ts: string): string {
+  const d = tsToDate(ts);
+  if (!d) return "00:00";
+  const p = bangkokPartsOf(d);
+  return `${String(p.h).padStart(2, "0")}:${String(p.min).padStart(2, "0")}`;
+}
+
+/** Day-of-month (1–31) in Asia/Bangkok for an ISO timestamp. */
+export function bangkokDayOf(ts: string): number {
+  const d = tsToDate(ts);
+  return d ? bangkokPartsOf(d).d : 0;
+}
+
+/** Month (1–12) in Asia/Bangkok for an ISO timestamp. */
+export function bangkokMonthOf(ts: string): number {
+  const d = tsToDate(ts);
+  return d ? bangkokPartsOf(d).m : 0;
+}
+
+/** "YYYY-MM-DD" in Asia/Bangkok for an ISO timestamp. */
+export function bangkokDateOf(ts: string): string {
+  const d = tsToDate(ts);
+  if (!d) return "";
+  const p = bangkokPartsOf(d);
+  return `${p.y}-${String(p.m).padStart(2, "0")}-${String(p.d).padStart(2, "0")}`;
 }
 
 /** "YYYY-MM-DD" in Asia/Bangkok. */
