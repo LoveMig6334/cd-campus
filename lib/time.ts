@@ -133,17 +133,19 @@ export function relativeThaiDay(ts: string): string {
 }
 
 /**
- * 6-row × 7-col (42 cells, Mon-first) skeleton for a 1-indexed (year, month).
+ * 6-row × 7-col (42 cells, Sun-first) skeleton for a 1-indexed (year, month).
  * Leading days come from the previous month, trailing days from the next.
- * Layout is timezone-invariant — we never derive "today" from these Dates.
+ * Sun-first matches the CalendarGrid / BigCalGrid weekday headers (`Su Mo Tu
+ * We Th Fr Sa`). Layout is timezone-invariant — we never derive "today" from
+ * these Dates.
  */
 export function buildMonthGrid(
   year: number,
   month: number,
 ): { num: number; inMonth: boolean }[] {
   const first = new Date(Date.UTC(year, month - 1, 1));
-  // JS Sunday=0 … Saturday=6; we want Monday=0 … Sunday=6
-  const leadCount = (first.getUTCDay() + 6) % 7;
+  // JS getUTCDay is already Sun=0 … Sat=6, matching the Sun-first grid.
+  const leadCount = first.getUTCDay();
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const daysInPrev = new Date(Date.UTC(year, month - 1, 0)).getUTCDate();
 

@@ -35,17 +35,19 @@ export function buildBookingMonthDays(
   month: number,
   todayISO: string,
 ): CalendarDay[] {
-  const [todayY, todayM, todayD] = todayISO.split("-").map(Number);
-  const todayInMonth = todayY === year && todayM === month;
-  // Cell index 0 = Monday of the first row; weekday = i % 7 (0=Mon … 6=Sun).
+  const monthStr = String(month).padStart(2, "0");
+  // Cell index 0 = Sunday of the first row; weekday = i % 7 (0=Sun … 6=Sat).
   return buildMonthGrid(year, month).map<CalendarDay>((cell, i) => {
     if (!cell.inMonth) return { num: cell.num, inMonth: false };
-    const weekday = i % 7;
-    const isWeekend = weekday === 5 || weekday === 6;
-    if (todayInMonth && cell.num === todayD) {
+    const iso = `${year}-${monthStr}-${String(cell.num).padStart(2, "0")}`;
+    if (iso === todayISO) {
       return { num: cell.num, inMonth: true, state: "today" };
     }
-    if (isWeekend) {
+    if (iso < todayISO) {
+      return { num: cell.num, inMonth: true, state: "closed" };
+    }
+    const weekday = i % 7;
+    if (weekday === 0 || weekday === 6) {
       return { num: cell.num, inMonth: true, state: "closed" };
     }
     return { num: cell.num, inMonth: true };
