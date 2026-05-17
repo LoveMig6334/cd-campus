@@ -26,10 +26,21 @@ async function getPeriodBookingsByRoom(
   const nextDay = addDays(dateISO, 1);
   const { data, error } = await db
     .from("bookings")
-    .select("room_id, starts_at")
+    .select("room_id, starts_at, status")
     .gte("starts_at", `${dateISO}T00:00:00+07:00`)
     .lt("starts_at", `${nextDay}T00:00:00+07:00`);
   if (error) throw new Error(`getPeriodBookingsByRoom: ${error.message}`);
+
+  // DEBUG: temporary instrumentation while diagnosing student-side mismatch.
+  // Remove once the root cause is confirmed.
+  console.log(
+    `[DEBUG getPeriodBookingsByRoom] date=${dateISO} rows=${data?.length ?? 0}`,
+  );
+  for (const b of data ?? []) {
+    console.log(
+      `  room_id=${b.room_id} starts_at=${b.starts_at} status=${b.status}`,
+    );
+  }
 
   const periodsByRoom = new Map<string, Set<string>>();
   for (const b of data ?? []) {
@@ -42,6 +53,10 @@ async function getPeriodBookingsByRoom(
     }
     set.add(time);
   }
+  console.log(
+    `[DEBUG getPeriodBookingsByRoom] => periodsByRoom:`,
+    [...periodsByRoom.entries()].map(([k, v]) => `${k}=[${[...v].join(",")}]`),
+  );
   return periodsByRoom;
 }
 

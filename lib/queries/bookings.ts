@@ -120,11 +120,19 @@ export async function getStudentMonthBookingDots(
   const { start, next } = monthRange(year, month);
   const { data, error } = await db
     .from("bookings")
-    .select("starts_at")
+    .select("starts_at, status")
     .eq("status", "Confirmed")
     .gte("starts_at", start)
     .lt("starts_at", next);
   if (error) throw new Error(`getStudentMonthBookingDots: ${error.message}`);
+
+  // DEBUG: temporary instrumentation. Remove once verified.
+  console.log(
+    `[DEBUG getStudentMonthBookingDots] ${year}-${String(month).padStart(2, "0")} rows=${data?.length ?? 0}`,
+  );
+  for (const b of data ?? []) {
+    console.log(`  starts_at=${b.starts_at} status=${b.status}`);
+  }
 
   const byDay = new Map<number, Set<string>>();
   for (const b of data ?? []) {
@@ -148,6 +156,11 @@ export async function getStudentMonthBookingDots(
     );
     if (dots.length > 0) result.set(day, dots);
   }
+  // DEBUG
+  console.log(
+    `[DEBUG getStudentMonthBookingDots] => byDay:`,
+    [...byDay.entries()].map(([d, v]) => `day${d}=[${[...v].join(",")}]`),
+  );
   return result;
 }
 
