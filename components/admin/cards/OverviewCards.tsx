@@ -7,13 +7,14 @@ import { TrendChart } from "@/components/admin/TrendChart";
 import { requireAdmin } from "@/lib/auth";
 import { getRecentBookings } from "@/lib/queries/bookings";
 import { getAdminTodayEvents } from "@/lib/queries/events";
-import { getOverviewKpis, getTrendChart } from "@/lib/queries/siteConfig";
+import { getOverviewKpis } from "@/lib/queries/overview";
+import { getTrendChart } from "@/lib/queries/siteConfig";
 
 export async function GreetingCard() {
   const admin = await requireAdmin();
   return (
     <GreetingBanner
-      th={`สวัสดี อาจารย์${admin.display_name}`}
+      th={`สวัสดี   ${admin.display_name}`}
       en={`Hello, ${admin.display_name}`}
     />
   );
