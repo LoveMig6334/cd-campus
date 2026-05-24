@@ -27,7 +27,3 @@ export async function getPortfolioStats(): Promise<PortfolioStats[]> {
 export async function getPortfolioKpis(): Promise<AdminKpi[]> {
   return getValue<AdminKpi[]>("portfolio_kpis");
 }
-
-export async function getCarelinKpis(): Promise<AdminKpi[]> {
-  return getValue<AdminKpi[]>("carelin_kpis");
-}

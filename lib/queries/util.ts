@@ -33,6 +33,26 @@ export function monthRange(
   return { start, next };
 }
 
+/** Add `n` days to a YYYY-MM-DD string, returning YYYY-MM-DD. */
+export function addDays(dateISO: string, n: number): string {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + n);
+  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
+}
+
+/**
+ * ISO bounds for the single day `dateISO` (YYYY-MM-DD) in Asia/Bangkok offset.
+ * `start` is 00:00 +07:00, `next` is the following day's 00:00 +07:00. Use as
+ * `.gte(start).lt(next)`.
+ */
+export function dayRange(dateISO: string): { start: string; next: string } {
+  return {
+    start: `${dateISO}T00:00:00+07:00`,
+    next: `${addDays(dateISO, 1)}T00:00:00+07:00`,
+  };
+}
+
 /**
  * ISO bounds for the Mon–Sun week containing `dateISO` (YYYY-MM-DD), in
  * Asia/Bangkok offset. `start` is Monday 00:00 +07:00, `next` is the following
@@ -45,20 +65,12 @@ export function weekRange(dateISO: string): {
   days: string[];
 } {
   const [y, m, d] = dateISO.split("-").map(Number);
-  const base = new Date(Date.UTC(y, m - 1, d));
-  const dayIdx = (base.getUTCDay() + 6) % 7; // Mon=0 … Sun=6
-  const iso = (dt: Date) =>
-    `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const dt = new Date(base);
-    dt.setUTCDate(base.getUTCDate() - dayIdx + i);
-    return iso(dt);
-  });
-  const nextMonday = new Date(base);
-  nextMonday.setUTCDate(base.getUTCDate() - dayIdx + 7);
+  const dayIdx = (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7; // Mon=0 … Sun=6
+  const monday = addDays(dateISO, -dayIdx);
+  const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
   return {
-    start: `${days[0]}T00:00:00+07:00`,
-    next: `${iso(nextMonday)}T00:00:00+07:00`,
+    start: `${monday}T00:00:00+07:00`,
+    next: `${addDays(monday, 7)}T00:00:00+07:00`,
     days,
   };
 }

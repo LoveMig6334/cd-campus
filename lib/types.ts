@@ -13,6 +13,29 @@ export type HomeHero = {
   weather: { degrees: number; glyph: string };
 };
 
+/**
+ * site_config `sport_day` — anchor facts only. The "Day X of N", date label,
+ * and events-remaining shown in the sport hero are derived from this + the clock.
+ */
+export type SportDayConfig = {
+  /** Mono-caps eyebrow, e.g. "★ Chitralada Sport Day 2026". */
+  label: string;
+  /** First competition day, "YYYY-MM-DD". */
+  startDate: string;
+  totalDays: number;
+};
+
+/**
+ * site_config `term_week` — anchor facts only. The current week is derived from
+ * the clock (`startDate` is the Monday of week 1).
+ */
+export type TermWeekConfig = {
+  term: number;
+  /** Monday of week 1, "YYYY-MM-DD". */
+  startDate: string;
+  totalWeeks: number;
+};
+
 export type HomeMenuItem = {
   href: string;
   labelEn: string;
