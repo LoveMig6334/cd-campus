@@ -19,7 +19,9 @@ export function CalendarChipRow({
             type="button"
             className={cn(
               "border-line rounded-full border-[1.2px] px-2.5 py-1 font-mono text-[10px] tracking-[0.08em] uppercase transition-colors",
-              active ? "bg-ink text-yellow" : "bg-paper text-ink",
+              active
+                ? "bg-ink text-yellow dark:bg-blue dark:text-white"
+                : "bg-paper text-ink",
             )}
           >
             {dotColor && (

@@ -146,7 +146,7 @@ export default async function EditProjectPage({
                   href={getAssetUrl(row.pdf_path)}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-blue underline"
+                  className="text-blue-deep underline"
                 >
                   open PDF ↗
                 </a>

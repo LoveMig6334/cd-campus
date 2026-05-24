@@ -119,7 +119,7 @@ export function PortfolioAdminTable({ rows }: { rows: PortfolioAdminRow[] }) {
                   </form>
                   <Link
                     href={`/admin/portfolio/${row.id}/edit`}
-                    className="border-line bg-paper text-blue hover:bg-cream border-[1.5px] px-2 py-1"
+                    className="border-line bg-paper text-blue-deep hover:bg-cream border-[1.5px] px-2 py-1"
                   >
                     Edit
                   </Link>

@@ -15,7 +15,9 @@ export function BookingTabs({
         const active = tab.id === activeId;
         const cls = cn(
           "py-2.5 text-center font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
-          active ? "bg-ink text-yellow" : "text-mute-500",
+          active
+            ? "bg-ink text-yellow dark:bg-blue dark:text-white"
+            : "text-mute-500",
         );
         const label = `${tab.labelEn} · ${tab.labelTh}`;
 

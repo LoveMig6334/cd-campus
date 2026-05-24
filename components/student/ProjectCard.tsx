@@ -77,7 +77,7 @@ export function ProjectCard({ project }: { project: Project }) {
             href={getAssetUrl(project.pdfPath)}
             target="_blank"
             rel="noreferrer"
-            className="border-line bg-ink text-yellow hover:bg-blue-deep mt-3 inline-flex w-full items-center justify-between border-[1.5px] px-3 py-2 font-mono text-[10px] tracking-[0.14em] uppercase transition-colors hover:text-white"
+            className="border-line bg-ink text-yellow hover:bg-blue-deep dark:bg-blue mt-3 inline-flex w-full items-center justify-between border-[1.5px] px-3 py-2 font-mono text-[10px] tracking-[0.14em] uppercase transition-colors hover:text-white dark:text-white"
           >
             <span>View portfolio PDF</span>
             <span aria-hidden>↓</span>

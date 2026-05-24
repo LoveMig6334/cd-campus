@@ -20,7 +20,7 @@ export function StubCard({
       <h1 className="font-display mt-1 text-[28px] leading-[1.05] italic">
         {titleEn}
       </h1>
-      <p className="font-display text-blue mt-0.5 text-[18px] italic">
+      <p className="font-display text-blue-deep mt-0.5 text-[18px] italic">
         {titleTh}
       </p>
       <p className="text-mute-700 mt-3 text-[13px] leading-[1.6]">{note}</p>

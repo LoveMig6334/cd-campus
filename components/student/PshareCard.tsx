@@ -39,7 +39,7 @@ export function PshareCard({ post }: { post: PsharePost }) {
           {post.snippet}
         </p>
         <div className="text-mute-500 mt-2 flex justify-between font-mono text-[9.5px] tracking-[0.06em]">
-          <span className="text-blue font-medium">{post.author}</span>
+          <span className="text-blue-deep font-medium">{post.author}</span>
           <span>{post.date}</span>
         </div>
         <div className="mt-1.5 flex flex-wrap gap-1">

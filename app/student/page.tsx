@@ -1,6 +1,6 @@
+import { connection } from "next/server";
 import { MobileBody } from "@/components/layout/MobileBody";
 import { StudentHeader } from "@/components/layout/StudentHeader";
-import { HeroCard } from "@/components/student/HeroCard";
 import { MenuGrid } from "@/components/student/MenuGrid";
 import {
   BookingIcon,
@@ -12,16 +12,15 @@ import {
 } from "@/components/student/MenuIcons";
 import { MenuTile } from "@/components/student/MenuTile";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import { getHomeHero } from "@/lib/queries/siteConfig";
 
 export default async function StudentHome() {
-  const hero = await getHomeHero();
+  // No DB read here anymore, but StudentHeader renders new Date() — opt into
+  // runtime rendering so the date header isn't frozen at build time.
+  await connection();
   return (
     <>
       <StudentHeader />
       <MobileBody className="space-y-[18px]">
-        <HeroCard hero={hero} />
-
         <SectionDivider>★ Menu · เมนูหลัก ★</SectionDivider>
 
         <MenuGrid>

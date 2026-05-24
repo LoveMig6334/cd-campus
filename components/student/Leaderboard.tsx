@@ -26,7 +26,7 @@ export function Leaderboard({ rows }: { rows: LeaderRow[] }) {
             <div
               className={cn(
                 "font-display text-center text-[18px] italic",
-                row.rank === 1 ? "text-blue" : "text-mute-500",
+                row.rank === 1 ? "text-blue-deep" : "text-mute-500",
               )}
             >
               {row.rank}

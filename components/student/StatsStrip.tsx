@@ -8,7 +8,7 @@ export function StatsStrip({ stats }: { stats: PortfolioStats[] }) {
           key={s.label}
           className="border-line bg-paper border-[1.5px] p-2.5 text-center"
         >
-          <div className="font-display text-blue text-[24px] leading-none italic">
+          <div className="font-display text-blue-deep text-[24px] leading-none italic">
             {s.num}
           </div>
           <div className="text-mute-500 mt-1 font-mono text-[9px] tracking-[0.14em] uppercase">

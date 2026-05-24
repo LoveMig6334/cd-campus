@@ -76,7 +76,7 @@ export function UnsplashPicker() {
                 href={`${picked.photographerUrl}${UTM}`}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue underline"
+                className="text-blue-deep underline"
               >
                 {picked.photographer}
               </a>
@@ -146,7 +146,9 @@ export function UnsplashPicker() {
             </div>
 
             {error && (
-              <p className="text-blue mb-3 font-mono text-[11px]">{error}</p>
+              <p className="text-blue-deep mb-3 font-mono text-[11px]">
+                {error}
+              </p>
             )}
 
             {!error && searched && !isSearching && results.length === 0 && (
@@ -191,7 +193,7 @@ export function UnsplashPicker() {
                 href={`https://unsplash.com${UTM}`}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue underline"
+                className="text-blue-deep underline"
               >
                 Unsplash
               </a>

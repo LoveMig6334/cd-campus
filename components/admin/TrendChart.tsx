@@ -47,7 +47,9 @@ export function TrendChart({ data }: { data: TrendChartData }) {
         {months.map((m, i) => (
           <span
             key={m}
-            className={i === months.length - 1 ? "text-blue font-semibold" : ""}
+            className={
+              i === months.length - 1 ? "text-blue-deep font-semibold" : ""
+            }
           >
             {m}
           </span>

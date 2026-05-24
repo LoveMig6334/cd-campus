@@ -73,7 +73,7 @@ export function DeleteAdminButton({ id, displayName, email }: Props) {
               This cannot be undone.
             </p>
             {error && (
-              <p className="text-blue mb-3 font-mono text-[11px] tracking-[0.04em]">
+              <p className="text-blue-deep mb-3 font-mono text-[11px] tracking-[0.04em]">
                 {error}
               </p>
             )}

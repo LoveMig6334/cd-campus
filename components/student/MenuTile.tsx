@@ -14,10 +14,10 @@ export function MenuTile({ href, labelEn, labelTh, star, children }: Props) {
   return (
     <Link
       href={href}
-      className="group border-line bg-paper relative flex aspect-square flex-col overflow-hidden rounded border-[1.5px] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:[box-shadow:4px_4px_0_var(--color-blue)]"
+      className="group border-line bg-paper relative flex aspect-square flex-col overflow-hidden rounded border-[1.5px] transition-transform duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:[box-shadow:4px_4px_0_var(--color-yellow)]"
     >
       {star && <MenuStar color={star.color} position={star.position} />}
-      <div className="bg-cream relative flex-1">
+      <div className="bg-cream group-hover:bg-yellow/10 relative flex-1 transition-colors duration-200">
         <span
           aria-hidden
           className="halftone-soft pointer-events-none absolute inset-0 opacity-50"

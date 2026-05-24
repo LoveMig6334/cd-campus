@@ -47,7 +47,7 @@ function ViewCard({
       <h2 className="font-display text-ink mt-3 text-4xl leading-[1.05] italic sm:text-5xl">
         {titleEn}
       </h2>
-      <p className="font-display text-blue mt-1 text-2xl leading-[1.1] italic sm:text-3xl">
+      <p className="font-display text-blue-deep mt-1 text-2xl leading-[1.1] italic sm:text-3xl">
         {titleTh}
       </p>
       <p className="text-mute-700 mt-5 max-w-[36ch] text-[13.5px] leading-[1.65]">
@@ -55,7 +55,7 @@ function ViewCard({
       </p>
       <p className="text-ink mt-6 inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.2em] uppercase">
         Enter view
-        <span aria-hidden className="text-blue">
+        <span aria-hidden className="text-blue-deep">
           →
         </span>
       </p>
@@ -75,7 +75,7 @@ export default function Home() {
             <h1 className="font-display text-ink mt-2 text-5xl leading-[0.95] italic sm:text-7xl">
               CD Smart
               <br />
-              <span className="text-blue">Campus</span>
+              <span className="text-blue-deep">Campus</span>
             </h1>
             <p className="font-display text-mute-700 mt-2 text-2xl italic sm:text-3xl">
               สมาร์ตแคมปัส จิตรลดา

@@ -88,7 +88,7 @@ export function AdminBookingsListTable({
                   )}
                   <Link
                     href={`/admin/bookings/${row.id}/edit`}
-                    className="text-blue hover:text-blue-deep font-mono text-[10px] tracking-[0.14em] uppercase"
+                    className="text-blue-deep hover:text-blue-deep font-mono text-[10px] tracking-[0.14em] uppercase"
                   >
                     Edit →
                   </Link>

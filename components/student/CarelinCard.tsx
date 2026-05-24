@@ -31,7 +31,7 @@ export function CarelinCard({ request }: { request: CarelinRequest }) {
         {request.body}
       </p>
       <div className="text-mute-500 flex gap-1.5 font-mono text-[9.5px] tracking-[0.06em]">
-        <span className="text-blue font-medium">
+        <span className="text-blue-deep font-medium">
           {request.who} · #{request.studentId}
         </span>
         <span>{request.when}</span>

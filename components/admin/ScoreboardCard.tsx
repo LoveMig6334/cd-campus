@@ -28,7 +28,7 @@ export function ScoreboardCard({ entry }: { entry: ScoreboardEntry }) {
       <div className="text-mute-500 font-mono text-[10px]">{entry.stat}</div>
       <Link
         href="/admin/sport/edit"
-        className="border-blue text-blue mt-2.5 inline-block border px-2 py-1 font-mono text-[10px] tracking-[0.12em] uppercase"
+        className="border-blue text-blue-deep mt-2.5 inline-block border px-2 py-1 font-mono text-[10px] tracking-[0.12em] uppercase"
       >
         ✎ edit score
       </Link>

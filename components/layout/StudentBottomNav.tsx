@@ -54,12 +54,12 @@ const TABS: Tab[] = [
 
 const BASE_TAB =
   "relative flex flex-col items-center gap-[3px] py-1.5 font-mono text-[9px] tracking-[0.1em] uppercase transition-colors group";
-const ACTIVE_TAB = `${BASE_TAB} text-blue font-semibold`;
-const INACTIVE_TAB = `${BASE_TAB} text-mute-500`;
+const ACTIVE_TAB = `${BASE_TAB} text-yellow font-semibold`;
+const INACTIVE_TAB = `${BASE_TAB} text-white/70`;
 
 export function StudentBottomNav() {
   return (
-    <nav className="border-line bg-cream grid shrink-0 grid-cols-5 border-t-[1.5px] pt-2 pb-3.5">
+    <nav className="border-navy bg-navy grid shrink-0 grid-cols-5 border-t-[1.5px] pt-2 pb-3.5">
       {TABS.map((tab) => (
         <ActiveLink
           key={tab.href}
@@ -70,7 +70,7 @@ export function StudentBottomNav() {
         >
           <span
             aria-hidden
-            className="bg-blue absolute -top-2 left-1/2 hidden h-[3px] w-6 -translate-x-1/2 group-data-[active=true]:block"
+            className="bg-yellow absolute -top-2 left-1/2 hidden h-[3px] w-6 -translate-x-1/2 group-data-[active=true]:block"
           />
           <svg
             width="22"

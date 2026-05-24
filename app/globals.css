@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
+/* Class-based dark variant — scoped to the student phone shell (.dark). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Brand */
-  --color-blue: #1e2ee4;
-  --color-blue-deep: #0a14a8;
-  --color-yellow: #f7e33a;
+  --color-blue: #2e98e7;
+  --color-blue-deep: #1668b3;
+  --color-blue-soft: #d6ecfb;
+  --color-navy: #102a4c;
+  --color-yellow: #fff100;
   --color-ink: #15151a;
   --color-line: #1a1a1a;
 
@@ -33,6 +38,41 @@
   --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 }
 
+/* Student-only dark theme — warm charcoal. Scoped to `.dark` on the phone
+   shell, so admin (no `.dark`) stays light. Flips surfaces dark + text/borders
+   light by overriding the tokens; accents (blue/yellow/house) are kept. */
+.dark {
+  /* Surfaces (were light) */
+  --color-cream: #16151b;
+  --color-cream-2: #1e1d25;
+  --color-paper: #211f29;
+  --color-mute-100: #26242e;
+
+  /* Text + structure (were dark) */
+  --color-ink: #f2efe3;
+  --color-line: #3a3743;
+  --color-mute-700: #e4dfd0;
+  --color-mute-500: #a8a596;
+  --color-mute-300: #74716a;
+  --color-mute-200: #3a3844;
+
+  /* Accents tuned for the dark surface */
+  --color-blue-deep: #5cb0f2;
+  --color-blue-soft: #1c3a57;
+  --color-navy: #1a2f4d;
+
+  /* Per-tile icon fills — lighter tints so they pop on the dark panel */
+  --icon-violet: #b59ae8;
+  --icon-teal: #46c4b5;
+  --icon-orange: #f7a86a;
+  --icon-green: #69cf93;
+  --icon-amber: #f0c44f;
+  --icon-pink: #f184b1;
+
+  /* Soft-halftone dots flip to warm white so the texture shows on dark */
+  --halftone-soft-dot: rgba(242, 239, 227, 0.22);
+}
+
 /* Halftone backgrounds — radial-gradient patterns kept as global utilities */
 .halftone-bk {
   background-image: radial-gradient(circle, #0a0a0a 1.1px, transparent 1.4px);
@@ -51,7 +91,7 @@
 .halftone-soft {
   background-image: radial-gradient(
     circle,
-    rgba(10, 10, 10, 0.4) 0.9px,
+    var(--halftone-soft-dot, rgba(10, 10, 10, 0.4)) 0.9px,
     transparent 1.3px
   );
   background-size: 6px 6px;

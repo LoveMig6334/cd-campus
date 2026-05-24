@@ -10,25 +10,31 @@ The visual language of the CD Smart Campus prototype. Use this when adding pages
 
 All tokens are defined in `app/globals.css` under `@theme` and consumed via Tailwind utilities (`bg-blue`, `text-yellow`, etc.).
 
-| Token                  | Hex       | Use                                                                                                       |
-| ---------------------- | --------- | --------------------------------------------------------------------------------------------------------- |
-| `--color-blue`         | `#1E2EE4` | Primary brand accent. Buttons, headings, KPIs, blue text accents inside Thai headlines                    |
-| `--color-blue-deep`    | `#0A14A8` | Hover state for primary buttons                                                                           |
-| `--color-yellow`       | `#F7E33A` | Secondary accent — offset shadows behind branded marks, highlight pills, ★ accents, "Selected" foreground |
-| `--color-ink`          | `#15151A` | Primary text + most borders                                                                               |
-| `--color-line`         | `#1A1A1A` | Dedicated border color (visually identical to ink, kept separate for future tweaks)                       |
-| `--color-cream`        | `#F6F3E7` | Page background                                                                                           |
-| `--color-cream-2`      | `#EFEBD9` | Alternate cream for inset surfaces (page intro decoration, calendar greyed days)                          |
-| `--color-paper`        | `#FFFFFF` | Card / surface background                                                                                 |
-| `--color-mute-100`     | `#ECE9DC` | Faint surface tint, disabled bg                                                                           |
-| `--color-mute-200`     | `#DAD6C4` | Dashed dividers                                                                                           |
-| `--color-mute-300`     | `#B7B4A6` | Muted strokes, "other month" calendar text                                                                |
-| `--color-mute-500`     | `#6C6A60` | Secondary body text, mono labels                                                                          |
-| `--color-mute-700`     | `#2E2D27` | Primary body text on cream                                                                                |
-| `--color-house-green`  | `#3FAE6C` | Green house, success status, "Answered" pill                                                              |
-| `--color-house-purple` | `#8E5BD9` | Purple house, "Review" status                                                                             |
-| `--color-house-orange` | `#F2843B` | Orange house                                                                                              |
-| `--color-house-pink`   | `#E94D8F` | Pink house, **CD Carelin accent**, downward delta                                                         |
+| Token                  | Hex       | Use                                                                                                                                            |
+| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--color-blue`         | `#2E98E7` | Primary brand accent (sky blue). Solid fills, borders, halftone, selection — sits behind white text. Too light to use _as_ text on cream/paper |
+| `--color-blue-deep`    | `#1668B3` | Blue **text** on light backgrounds (accents, links, date highlight) + primary-button hover. Deeper for legibility                              |
+| `--color-blue-soft`    | `#D6ECFB` | Pastel sky tint for large/decorative blue surfaces (e.g. admin greeting banner). Reserve solid `blue` for actions + accents (60/30/10)         |
+| `--color-navy`         | `#102A4C` | Dark-blue navigation surface (student bottom nav) — light icons, yellow active accent                                                          |
+| `--color-yellow`       | `#FFF100` | Secondary accent — offset shadows behind branded marks, highlight pills, ★ accents, "Selected" foreground                                      |
+| `--color-ink`          | `#15151A` | Primary text + most borders                                                                                                                    |
+| `--color-line`         | `#1A1A1A` | Dedicated border color (visually identical to ink, kept separate for future tweaks)                                                            |
+| `--color-cream`        | `#F6F3E7` | Page background                                                                                                                                |
+| `--color-cream-2`      | `#EFEBD9` | Alternate cream for inset surfaces (page intro decoration, calendar greyed days)                                                               |
+| `--color-paper`        | `#FFFFFF` | Card / surface background                                                                                                                      |
+| `--color-mute-100`     | `#ECE9DC` | Faint surface tint, disabled bg                                                                                                                |
+| `--color-mute-200`     | `#DAD6C4` | Dashed dividers                                                                                                                                |
+| `--color-mute-300`     | `#B7B4A6` | Muted strokes, "other month" calendar text                                                                                                     |
+| `--color-mute-500`     | `#6C6A60` | Secondary body text, mono labels                                                                                                               |
+| `--color-mute-700`     | `#2E2D27` | Primary body text on cream                                                                                                                     |
+| `--color-house-green`  | `#3FAE6C` | Green house, success status, "Answered" pill                                                                                                   |
+| `--color-house-purple` | `#8E5BD9` | Purple house, "Review" status                                                                                                                  |
+| `--color-house-orange` | `#F2843B` | Orange house                                                                                                                                   |
+| `--color-house-pink`   | `#E94D8F` | Pink house, **CD Carelin accent**, downward delta                                                                                              |
+
+**60/30/10 balance.** Cream/paper neutrals carry ~60% of the surface; the softened `blue` is ~30% (prefer the pale `blue-soft` tint for large fills, reserve solid `blue` for actions); `yellow` is the ~10% accent pop.
+
+**Menu-tile icons.** One accent per tile via dedicated `--icon-*` tokens (violet `#8E5BD9`, teal `#1F9E90`, orange `#F2843B`, green `#3FAE6C`, amber `#E0A020`, pink `#E94D8F`) over a shared ink outline + white detail. Each is overridden to a lighter tint in dark mode so the glyphs stay bright on the dark panel. Kept off `blue` so each glyph stays distinct from its blue footer bar; small `yellow` pops tie them to the accent.
 
 **Selection inversion.** Anything in a selected/active state inverts to `bg-ink text-yellow` (or `bg-blue text-yellow` for primary). Don't break this — it's the strongest visual signal in the system.
 
