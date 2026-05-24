@@ -4,7 +4,7 @@
 
 **Goal:** Replace the three hardcoded "stale-over-time" strings — the student sport hero (`SPORT_HERO`), the admin sport-day eyebrow, and the admin overview term/week eyebrow — with values derived at render time from anchor data stored in `site_config` plus the current Bangkok date.
 
-**Architecture:** Store only the *anchor* facts in the existing generic `site_config` key/value JSONB table — `sport_day` (`label`, `startDate`, `totalDays`) and `term_week` (`term`, `startDate`, `totalWeeks`). Two new thin query helpers (`getSportDay`, `getTermWeek`) read those keys and compute the display values: "Day X of N" and the term week from a day-count since `startDate`, today's date label from the clock, and "events remaining" counted from the `events` table. The values become editable through the existing admin config editor (`/admin/config`), so the anchors can be adjusted without a deploy.
+**Architecture:** Store only the _anchor_ facts in the existing generic `site_config` key/value JSONB table — `sport_day` (`label`, `startDate`, `totalDays`) and `term_week` (`term`, `startDate`, `totalWeeks`). Two new thin query helpers (`getSportDay`, `getTermWeek`) read those keys and compute the display values: "Day X of N" and the term week from a day-count since `startDate`, today's date label from the clock, and "events remaining" counted from the `events` table. The values become editable through the existing admin config editor (`/admin/config`), so the anchors can be adjusted without a deploy.
 
 **Tech Stack:** Next 16 (App Router, RSC), Supabase (Postgres + RLS), TypeScript. **No test runner exists in this repo** — verification is `npx tsc --noEmit`, a `tsx` one-liner for the pure date math, `npm run lint`, and manual UI smoke after `npm run seed`.
 
@@ -12,21 +12,22 @@
 
 ## File Structure
 
-| File | Change | Responsibility |
-|---|---|---|
-| `lib/time.ts` | modify | Add pure `daysBetween(fromISO, toISO)` helper (UTC-anchored day count). |
-| `lib/types.ts` | modify | Add `SportDayConfig` + `TermWeekConfig` (the stored anchor shapes). |
-| `supabase/seed/siteConfig.ts` | modify | Seed the two new `site_config` rows (idempotent upsert). |
-| `lib/queries/siteConfig.ts` | modify | Add `SportDay`/`TermWeek` view types + `getSportDay()`/`getTermWeek()`. |
-| `app/student/sport/page.tsx` | modify | Build `SportHero` props from `getSportDay()`. |
-| `app/admin/sport/page.tsx` | modify | Compute the sport-day eyebrow from `getSportDay()`. |
-| `lib/ui/sport.ts` | modify | Remove the now-dead `SPORT_HERO` constant (keep `HOUSES`). |
-| `app/admin/page.tsx` | modify | Make async; compute the term/week eyebrow from `getTermWeek()`. |
-| `lib/ui/siteConfig.ts` | modify | Add the two keys to `EDITABLE_KEYS` + `KEY_LABELS`. |
-| `app/admin/config/actions.ts` | modify | Add parsers + switch cases + revalidate branches. |
-| `app/admin/config/[key]/edit/page.tsx` | modify | Add `SportDayFields` + `TermWeekFields` form sections. |
+| File                                   | Change | Responsibility                                                          |
+| -------------------------------------- | ------ | ----------------------------------------------------------------------- |
+| `lib/time.ts`                          | modify | Add pure `daysBetween(fromISO, toISO)` helper (UTC-anchored day count). |
+| `lib/types.ts`                         | modify | Add `SportDayConfig` + `TermWeekConfig` (the stored anchor shapes).     |
+| `supabase/seed/siteConfig.ts`          | modify | Seed the two new `site_config` rows (idempotent upsert).                |
+| `lib/queries/siteConfig.ts`            | modify | Add `SportDay`/`TermWeek` view types + `getSportDay()`/`getTermWeek()`. |
+| `app/student/sport/page.tsx`           | modify | Build `SportHero` props from `getSportDay()`.                           |
+| `app/admin/sport/page.tsx`             | modify | Compute the sport-day eyebrow from `getSportDay()`.                     |
+| `lib/ui/sport.ts`                      | modify | Remove the now-dead `SPORT_HERO` constant (keep `HOUSES`).              |
+| `app/admin/page.tsx`                   | modify | Make async; compute the term/week eyebrow from `getTermWeek()`.         |
+| `lib/ui/siteConfig.ts`                 | modify | Add the two keys to `EDITABLE_KEYS` + `KEY_LABELS`.                     |
+| `app/admin/config/actions.ts`          | modify | Add parsers + switch cases + revalidate branches.                       |
+| `app/admin/config/[key]/edit/page.tsx` | modify | Add `SportDayFields` + `TermWeekFields` form sections.                  |
 
 **Anchor values chosen so the seeded demo reproduces today's (2026-05-24) display:**
+
 - `sport_day`: `startDate "2026-05-23"`, `totalDays 3` → elapsed 1 → **"Day 2 of 3"**, live.
 - `term_week`: `term 1`, `startDate "2026-04-19"`, `totalWeeks 16` → elapsed 35 → **"Week 6 of 16"**.
 
@@ -35,6 +36,7 @@
 ### Task 1: Pure `daysBetween` date helper
 
 **Files:**
+
 - Modify: `lib/time.ts` (insert after `today()`, which ends at line 137)
 
 - [ ] **Step 1: Add the helper**
@@ -58,9 +60,11 @@ export function daysBetween(fromISO: string, toISO: string): number {
 - [ ] **Step 2: Sanity-check the math** (no test runner — use a `tsx` one-liner; `lib/time.ts` has no imports so it loads standalone)
 
 Run:
+
 ```bash
 npx tsx -e "import {daysBetween} from './lib/time.ts'; console.log(daysBetween('2026-05-23','2026-05-24'), daysBetween('2026-04-19','2026-05-24'));"
 ```
+
 Expected output: `1 35`
 
 - [ ] **Step 3: Typecheck**
@@ -80,6 +84,7 @@ git commit -m "feat: add daysBetween date helper"
 ### Task 2: Stored anchor config types
 
 **Files:**
+
 - Modify: `lib/types.ts` (insert after the `HomeHero` type, which ends at line 14)
 
 - [ ] **Step 1: Add the two config shapes**
@@ -128,6 +133,7 @@ git commit -m "feat: add sport-day and term-week config types"
 ### Task 3: Seed the two `site_config` keys
 
 **Files:**
+
 - Modify: `supabase/seed/siteConfig.ts` (the `rows` array, currently lines 26–52)
 
 No migration is needed — `site_config` is a generic `key/value` table (`supabase/migrations/0001_init.sql:220`) with public-read / admin-write RLS already in place.
@@ -175,6 +181,7 @@ git commit -m "feat: seed sport_day and term_week site_config keys"
 ### Task 4: `getSportDay` + `getTermWeek` query helpers
 
 **Files:**
+
 - Modify: `lib/queries/siteConfig.ts`
 
 - [ ] **Step 1: Extend the imports at the top of the file**
@@ -262,6 +269,7 @@ git commit -m "feat: add getSportDay and getTermWeek queries"
 ### Task 5: Drive the sport hero + admin sport eyebrow from `getSportDay`
 
 **Files:**
+
 - Modify: `app/student/sport/page.tsx`
 - Modify: `app/admin/sport/page.tsx`
 - Modify: `lib/ui/sport.ts`
@@ -274,10 +282,13 @@ Expected: only `app/student/sport/page.tsx` (import + usage) and `lib/ui/sport.t
 - [ ] **Step 2: Student sport page — swap the import**
 
 In `app/student/sport/page.tsx`, remove:
+
 ```ts
 import { SPORT_HERO } from "@/lib/ui/sport";
 ```
+
 and add to the existing siteConfig-less imports (group with the other `@/lib/queries/*` imports):
+
 ```ts
 import { getSportDay } from "@/lib/queries/siteConfig";
 ```
@@ -285,44 +296,55 @@ import { getSportDay } from "@/lib/queries/siteConfig";
 - [ ] **Step 3: Student sport page — add to `Promise.all` and build props**
 
 Change the destructured `Promise.all` (currently lines 16–20) to include `sportDay`:
+
 ```ts
-  const [leaderboard, liveResults, upcoming, sportDay] = await Promise.all([
-    getLeaderboard(),
-    getStudentLiveResults(),
-    getStudentUpcomingSport(),
-    getSportDay(),
-  ]);
+const [leaderboard, liveResults, upcoming, sportDay] = await Promise.all([
+  getLeaderboard(),
+  getStudentLiveResults(),
+  getStudentUpcomingSport(),
+  getSportDay(),
+]);
 ```
+
 Replace `<SportHero {...SPORT_HERO} />` (line 44) with:
+
 ```tsx
-        <SportHero
-          label={sportDay.label}
-          title={`Day ${sportDay.dayOfN} of ${sportDay.totalDays}`}
-          meta={`${sportDay.dateLabel}${sportDay.isLive ? " · Live" : ""} · ${sportDay.eventsRemaining} events remaining`}
-        />
+<SportHero
+  label={sportDay.label}
+  title={`Day ${sportDay.dayOfN} of ${sportDay.totalDays}`}
+  meta={`${sportDay.dateLabel}${sportDay.isLive ? " · Live" : ""} · ${sportDay.eventsRemaining} events remaining`}
+/>
 ```
+
 (The `SportHero` component already special-cases the `Live` token when it splits `meta` on `" · "`, so the highlight still works.)
 
 - [ ] **Step 4: Admin sport page — import + fetch + compute eyebrow**
 
 In `app/admin/sport/page.tsx`, add to the `@/lib/queries/*` imports:
+
 ```ts
 import { getSportDay } from "@/lib/queries/siteConfig";
 ```
+
 Change the `Promise.all` (currently lines 14–18) to:
+
 ```ts
-  const [scoreboard, results, upcoming, sportDay] = await Promise.all([
-    getScoreboard(),
-    getAdminSportResults(),
-    getAdminUpcomingSport(),
-    getSportDay(),
-  ]);
+const [scoreboard, results, upcoming, sportDay] = await Promise.all([
+  getScoreboard(),
+  getAdminSportResults(),
+  getAdminUpcomingSport(),
+  getSportDay(),
+]);
 ```
+
 Replace the static eyebrow (line 23):
+
 ```tsx
-        eyebrow="Sport Day · Day 2 of 3 · Live"
+eyebrow = "Sport Day · Day 2 of 3 · Live";
 ```
+
 with:
+
 ```tsx
         eyebrow={`Sport Day · Day ${sportDay.dayOfN} of ${sportDay.totalDays}${sportDay.isLive ? " · Live" : ""}`}
 ```
@@ -348,13 +370,15 @@ git commit -m "refactor: derive sport hero and eyebrow from sport_day config"
 ### Task 6: Drive the admin overview term/week eyebrow from `getTermWeek`
 
 **Files:**
+
 - Modify: `app/admin/page.tsx`
 
-`AdminOverview` is currently a *synchronous* component; the cards below stream via `<Suspense>`. We make the component `async` and `await getTermWeek()` (a single indexed-row read) before the topbar — consistent with `app/admin/sport/page.tsx`, which is already async. The card-level Suspense streaming is unaffected.
+`AdminOverview` is currently a _synchronous_ component; the cards below stream via `<Suspense>`. We make the component `async` and `await getTermWeek()` (a single indexed-row read) before the topbar — consistent with `app/admin/sport/page.tsx`, which is already async. The card-level Suspense streaming is unaffected.
 
 - [ ] **Step 1: Add the import**
 
 In `app/admin/page.tsx`, after the existing imports add:
+
 ```ts
 import { getTermWeek } from "@/lib/queries/siteConfig";
 ```
@@ -362,21 +386,28 @@ import { getTermWeek } from "@/lib/queries/siteConfig";
 - [ ] **Step 2: Make the component async and compute the eyebrow**
 
 Change the declaration (line 17) from:
+
 ```tsx
 export default function AdminOverview() {
   return (
 ```
+
 to:
+
 ```tsx
 export default async function AdminOverview() {
   const { term, week, totalWeeks } = await getTermWeek();
   return (
 ```
+
 Replace the static eyebrow (line 22):
+
 ```tsx
-        eyebrow="Overview · Term 1 / Week 6 of 16"
+eyebrow = "Overview · Term 1 / Week 6 of 16";
 ```
+
 with:
+
 ```tsx
         eyebrow={`Overview · Term ${term} / Week ${week} of ${totalWeeks}`}
 ```
@@ -398,6 +429,7 @@ git commit -m "refactor: derive admin overview term/week from config"
 ### Task 7: Make both keys editable in the admin config editor
 
 **Files:**
+
 - Modify: `lib/ui/siteConfig.ts`
 - Modify: `app/admin/config/actions.ts`
 - Modify: `app/admin/config/[key]/edit/page.tsx`
@@ -405,6 +437,7 @@ git commit -m "refactor: derive admin overview term/week from config"
 - [ ] **Step 1: Register the keys + labels**
 
 In `lib/ui/siteConfig.ts`, extend `EDITABLE_KEYS` (lines 3–9):
+
 ```ts
 export const EDITABLE_KEYS = [
   "home_hero",
@@ -416,7 +449,9 @@ export const EDITABLE_KEYS = [
   "term_week",
 ] as const;
 ```
+
 and add to `KEY_LABELS` (lines 17–23):
+
 ```ts
   sport_day: { en: "Sport day", th: "วันกีฬาสี" },
   term_week: { en: "Term & week", th: "ภาคเรียน · สัปดาห์" },
@@ -425,6 +460,7 @@ and add to `KEY_LABELS` (lines 17–23):
 - [ ] **Step 2: Add parsers + switch cases + revalidate branches in `actions.ts`**
 
 Extend the types import (line 7) to include the new shapes:
+
 ```ts
 import type {
   AdminKpi,
@@ -435,7 +471,9 @@ import type {
   TermWeekConfig,
 } from "@/lib/types";
 ```
+
 Add these two parsers (e.g. after `parsePortfolioStats`, before `parseTrendChart`):
+
 ```ts
 function parseSportDay(formData: FormData): SportDayConfig {
   const label = str(formData, "label");
@@ -461,7 +499,9 @@ function parseTermWeek(formData: FormData): TermWeekConfig {
   return { term, startDate, totalWeeks };
 }
 ```
+
 Add two cases to the `switch (key)` in `updateSiteConfig` (after the `trend_chart` case):
+
 ```ts
     case "sport_day":
       value = parseSportDay(formData) as unknown as Json;
@@ -470,24 +510,27 @@ Add two cases to the `switch (key)` in `updateSiteConfig` (after the `trend_char
       value = parseTermWeek(formData) as unknown as Json;
       break;
 ```
+
 (The switch assigns `value` in every branch and `EditableKey` is now wider — omitting either case makes `tsc` flag "used before assigned", which is the guard.)
 
 Add two branches to `revalidateFor` (after the `carelin_kpis` branch):
+
 ```ts
-  if (key === "sport_day") {
-    revalidatePath("/student/sport");
-    revalidatePath("/admin/sport");
-    return;
-  }
-  if (key === "term_week") {
-    revalidatePath("/admin");
-    return;
-  }
+if (key === "sport_day") {
+  revalidatePath("/student/sport");
+  revalidatePath("/admin/sport");
+  return;
+}
+if (key === "term_week") {
+  revalidatePath("/admin");
+  return;
+}
 ```
 
 - [ ] **Step 3: Add the form field sections in the edit page**
 
 In `app/admin/config/[key]/edit/page.tsx`, extend the types import (line 7):
+
 ```ts
 import type {
   AdminKpi,
@@ -497,12 +540,20 @@ import type {
   TermWeekConfig,
 } from "@/lib/types";
 ```
+
 Add two render conditionals inside the `<form>` (after the `trend_chart` line, currently line 57):
+
 ```tsx
-          {key === "sport_day" && <SportDayFields />}
-          {key === "term_week" && <TermWeekFields />}
+{
+  key === "sport_day" && <SportDayFields />;
+}
+{
+  key === "term_week" && <TermWeekFields />;
+}
 ```
+
 Append these two field components at the end of the file (after `TrendChartFields`):
+
 ```tsx
 async function SportDayFields() {
   const v = await getConfigByKey<SportDayConfig>("sport_day");
@@ -584,6 +635,7 @@ async function TermWeekFields() {
   );
 }
 ```
+
 (`<input type="date">` consumes/produces `YYYY-MM-DD`, matching `startDate`.)
 
 - [ ] **Step 4: Typecheck**
@@ -622,6 +674,7 @@ Expected: no errors.
 - [ ] **Step 4: Manual UI smoke** (requires `npm run seed` from Task 3 to have run)
 
 Run: `npm run dev`, then check:
+
 - `/student/sport` — hero shows "Day 2 of 3" and "24 May · Live · N events remaining" (N = real upcoming-sport count).
 - `/admin/sport` — eyebrow shows "Sport Day · Day 2 of 3 · Live".
 - `/admin` — eyebrow shows "Overview · Term 1 / Week 6 of 16".
@@ -639,6 +692,7 @@ git commit -m "chore: format"
 ## Self-Review
 
 **Spec coverage:**
+
 - Finding #1 (sport hero `SPORT_HERO`) → Tasks 4 + 5. ✅
 - Finding #2 (admin overview "Term 1 / Week 6 of 16") → Tasks 4 + 6. ✅
 - Finding #3 (admin sport "Day 2 of 3 · Live") → Tasks 4 + 5. ✅
@@ -646,6 +700,7 @@ git commit -m "chore: format"
 - Seed so the keys exist (queries throw on missing key) → Task 3, ordered before consumers. ✅
 
 **Type consistency:**
+
 - `SportDayConfig`/`TermWeekConfig` (stored shapes) defined in Task 2, consumed in Tasks 4 + 7 — names match.
 - `getSportDay`/`getTermWeek` defined in Task 4, imported in Tasks 5 + 6 — names match.
 - `SportHero` component prop names (`label`, `title`, `meta`) match the JSX in Task 5 Step 3 (verified against `components/student/SportHero.tsx`).
