@@ -1,12 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 import type {
+  AdminKpi,
   PortfolioAdminRow,
   PortfolioIconKey,
   PortfolioTagPill,
   PortfolioThumbIcon,
   Project,
 } from "@/lib/types";
+import { monthRange } from "@/lib/queries/util";
+import { currentYearMonth } from "@/lib/time";
 
 export type ProjectFull = Database["public"]["Tables"]["projects"]["Row"];
 
@@ -114,6 +117,93 @@ export async function getAdminPortfolioRows(): Promise<PortfolioAdminRow[]> {
     submitted: fmtSubmitted(p.submitted_at),
     status: p.status as PortfolioAdminRow["status"],
   }));
+}
+
+function fmt(n: number): string {
+  return n.toLocaleString("en-US");
+}
+
+// Running totals have no good/bad polarity, so the badge stays flat (cream);
+// the ▲ glyph is informational. Mirrors overview.ts `newThisMonthDelta`.
+function addedThisMonth(n: number): AdminKpi["delta"] {
+  if (n > 0) return { kind: "flat", text: `▲ ${fmt(n)} this month` };
+  return { kind: "flat", text: "— none this month" };
+}
+
+/**
+ * The four Portfolio Manager status bars, computed live from the projects table
+ * (replaces the old static site_config `portfolio_kpis`):
+ *   Total · Published · Under review (= Draft) · Featured (is_featured).
+ * Each delta reports how many of that category were added this month.
+ */
+export async function getPortfolioKpis(): Promise<AdminKpi[]> {
+  const db = await createClient();
+  const { year, month } = currentYearMonth();
+  const { start, next } = monthRange(year, month);
+
+  const count = () =>
+    db.from("projects").select("*", { count: "exact", head: true });
+  const newThisMonth = () => count().gte("created_at", start).lt("created_at", next);
+
+  const [
+    total,
+    published,
+    drafts,
+    featured,
+    totalNew,
+    publishedNew,
+    draftsNew,
+    featuredNew,
+  ] = await Promise.all([
+    count(),
+    count().eq("status", "Published"),
+    count().eq("status", "Draft"),
+    count().eq("is_featured", true),
+    newThisMonth(),
+    newThisMonth().eq("status", "Published"),
+    newThisMonth().eq("status", "Draft"),
+    newThisMonth().eq("is_featured", true),
+  ]);
+
+  for (const r of [
+    total,
+    published,
+    drafts,
+    featured,
+    totalNew,
+    publishedNew,
+    draftsNew,
+    featuredNew,
+  ]) {
+    if (r.error) throw new Error(`getPortfolioKpis: ${r.error.message}`);
+  }
+
+  return [
+    {
+      label: "Total",
+      th: "โครงงานทั้งหมด",
+      num: fmt(total.count ?? 0),
+      delta: addedThisMonth(totalNew.count ?? 0),
+    },
+    {
+      label: "Published",
+      th: "เผยแพร่แล้ว",
+      num: fmt(published.count ?? 0),
+      delta: addedThisMonth(publishedNew.count ?? 0),
+    },
+    {
+      label: "Under review",
+      th: "รออนุมัติ",
+      num: fmt(drafts.count ?? 0),
+      delta: addedThisMonth(draftsNew.count ?? 0),
+    },
+    {
+      label: "Featured",
+      th: "โครงงานเด่น",
+      num: fmt(featured.count ?? 0),
+      delta: addedThisMonth(featuredNew.count ?? 0),
+    },
+  ];
 }
 
 export async function getProjectById(id: string): Promise<ProjectFull | null> {

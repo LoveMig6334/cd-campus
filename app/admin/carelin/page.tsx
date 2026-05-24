@@ -6,8 +6,11 @@ import { CarelinDeskTable } from "@/components/admin/CarelinDeskTable";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import { TabBar } from "@/components/admin/TabBar";
-import { getCarelinDeskRows, getCarelinTabCounts } from "@/lib/queries/carelin";
-import { getCarelinKpis } from "@/lib/queries/siteConfig";
+import {
+  getCarelinDeskRows,
+  getCarelinKpis,
+  getCarelinTabCounts,
+} from "@/lib/queries/carelin";
 import { requireAdmin } from "@/lib/auth";
 import { CARELIN_DESK_ACTIVE_TAB, carelinDeskTabs } from "@/lib/ui/carelin";
 

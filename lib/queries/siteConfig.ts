@@ -1,7 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import type { AdminKpi, HomeHero, PortfolioStats } from "@/lib/types";
+import type {
+  HomeHero,
+  PortfolioStats,
+  SportDayConfig,
+  TermWeekConfig,
+} from "@/lib/types";
 import { today, daysBetween, EN_MONTHS_ABBR } from "@/lib/time";
-import type { SportDayConfig, TermWeekConfig } from "@/lib/types";
 
 export async function getConfigByKey<T>(key: string): Promise<T> {
   return getValue<T>(key);
@@ -24,14 +28,6 @@ export async function getHomeHero(): Promise<HomeHero> {
 
 export async function getPortfolioStats(): Promise<PortfolioStats[]> {
   return getValue<PortfolioStats[]>("portfolio_stats");
-}
-
-export async function getPortfolioKpis(): Promise<AdminKpi[]> {
-  return getValue<AdminKpi[]>("portfolio_kpis");
-}
-
-export async function getCarelinKpis(): Promise<AdminKpi[]> {
-  return getValue<AdminKpi[]>("carelin_kpis");
 }
 
 export type SportDay = {
