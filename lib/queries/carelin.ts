@@ -218,7 +218,13 @@ export async function getCarelinKpis(): Promise<AdminKpi[]> {
         .eq("status", "answered"),
     ]);
 
-  for (const r of [openRes, newTodayRes, thisWeekRes, lastWeekRes, answeredRes]) {
+  for (const r of [
+    openRes,
+    newTodayRes,
+    thisWeekRes,
+    lastWeekRes,
+    answeredRes,
+  ]) {
     if (r.error) throw new Error(`getCarelinKpis: ${r.error.message}`);
   }
 
@@ -240,7 +246,8 @@ export async function getCarelinKpis(): Promise<AdminKpi[]> {
     const repliedOn = bangkokDateOf(firstReply);
     if (repliedOn === todayISO) answeredToday++;
     else if (repliedOn === yesterdayISO) answeredYesterday++;
-    const ms = new Date(firstReply).getTime() - new Date(req.created_at).getTime();
+    const ms =
+      new Date(firstReply).getTime() - new Date(req.created_at).getTime();
     if (ms >= 0) {
       responseSum += ms;
       responseCount++;

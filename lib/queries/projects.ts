@@ -143,7 +143,8 @@ export async function getPortfolioKpis(): Promise<AdminKpi[]> {
 
   const count = () =>
     db.from("projects").select("*", { count: "exact", head: true });
-  const newThisMonth = () => count().gte("created_at", start).lt("created_at", next);
+  const newThisMonth = () =>
+    count().gte("created_at", start).lt("created_at", next);
 
   const [
     total,
