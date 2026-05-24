@@ -49,6 +49,20 @@ export async function seedSiteConfig(
       value: json(CARELIN_DESK_KPIS),
       updated_by_admin_id: adminId,
     },
+    {
+      key: "sport_day",
+      value: json({
+        label: "★ Chitralada Sport Day 2026",
+        startDate: "2026-05-23",
+        totalDays: 3,
+      }),
+      updated_by_admin_id: adminId,
+    },
+    {
+      key: "term_week",
+      value: json({ term: 1, startDate: "2026-04-19", totalWeeks: 16 }),
+      updated_by_admin_id: adminId,
+    },
   ];
   const { error } = await db
     .from("site_config")

@@ -4,7 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
-import type { AdminKpi, HomeHero, House, PortfolioStats } from "@/lib/types";
+import type {
+  AdminKpi,
+  HomeHero,
+  House,
+  PortfolioStats,
+  SportDayConfig,
+  TermWeekConfig,
+} from "@/lib/types";
 import type { Json } from "@/lib/supabase/database.types";
 import {
   isEditableKey,
@@ -32,6 +39,15 @@ function revalidateFor(key: EditableKey): void {
   }
   if (key === "carelin_kpis") {
     revalidatePath("/admin/carelin");
+    return;
+  }
+  if (key === "sport_day") {
+    revalidatePath("/student/sport");
+    revalidatePath("/admin/sport");
+    return;
+  }
+  if (key === "term_week") {
+    revalidatePath("/admin");
     return;
   }
 }
@@ -110,6 +126,30 @@ function parsePortfolioStats(formData: FormData): PortfolioStats[] {
   return out;
 }
 
+function parseSportDay(formData: FormData): SportDayConfig {
+  const label = str(formData, "label");
+  const startDate = str(formData, "startDate");
+  const totalDays = Number.parseInt(str(formData, "totalDays"), 10);
+  if (!label) throw new Error("label required");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate))
+    throw new Error("startDate must be YYYY-MM-DD");
+  if (!Number.isFinite(totalDays) || totalDays < 1)
+    throw new Error("totalDays must be ≥ 1");
+  return { label, startDate, totalDays };
+}
+
+function parseTermWeek(formData: FormData): TermWeekConfig {
+  const term = Number.parseInt(str(formData, "term"), 10);
+  const startDate = str(formData, "startDate");
+  const totalWeeks = Number.parseInt(str(formData, "totalWeeks"), 10);
+  if (!Number.isFinite(term) || term < 1) throw new Error("term must be ≥ 1");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate))
+    throw new Error("startDate must be YYYY-MM-DD");
+  if (!Number.isFinite(totalWeeks) || totalWeeks < 1)
+    throw new Error("totalWeeks must be ≥ 1");
+  return { term, startDate, totalWeeks };
+}
+
 type TrendChartValue = {
   months: string[];
   path: string;
@@ -157,6 +197,12 @@ export async function updateSiteConfig(formData: FormData): Promise<void> {
       break;
     case "trend_chart":
       value = parseTrendChart(formData) as unknown as Json;
+      break;
+    case "sport_day":
+      value = parseSportDay(formData) as unknown as Json;
+      break;
+    case "term_week":
+      value = parseTermWeek(formData) as unknown as Json;
       break;
   }
 

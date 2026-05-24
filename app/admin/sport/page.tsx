@@ -9,18 +9,20 @@ import { UpcomingGrid } from "@/components/admin/UpcomingGrid";
 import { getScoreboard } from "@/lib/queries/houses";
 import { getAdminSportResults } from "@/lib/queries/sportResults";
 import { getAdminUpcomingSport } from "@/lib/queries/events";
+import { getSportDay } from "@/lib/queries/siteConfig";
 
 export default async function AdminSport() {
-  const [scoreboard, results, upcoming] = await Promise.all([
+  const [scoreboard, results, upcoming, sportDay] = await Promise.all([
     getScoreboard(),
     getAdminSportResults(),
     getAdminUpcomingSport(),
+    getSportDay(),
   ]);
   return (
     <>
       <AdminTopbar
         titleTh="กีฬาสี"
-        eyebrow="Sport Day · Day 2 of 3 · Live"
+        eyebrow={`Sport Day · Day ${sportDay.dayOfN} of ${sportDay.totalDays}${sportDay.isLive ? " · Live" : ""}`}
         actions={
           <>
             <LiveIndicator label="Broadcasting live" />

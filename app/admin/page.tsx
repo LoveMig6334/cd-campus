@@ -12,13 +12,15 @@ import {
   TallCardSkeleton,
   WeekEvents,
 } from "@/components/admin/cards/OverviewCards";
+import { getTermWeek } from "@/lib/queries/siteConfig";
 
-export default function AdminOverview() {
+export default async function AdminOverview() {
+  const { term, week, totalWeeks } = await getTermWeek();
   return (
     <>
       <AdminTopbar
         titleTh="ภาพรวม"
-        eyebrow="Overview · Term 1 / Week 6 of 16"
+        eyebrow={`Overview · Term ${term} / Week ${week} of ${totalWeeks}`}
         actions={
           <>
             <AdminSearch />

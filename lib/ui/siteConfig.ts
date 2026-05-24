@@ -6,6 +6,8 @@ export const EDITABLE_KEYS = [
   "portfolio_stats",
   "portfolio_kpis",
   "carelin_kpis",
+  "sport_day",
+  "term_week",
 ] as const;
 
 export type EditableKey = (typeof EDITABLE_KEYS)[number];
@@ -20,6 +22,8 @@ export const KEY_LABELS: Record<EditableKey, { en: string; th: string }> = {
   portfolio_stats: { en: "Portfolio stats", th: "ตัวเลขโครงงาน · นักเรียน" },
   portfolio_kpis: { en: "Portfolio KPIs", th: "ตัวเลขโครงงาน · ครู" },
   carelin_kpis: { en: "Carelin KPIs", th: "ตัวเลขพี่แคร์ลิน · ครู" },
+  sport_day: { en: "Sport day", th: "วันกีฬาสี" },
+  term_week: { en: "Term & week", th: "ภาคเรียน · สัปดาห์" },
 };
 
 export const HOUSE_KEYS: readonly House[] = [

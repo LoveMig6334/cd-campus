@@ -4,7 +4,13 @@ import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Btn } from "@/components/admin/Btn";
 import { getConfigByKey } from "@/lib/queries/siteConfig";
-import type { AdminKpi, HomeHero, PortfolioStats } from "@/lib/types";
+import type {
+  AdminKpi,
+  HomeHero,
+  PortfolioStats,
+  SportDayConfig,
+  TermWeekConfig,
+} from "@/lib/types";
 import { updateSiteConfig } from "../../actions";
 import {
   isEditableKey,
@@ -55,6 +61,8 @@ export default async function EditConfigPage({
           )}
           {key === "portfolio_stats" && <PortfolioStatsFields />}
           {key === "trend_chart" && <TrendChartFields />}
+          {key === "sport_day" && <SportDayFields />}
+          {key === "term_week" && <TermWeekFields />}
 
           <div className="flex gap-2 pt-2">
             <Btn type="submit" variant="primary">
@@ -376,6 +384,86 @@ async function TrendChartFields() {
           })}
         </div>
       </div>
+    </div>
+  );
+}
+
+async function SportDayFields() {
+  const v = await getConfigByKey<SportDayConfig>("sport_day");
+  return (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <label className="block md:col-span-2">
+        <span className={LABEL_CLS}>Label (mono caps eyebrow)</span>
+        <input
+          name="label"
+          type="text"
+          required
+          maxLength={120}
+          defaultValue={v.label}
+          className={INPUT_MONO}
+        />
+      </label>
+      <label className="block">
+        <span className={LABEL_CLS}>Start date (first competition day)</span>
+        <input
+          name="startDate"
+          type="date"
+          required
+          defaultValue={v.startDate}
+          className={INPUT_MONO}
+        />
+      </label>
+      <label className="block">
+        <span className={LABEL_CLS}>Total days</span>
+        <input
+          name="totalDays"
+          type="number"
+          min={1}
+          required
+          defaultValue={v.totalDays}
+          className={INPUT_MONO}
+        />
+      </label>
+    </div>
+  );
+}
+
+async function TermWeekFields() {
+  const v = await getConfigByKey<TermWeekConfig>("term_week");
+  return (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <label className="block">
+        <span className={LABEL_CLS}>Term number</span>
+        <input
+          name="term"
+          type="number"
+          min={1}
+          required
+          defaultValue={v.term}
+          className={INPUT_MONO}
+        />
+      </label>
+      <label className="block">
+        <span className={LABEL_CLS}>Week 1 start date (Monday)</span>
+        <input
+          name="startDate"
+          type="date"
+          required
+          defaultValue={v.startDate}
+          className={INPUT_MONO}
+        />
+      </label>
+      <label className="block">
+        <span className={LABEL_CLS}>Total weeks</span>
+        <input
+          name="totalWeeks"
+          type="number"
+          min={1}
+          required
+          defaultValue={v.totalWeeks}
+          className={INPUT_MONO}
+        />
+      </label>
     </div>
   );
 }

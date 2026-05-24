@@ -10,13 +10,14 @@ import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import { getLeaderboard } from "@/lib/queries/houses";
 import { getStudentLiveResults } from "@/lib/queries/sportResults";
 import { getStudentUpcomingSport } from "@/lib/queries/events";
-import { SPORT_HERO } from "@/lib/ui/sport";
+import { getSportDay } from "@/lib/queries/siteConfig";
 
 export default async function StudentSport() {
-  const [leaderboard, liveResults, upcoming] = await Promise.all([
+  const [leaderboard, liveResults, upcoming, sportDay] = await Promise.all([
     getLeaderboard(),
     getStudentLiveResults(),
     getStudentUpcomingSport(),
+    getSportDay(),
   ]);
   return (
     <>
@@ -41,7 +42,11 @@ export default async function StudentSport() {
         }
       />
       <MobileBody className="space-y-3.5">
-        <SportHero {...SPORT_HERO} />
+        <SportHero
+          label={sportDay.label}
+          title={`Day ${sportDay.dayOfN} of ${sportDay.totalDays}`}
+          meta={`${sportDay.dateLabel}${sportDay.isLive ? " · Live" : ""} · ${sportDay.eventsRemaining} events remaining`}
+        />
         <Leaderboard rows={leaderboard} />
 
         <SectionDivider>⚡ Live Results</SectionDivider>

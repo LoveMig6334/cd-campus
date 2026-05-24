@@ -136,6 +136,18 @@ export function today(): string {
   return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
 
+/**
+ * Whole days from `fromISO` to `toISO` (both "YYYY-MM-DD"). UTC-anchored so the
+ * count is DST-free, matching the timezone-invariant grid math in this file.
+ */
+export function daysBetween(fromISO: string, toISO: string): number {
+  const [fy, fm, fd] = fromISO.split("-").map(Number);
+  const [ty, tm, td] = toISO.split("-").map(Number);
+  return Math.round(
+    (Date.UTC(ty, tm - 1, td) - Date.UTC(fy, fm - 1, fd)) / 86_400_000,
+  );
+}
+
 /** Current Bangkok-local year + 1-indexed month with display labels. */
 export function currentYearMonth(): {
   year: number;
