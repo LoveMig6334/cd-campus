@@ -6,8 +6,7 @@ import { Card } from "@/components/admin/Card";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { PortfolioAdminTable } from "@/components/admin/PortfolioAdminTable";
 import { TabBar } from "@/components/admin/TabBar";
-import { getAdminPortfolioRows } from "@/lib/queries/projects";
-import { getPortfolioKpis } from "@/lib/queries/siteConfig";
+import { getAdminPortfolioRows, getPortfolioKpis } from "@/lib/queries/projects";
 import { PORTFOLIO_ACTIVE_TAB, PORTFOLIO_TABS } from "@/lib/ui/portfolio";
 
 export default async function AdminPortfolio() {
