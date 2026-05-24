@@ -32,3 +32,33 @@ export function monthRange(
       : `${year}-${String(month + 1).padStart(2, "0")}-01T00:00:00+07:00`;
   return { start, next };
 }
+
+/**
+ * ISO bounds for the Mon–Sun week containing `dateISO` (YYYY-MM-DD), in
+ * Asia/Bangkok offset. `start` is Monday 00:00 +07:00, `next` is the following
+ * Monday 00:00 +07:00 (use as `.gte(start).lt(next)`). `days` lists the seven
+ * YYYY-MM-DD strings, Mon→Sun.
+ */
+export function weekRange(dateISO: string): {
+  start: string;
+  next: string;
+  days: string[];
+} {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  const base = new Date(Date.UTC(y, m - 1, d));
+  const dayIdx = (base.getUTCDay() + 6) % 7; // Mon=0 … Sun=6
+  const iso = (dt: Date) =>
+    `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const dt = new Date(base);
+    dt.setUTCDate(base.getUTCDate() - dayIdx + i);
+    return iso(dt);
+  });
+  const nextMonday = new Date(base);
+  nextMonday.setUTCDate(base.getUTCDate() - dayIdx + 7);
+  return {
+    start: `${days[0]}T00:00:00+07:00`,
+    next: `${iso(nextMonday)}T00:00:00+07:00`,
+    days,
+  };
+}

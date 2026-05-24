@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
-import { monthRange } from "@/lib/queries/util";
+import { monthRange, weekRange } from "@/lib/queries/util";
 import {
   CATEGORY_COLOR,
   type AdminEvent,
@@ -10,7 +10,13 @@ import {
   type CalendarDay,
   type CalendarEvent,
 } from "@/lib/types";
-import { buildMonthGrid, today } from "@/lib/time";
+import {
+  EN_MONTHS_ABBR,
+  bangkokDateOf,
+  bangkokTimeOf,
+  buildMonthGrid,
+  today,
+} from "@/lib/time";
 
 /**
  * Tag-based discriminator for which "view" each event belongs to:
@@ -166,19 +172,40 @@ export async function getAdminMonth(
   });
 }
 
-export async function getAdminTodayEvents(): Promise<AdminEvent[]> {
-  // Today-card entries have tags starting with a CalendarCategory name;
-  // upcoming-sport entries (Team/Track/Show prefixes) are excluded.
+const EN_WEEKDAYS_ABBR = [
+  "Sun",
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
+] as const;
+const TH_WEEKDAYS = [
+  "อาทิตย์",
+  "จันทร์",
+  "อังคาร",
+  "พุธ",
+  "พฤหัสบดี",
+  "ศุกร์",
+  "เสาร์",
+] as const;
+
+export type AdminWeekDay = {
+  dateISO: string;
+  weekdayTh: string;
+  /** e.g. "Mon · 25 May" */
+  label: string;
+  isToday: boolean;
+  events: AdminEvent[];
+};
+
+export async function getAdminWeekEvents(): Promise<AdminWeekDay[]> {
+  // Same tag slice as the old today-card (Sport/Music/Admin/Academic/Tradition),
+  // but spanning the current Mon–Sun week and grouped by Bangkok-local day.
   const db = await createClient();
   const todayISO = today();
-  const start = `${todayISO}T00:00:00+07:00`;
-  const [y, m, d] = todayISO.split("-").map(Number);
-  const tomorrow = new Date(Date.UTC(y, m - 1, d));
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-  const tYear = tomorrow.getUTCFullYear();
-  const tMonth = String(tomorrow.getUTCMonth() + 1).padStart(2, "0");
-  const tDay = String(tomorrow.getUTCDate()).padStart(2, "0");
-  const next = `${tYear}-${tMonth}-${tDay}T00:00:00+07:00`;
+  const { start, next, days } = weekRange(todayISO);
   const { data, error } = await db
     .from("events")
     .select("title_th, tag, category, starts_at")
@@ -187,15 +214,32 @@ export async function getAdminTodayEvents(): Promise<AdminEvent[]> {
     .eq("highlight", false)
     .not("tag", "is", null)
     .or(TODAY_TAG_FILTER)
-    .order("starts_at", { ascending: true })
-    .limit(4);
-  if (error) throw new Error(`getAdminTodayEvents: ${error.message}`);
-  return (data ?? []).map<AdminEvent>((r) => ({
-    time: timeOf(r.starts_at),
-    title: r.title_th,
-    tag: r.tag ?? "",
-    barColor: CATEGORY_COLOR[r.category as CalendarCategory],
-  }));
+    .order("starts_at", { ascending: true });
+  if (error) throw new Error(`getAdminWeekEvents: ${error.message}`);
+
+  const byDate = new Map<string, AdminEvent[]>();
+  for (const r of data ?? []) {
+    const dateISO = bangkokDateOf(r.starts_at);
+    if (!byDate.has(dateISO)) byDate.set(dateISO, []);
+    byDate.get(dateISO)!.push({
+      time: bangkokTimeOf(r.starts_at),
+      title: r.title_th,
+      tag: r.tag ?? "",
+      barColor: CATEGORY_COLOR[r.category as CalendarCategory],
+    });
+  }
+
+  return days.map<AdminWeekDay>((dateISO) => {
+    const [y, m, d] = dateISO.split("-").map(Number);
+    const dow = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    return {
+      dateISO,
+      weekdayTh: TH_WEEKDAYS[dow],
+      label: `${EN_WEEKDAYS_ABBR[dow]} · ${d} ${EN_MONTHS_ABBR[m - 1]}`,
+      isToday: dateISO === todayISO,
+      events: byDate.get(dateISO) ?? [],
+    };
+  });
 }
 
 export async function getStudentUpcomingSport(

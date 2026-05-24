@@ -10,8 +10,7 @@ import {
   RecentBookings,
   TableCardSkeleton,
   TallCardSkeleton,
-  TodayEvents,
-  TrendCard,
+  WeekEvents,
 } from "@/components/admin/cards/OverviewCards";
 
 export default function AdminOverview() {
@@ -39,14 +38,9 @@ export default function AdminOverview() {
         <KpiGrid />
       </Suspense>
 
-      <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-[2fr_1fr]">
-        <Suspense fallback={<TallCardSkeleton />}>
-          <TrendCard />
-        </Suspense>
-        <Suspense fallback={<TallCardSkeleton />}>
-          <TodayEvents />
-        </Suspense>
-      </div>
+      <Suspense fallback={<TallCardSkeleton />}>
+        <WeekEvents />
+      </Suspense>
 
       <Suspense fallback={<TableCardSkeleton />}>
         <RecentBookings />

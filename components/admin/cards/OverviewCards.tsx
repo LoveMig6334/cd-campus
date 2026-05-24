@@ -2,13 +2,11 @@ import { Card, CardTitle } from "@/components/admin/Card";
 import { GreetingBanner } from "@/components/admin/GreetingBanner";
 import { KpiCard } from "@/components/admin/KpiCard";
 import { RecentBookingsTable } from "@/components/admin/RecentBookingsTable";
-import { TodayEventsCard } from "@/components/admin/TodayEventsCard";
-import { TrendChart } from "@/components/admin/TrendChart";
+import { WeekEventsCard } from "@/components/admin/WeekEventsCard";
 import { requireAdmin } from "@/lib/auth";
 import { getRecentBookings } from "@/lib/queries/bookings";
-import { getAdminTodayEvents } from "@/lib/queries/events";
+import { getAdminWeekEvents } from "@/lib/queries/events";
 import { getOverviewKpis } from "@/lib/queries/overview";
-import { getTrendChart } from "@/lib/queries/siteConfig";
 
 export async function GreetingCard() {
   const admin = await requireAdmin();
@@ -31,23 +29,9 @@ export async function KpiGrid() {
   );
 }
 
-export async function TrendCard() {
-  const trend = await getTrendChart();
-  return (
-    <Card accent>
-      <CardTitle
-        th="กิจกรรม 12 เดือน"
-        en="12-month trend"
-        menu="↗ View report"
-      />
-      <TrendChart data={trend} />
-    </Card>
-  );
-}
-
-export async function TodayEvents() {
-  const events = await getAdminTodayEvents();
-  return <TodayEventsCard events={events} />;
+export async function WeekEvents() {
+  const days = await getAdminWeekEvents();
+  return <WeekEventsCard days={days} />;
 }
 
 export async function RecentBookings() {

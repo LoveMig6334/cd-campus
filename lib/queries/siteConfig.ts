@@ -31,13 +31,3 @@ export async function getPortfolioKpis(): Promise<AdminKpi[]> {
 export async function getCarelinKpis(): Promise<AdminKpi[]> {
   return getValue<AdminKpi[]>("carelin_kpis");
 }
-
-export type TrendChartData = {
-  months: readonly string[];
-  path: string;
-  points: { x: number; y: number }[];
-};
-
-export async function getTrendChart(): Promise<TrendChartData> {
-  return getValue<TrendChartData>("trend_chart");
-}
