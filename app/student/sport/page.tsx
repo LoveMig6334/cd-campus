@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { MobileBody } from "@/components/layout/MobileBody";
 import { PageHead } from "@/components/layout/PageHead";
 import { CalendarEventCard } from "@/components/student/CalendarEventCard";
@@ -12,13 +13,7 @@ import { getStudentLiveResults } from "@/lib/queries/sportResults";
 import { getStudentUpcomingSport } from "@/lib/queries/events";
 import { getSportDay } from "@/lib/queries/siteConfig";
 
-export default async function StudentSport() {
-  const [leaderboard, liveResults, upcoming, sportDay] = await Promise.all([
-    getLeaderboard(),
-    getStudentLiveResults(),
-    getStudentUpcomingSport(),
-    getSportDay(),
-  ]);
+export default function StudentSport() {
   return (
     <>
       <RealtimeRefresh tables={["sport_results"]} channelKey="rt-sport" />
@@ -42,27 +37,83 @@ export default async function StudentSport() {
         }
       />
       <MobileBody className="space-y-3.5">
-        <SportHero
-          label={sportDay.label}
-          title={`Day ${sportDay.dayOfN} of ${sportDay.totalDays}`}
-          meta={`${sportDay.dateLabel}${sportDay.isLive ? " · Live" : ""} · ${sportDay.eventsRemaining} events remaining`}
-        />
-        <Leaderboard rows={leaderboard} />
-
-        <SectionDivider>⚡ Live Results</SectionDivider>
-        <div className="space-y-2.5">
-          {liveResults.map((result, i) => (
-            <SportFeedCard key={i} result={result} />
-          ))}
-        </div>
-
-        <SectionDivider>★ Upcoming</SectionDivider>
-        <div className="space-y-2">
-          {upcoming.map((event, i) => (
-            <CalendarEventCard key={i} event={event} />
-          ))}
-        </div>
+        {/* Two Suspense boundaries stream independently; all four queries still
+            run concurrently (sibling async children fetch in parallel). */}
+        <Suspense fallback={<SportTopSkeleton />}>
+          <SportTop />
+        </Suspense>
+        <Suspense fallback={<SportFeedsSkeleton />}>
+          <SportFeeds />
+        </Suspense>
       </MobileBody>
+    </>
+  );
+}
+
+async function SportTop() {
+  const [sportDay, leaderboard] = await Promise.all([
+    getSportDay(),
+    getLeaderboard(),
+  ]);
+  return (
+    <>
+      <SportHero
+        label={sportDay.label}
+        title={`Day ${sportDay.dayOfN} of ${sportDay.totalDays}`}
+        meta={`${sportDay.dateLabel}${sportDay.isLive ? " · Live" : ""} · ${sportDay.eventsRemaining} events remaining`}
+      />
+      <Leaderboard rows={leaderboard} />
+    </>
+  );
+}
+
+async function SportFeeds() {
+  const [liveResults, upcoming] = await Promise.all([
+    getStudentLiveResults(),
+    getStudentUpcomingSport(),
+  ]);
+  return (
+    <>
+      <SectionDivider>⚡ Live Results</SectionDivider>
+      <div className="space-y-2.5">
+        {liveResults.map((result, i) => (
+          <SportFeedCard key={i} result={result} />
+        ))}
+      </div>
+
+      <SectionDivider>★ Upcoming</SectionDivider>
+      <div className="space-y-2">
+        {upcoming.map((event, i) => (
+          <CalendarEventCard key={i} event={event} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+function SportTopSkeleton() {
+  return (
+    <div className="animate-pulse space-y-3.5">
+      <div className="border-line bg-paper h-28 border-[1.5px]" />
+      <div className="border-line bg-paper h-40 border-[1.5px]" />
+    </div>
+  );
+}
+
+function SportFeedsSkeleton() {
+  return (
+    <>
+      <SectionDivider>⚡ Live Results</SectionDivider>
+      <div className="animate-pulse space-y-2.5">
+        <div className="border-line bg-paper h-16 border-[1.5px]" />
+        <div className="border-line bg-paper h-16 border-[1.5px]" />
+      </div>
+
+      <SectionDivider>★ Upcoming</SectionDivider>
+      <div className="animate-pulse space-y-2">
+        <div className="border-line bg-paper h-14 border-[1.5px]" />
+        <div className="border-line bg-paper h-14 border-[1.5px]" />
+      </div>
     </>
   );
 }
