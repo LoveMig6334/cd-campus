@@ -69,8 +69,11 @@ function DayCell({ day }: { day: CalendarDay }) {
   );
 
   if (day.href && day.state !== "closed") {
+    // No prefetch: these point to searchParam variants of the dynamic booking
+    // route, so each prefetch is a full server render (DB queries). Prefetching
+    // every day cell saturates the pool and slows the actual click.
     return (
-      <Link href={day.href} className={cn(base, stateClass)}>
+      <Link href={day.href} prefetch={false} className={cn(base, stateClass)}>
         {content}
       </Link>
     );

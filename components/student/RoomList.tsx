@@ -37,8 +37,14 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
         );
 
         if (room.href) {
+          // No prefetch — dynamic booking route, prefetch only adds load.
           return (
-            <Link key={room.id} href={room.href} className={cls}>
+            <Link
+              key={room.id}
+              href={room.href}
+              prefetch={false}
+              className={cls}
+            >
               {inner}
             </Link>
           );

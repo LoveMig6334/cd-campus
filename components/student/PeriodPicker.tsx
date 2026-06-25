@@ -48,8 +48,9 @@ export function PeriodPicker({ periods }: { periods: BookingPeriod[] }) {
         );
 
         if (p.href) {
+          // No prefetch — dynamic booking route, prefetch only adds load.
           return (
-            <Link key={p.label} href={p.href} className={cls}>
+            <Link key={p.label} href={p.href} prefetch={false} className={cls}>
               {inner}
             </Link>
           );

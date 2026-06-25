@@ -22,8 +22,9 @@ export function BookingTabs({
         const label = `${tab.labelEn} · ${tab.labelTh}`;
 
         if (tab.href) {
+          // No prefetch — dynamic booking route, prefetch only adds load.
           return (
-            <Link key={tab.id} href={tab.href} className={cls}>
+            <Link key={tab.id} href={tab.href} prefetch={false} className={cls}>
               {label}
             </Link>
           );

@@ -71,9 +71,11 @@ function NavButton({
   label: string;
 }) {
   if (href) {
+    // No prefetch — month nav targets the dynamic booking route.
     return (
       <Link
         href={href}
+        prefetch={false}
         aria-label={label}
         className={`${ICON_BTN_BASE} hover:bg-yellow transition-colors`}
       >
