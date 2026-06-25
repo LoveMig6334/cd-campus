@@ -13,6 +13,13 @@ const nextConfig: NextConfig = {
       // in a single submit. Default is 1 MB, which rejects every upload.
       bodySizeLimit: "16mb",
     },
+    // Client-side Router Cache: reuse a visited dynamic route for 30s so
+    // back/tab navigation is instant instead of a fresh server round-trip.
+    // RealtimeRefresh() still busts the *current* page on real data changes,
+    // so this speeds up navigation without showing meaningfully stale data.
+    staleTimes: {
+      dynamic: 30,
+    },
   },
   images: {
     formats: ["image/avif", "image/webp"],
