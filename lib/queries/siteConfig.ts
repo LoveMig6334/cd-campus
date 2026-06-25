@@ -41,7 +41,23 @@ export type SportDay = {
 };
 
 export async function getSportDay(): Promise<SportDay> {
-  const cfg = await getValue<SportDayConfig>("sport_day");
+  // The config read and the "remaining matches" count are independent, so run
+  // them concurrently — this leg sets the critical path on both sport pages.
+  // "Remaining" = upcoming sport matches (same Team/Track/Show tag filter as
+  // getStudentUpcomingSport) that have not started yet.
+  const db = await createClient();
+  const [cfg, countRes] = await Promise.all([
+    getValue<SportDayConfig>("sport_day"),
+    db
+      .from("events")
+      .select("id", { count: "exact", head: true })
+      .eq("category", "sport")
+      .or("tag.ilike.Team · %,tag.ilike.Track · %,tag.ilike.Show · %")
+      .gte("starts_at", new Date().toISOString()),
+  ]);
+  if (countRes.error)
+    throw new Error(`getSportDay events: ${countRes.error.message}`);
+
   const todayISO = today();
   const elapsed = daysBetween(cfg.startDate, todayISO); // 0 on day 1
   const dayOfN = Math.min(Math.max(elapsed + 1, 1), cfg.totalDays);
@@ -50,23 +66,12 @@ export async function getSportDay(): Promise<SportDay> {
   const [, m, d] = todayISO.split("-").map(Number);
   const dateLabel = `${d} ${EN_MONTHS_ABBR[m - 1]}`;
 
-  // "Remaining" = upcoming sport matches (same Team/Track/Show tag filter as
-  // getStudentUpcomingSport) that have not started yet.
-  const db = await createClient();
-  const { count, error } = await db
-    .from("events")
-    .select("id", { count: "exact", head: true })
-    .eq("category", "sport")
-    .or("tag.ilike.Team · %,tag.ilike.Track · %,tag.ilike.Show · %")
-    .gte("starts_at", new Date().toISOString());
-  if (error) throw new Error(`getSportDay events: ${error.message}`);
-
   return {
     label: cfg.label,
     dayOfN,
     totalDays: cfg.totalDays,
     dateLabel,
-    eventsRemaining: count ?? 0,
+    eventsRemaining: countRes.count ?? 0,
     isLive,
   };
 }

@@ -74,10 +74,13 @@ export async function getRoomsAndBookings(
   bookingsByRoom: Map<string, Set<string>>;
 }> {
   const db = await createClient();
-  const roomsData = await fetchRoomsByKind(db, kind);
-  const bookingsByRoom = dateISO
-    ? await getPeriodBookingsByRoom(db, dateISO)
-    : new Map<string, Set<string>>();
+  // rooms-by-kind and the day's bookings are independent — fetch concurrently.
+  const [roomsData, bookingsByRoom] = await Promise.all([
+    fetchRoomsByKind(db, kind),
+    dateISO
+      ? getPeriodBookingsByRoom(db, dateISO)
+      : Promise.resolve(new Map<string, Set<string>>()),
+  ]);
 
   const rooms = roomsData.map<Room>((r) => {
     const booked = bookingsByRoom.get(r.id);
