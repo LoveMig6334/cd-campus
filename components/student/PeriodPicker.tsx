@@ -14,11 +14,32 @@ const STATUS_LABEL: Record<BookingPeriod["status"], string> = {
   booked: "● Booked",
 };
 
-export function PeriodPicker({ periods }: { periods: BookingPeriod[] }) {
+export function PeriodPicker({
+  periods,
+  selectedId,
+  onSelect,
+}: {
+  periods: BookingPeriod[];
+  /** Booking: optimistically-selected period id — drives the highlight
+   *  client-side so the click registers instantly. */
+  selectedId?: string;
+  /** Booking: select via client navigation instead of a Link. */
+  onSelect?: (id: string, href: string) => void;
+}) {
   return (
     <div className="grid grid-cols-3 gap-1.5">
       {periods.map((p) => {
-        const active = p.status === "selected";
+        // selectedId (when supplied) overrides the server-baked "selected"
+        // status; a booked slot can never read as selected.
+        const active =
+          selectedId !== undefined
+            ? p.id === selectedId && p.status !== "booked"
+            : p.status === "selected";
+        const displayStatus: BookingPeriod["status"] = active
+          ? "selected"
+          : p.status === "booked"
+            ? "booked"
+            : "available";
         const cls = cn(
           "block border-[1.5px] border-line px-2 py-2.5 text-center transition-colors",
           active ? "bg-blue text-white" : "bg-paper",
@@ -39,18 +60,36 @@ export function PeriodPicker({ periods }: { periods: BookingPeriod[] }) {
             <div
               className={cn(
                 "mt-1 font-mono text-[8.5px] tracking-[0.12em] uppercase",
-                STATUS_DOT[p.status],
+                STATUS_DOT[displayStatus],
               )}
             >
-              {STATUS_LABEL[p.status]}
+              {STATUS_LABEL[displayStatus]}
             </div>
           </>
         );
 
         if (p.href) {
+          // Booking interactive mode: client-side select for an instant highlight.
+          if (onSelect && p.id) {
+            return (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => onSelect(p.id!, p.href!)}
+                className={cn(cls, "cursor-pointer")}
+              >
+                {inner}
+              </button>
+            );
+          }
           // No prefetch — dynamic booking route, prefetch only adds load.
           return (
-            <Link key={p.label} href={p.href} prefetch={false} className={cls}>
+            <Link
+              key={p.label}
+              href={p.href}
+              prefetch={false}
+              className={cn(cls, "cursor-pointer")}
+            >
               {inner}
             </Link>
           );

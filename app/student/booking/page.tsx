@@ -1,13 +1,7 @@
 import { MobileBody } from "@/components/layout/MobileBody";
 import { PageHead } from "@/components/layout/PageHead";
-import { BookingTabs } from "@/components/student/BookingTabs";
-import { CalendarGrid } from "@/components/student/CalendarGrid";
-import { CalendarMonthRow } from "@/components/student/CalendarMonthRow";
-import { PeriodPicker } from "@/components/student/PeriodPicker";
-import { RoomList } from "@/components/student/RoomList";
-import { BookingConfirmForm } from "@/components/student/BookingConfirmForm";
+import { BookingBoard } from "@/components/student/BookingBoard";
 import { IconButton } from "@/components/ui/IconButton";
-import { SectionDivider } from "@/components/ui/SectionDivider";
 import { getStudentMonthBookingDots } from "@/lib/queries/bookings";
 import { getRoomsAndBookings } from "@/lib/queries/rooms";
 import type { BookingPeriod, BookingTab, CalendarDay, Room } from "@/lib/types";
@@ -170,6 +164,7 @@ export default async function StudentBooking({
       const iso = `${year}-${monthStr}-${String(d.num).padStart(2, "0")}`;
       return {
         ...withDots,
+        iso,
         href: buildHref(currentParams, { date: iso }),
         state: iso === date ? ("selected" as const) : withDots.state,
       };
@@ -239,31 +234,21 @@ export default async function StudentBooking({
             ✓ Booking submitted · ส่งคำขอแล้ว — admin will confirm shortly.
           </div>
         )}
-        <BookingTabs tabs={tabs} activeId={tab} />
-
-        <CalendarMonthRow
-          titleTh={enLabel}
-          subEn="เลือกวันที่จอง"
-          compact
-          prevHref={prevMonthHref}
-          nextHref={nextMonthHref}
-          prevDisabled={!onNext}
-          nextDisabled={onNext}
-        />
-        <CalendarGrid days={days} compact />
-
-        <SectionDivider>★ Time period · ช่วงเวลา ★</SectionDivider>
-        <PeriodPicker periods={periods} />
-
-        <SectionDivider>★ Choose room · เลือกห้อง ★</SectionDivider>
-        <RoomList rooms={roomList} />
-
-        <SectionDivider>★ Confirm · ยืนยัน ★</SectionDivider>
-        <BookingConfirmForm
+        <BookingBoard
+          tabs={tabs}
+          days={days}
+          periods={periods}
+          roomList={roomList}
+          tab={tab}
           date={date}
           period={period}
           room={effectiveRoom}
           eyebrow={eyebrow}
+          enLabel={enLabel}
+          onNext={onNext}
+          nextMonthParam={nextMonthParam}
+          prevMonthHref={prevMonthHref}
+          nextMonthHref={nextMonthHref}
         />
       </MobileBody>
     </>

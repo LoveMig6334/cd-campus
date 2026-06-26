@@ -2,14 +2,27 @@ import Link from "next/link";
 import type { Room } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
-export function RoomList({ rooms }: { rooms: Room[] }) {
+export function RoomList({
+  rooms,
+  selectedId,
+  onSelect,
+}: {
+  rooms: Room[];
+  /** Booking: optimistically-selected room id — drives the highlight
+   *  client-side, overriding the server-baked `selected`. */
+  selectedId?: string;
+  /** Booking: select via client navigation instead of a Link. */
+  onSelect?: (id: string, href: string) => void;
+}) {
   return (
     <div className="border-line bg-paper overflow-hidden rounded-[10px] border-[1.5px]">
       {rooms.map((room, i) => {
+        const selected =
+          selectedId !== undefined ? room.id === selectedId : room.selected;
         const cls = cn(
           "flex w-full items-center justify-between px-3.5 py-3 text-left transition-colors hover:bg-cream",
           i < rooms.length - 1 && "border-b border-dashed border-mute-200",
-          room.selected && "bg-yellow hover:bg-yellow",
+          selected && "bg-yellow hover:bg-yellow",
         );
         const inner = (
           <>
@@ -37,13 +50,26 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
         );
 
         if (room.href) {
+          // Booking interactive mode: client-side select for an instant highlight.
+          if (onSelect) {
+            return (
+              <button
+                key={room.id}
+                type="button"
+                onClick={() => onSelect(room.id, room.href!)}
+                className={cn(cls, "cursor-pointer")}
+              >
+                {inner}
+              </button>
+            );
+          }
           // No prefetch — dynamic booking route, prefetch only adds load.
           return (
             <Link
               key={room.id}
               href={room.href}
               prefetch={false}
-              className={cls}
+              className={cn(cls, "cursor-pointer")}
             >
               {inner}
             </Link>

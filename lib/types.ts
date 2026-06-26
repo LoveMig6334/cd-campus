@@ -81,6 +81,9 @@ export type CalendarDay = {
   dots?: string[];
   /** When set, the day cell renders as a Link (URL-param picker) */
   href?: string;
+  /** ISO date (booking grid) — lets the client pick by identity for instant
+   *  optimistic selection without a server round-trip. */
+  iso?: string;
 };
 
 export type CalendarEvent = {
