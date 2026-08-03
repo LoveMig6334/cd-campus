@@ -29,17 +29,17 @@ export const ADMIN_MAY_2026: BigCalDay[] = [
   make(8),
   make(9),
   make(10),
-  make(11, { events: [{ title: "Sport Day · Day 1", variant: "sport" }] }),
+  make(11, { events: [{ title: "Sports Day · Day 1", variant: "sport" }] }),
   make(12, {
     isToday: true,
     events: [
-      { title: "Sport Day · Day 2", variant: "sport" },
+      { title: "Sports Day · Day 2", variant: "sport" },
       { title: "Briefing", variant: "highlight" },
     ],
   }),
   make(13, {
     events: [
-      { title: "Sport Day · Day 3", variant: "sport" },
+      { title: "Sports Day · Day 3", variant: "sport" },
       { title: "Council mtg.", variant: "admin" },
     ],
   }),

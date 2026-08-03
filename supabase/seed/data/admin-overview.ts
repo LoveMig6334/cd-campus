@@ -15,7 +15,7 @@ export const ADMIN_TODAY_EVENTS: AdminEvent[] = [
   },
   {
     time: "10:30",
-    title: "Sport Day · Day 2 opening",
+    title: "Sports Day · Day 2 opening",
     tag: "Sport · Stadium",
     barColor: C.sport,
   },

@@ -21,8 +21,8 @@ export const KEY_LABELS: Record<EditableKey, { en: string; th: string }> = {
   trend_chart: { en: "Trend chart", th: "กราฟแนวโน้ม" },
   portfolio_stats: { en: "Portfolio stats", th: "ตัวเลขโครงงาน · นักเรียน" },
   portfolio_kpis: { en: "Portfolio KPIs", th: "ตัวเลขโครงงาน · ครู" },
-  carelin_kpis: { en: "Carelin KPIs", th: "ตัวเลขพี่แคร์ลิน · ครู" },
-  sport_day: { en: "Sport day", th: "วันกีฬาสี" },
+  carelin_kpis: { en: "Careline KPIs", th: "ตัวเลขพี่แคร์ลิน · ครู" },
+  sport_day: { en: "Sports Day", th: "วันกีฬาสี" },
   term_week: { en: "Term & week", th: "ภาคเรียน · สัปดาห์" },
 };
 

@@ -26,7 +26,7 @@ export default async function EditPsharePost({
     <>
       <AdminTopbar
         titleTh="แก้ไขโพสต์"
-        eyebrow="P'share · edit post"
+        eyebrow="P'Share · edit post"
         actions={
           <Link
             href="/admin/pshare"

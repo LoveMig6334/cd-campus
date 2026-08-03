@@ -16,7 +16,7 @@ const iso = (day: number, time: string) =>
 const TIME_BY_TITLE: Record<string, string> = {
   // ADMIN_TODAY_EVENTS times (12 May)
   "Staff briefing": "09:00",
-  "Sport Day · Day 2 opening": "10:30",
+  "Sports Day · Day 2 opening": "10:30",
   "Curriculum review": "14:00",
   "Orchestra rehearsal": "17:00",
 };

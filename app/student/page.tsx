@@ -42,7 +42,7 @@ export default async function StudentHome() {
           </MenuTile>
           <MenuTile
             href="/student/sport"
-            labelEn="Sport Day"
+            labelEn="Sports Day"
             labelTh="กีฬาสี · Live"
           >
             <SportIcon />
@@ -57,7 +57,7 @@ export default async function StudentHome() {
           </MenuTile>
           <MenuTile
             href="/student/pshare"
-            labelEn="P'share"
+            labelEn="P'Share"
             labelTh="พี่แชร์ น้องชัวร์"
             star={{ color: "blue", position: "tr" }}
           >
@@ -65,7 +65,7 @@ export default async function StudentHome() {
           </MenuTile>
           <MenuTile
             href="/student/carelin"
-            labelEn="CD Carelin"
+            labelEn="CD Careline"
             labelTh="เรื่องที่อยากเล่า"
             star={{ color: "pink", position: "tl" }}
           >

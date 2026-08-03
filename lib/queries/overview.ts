@@ -145,8 +145,8 @@ export async function getOverviewKpis(): Promise<AdminKpi[]> {
       delta: compareDelta(bookingsCurr, bookingsPrevN, prevAbbr),
     },
     {
-      label: "Carelin · open",
-      th: "Carelin ค้างตอบ",
+      label: "Careline · open",
+      th: "Careline ค้างตอบ",
       num: fmt(carelinOpenN),
       delta: newThisMonthDelta(carelinNewN, "new"),
     },

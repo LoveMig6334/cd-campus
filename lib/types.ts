@@ -18,7 +18,7 @@ export type HomeHero = {
  * and events-remaining shown in the sport hero are derived from this + the clock.
  */
 export type SportDayConfig = {
-  /** Mono-caps eyebrow, e.g. "★ Chitralada Sport Day 2026". */
+  /** Mono-caps eyebrow, e.g. "★ Chitralada Sports Day 2026". */
   label: string;
   /** First competition day, "YYYY-MM-DD". */
   startDate: string;
@@ -94,7 +94,7 @@ export type CalendarEvent = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Sport day */
+/* Sports Day */
 /* ------------------------------------------------------------------ */
 
 export type LeaderRow = {
@@ -173,7 +173,7 @@ export type PortfolioStats = {
 };
 
 /* ------------------------------------------------------------------ */
-/* P'share */
+/* P'Share */
 /* ------------------------------------------------------------------ */
 
 export type PshareArt = {
@@ -199,7 +199,7 @@ export type PsharePost = {
 export type PshareTagFilter = string;
 
 /* ------------------------------------------------------------------ */
-/* CD Carelin */
+/* CD Careline */
 /* ------------------------------------------------------------------ */
 
 export type CarelinReply = {
@@ -336,7 +336,7 @@ export type PortfolioAdminRow = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Admin Carelin Desk */
+/* Admin Careline Desk */
 /* ------------------------------------------------------------------ */
 
 export type CarelinDeskRow = {

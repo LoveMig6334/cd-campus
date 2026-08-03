@@ -7,7 +7,7 @@ export default function NewPsharePost() {
     <>
       <AdminTopbar
         titleTh="โพสต์ใหม่"
-        eyebrow="P'share · new post"
+        eyebrow="P'Share · new post"
         actions={
           <Link
             href="/admin/pshare"

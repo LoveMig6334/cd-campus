@@ -176,7 +176,7 @@ function formatDuration(ms: number): string {
 }
 
 /**
- * The four Carelin Desk status bars, computed live from carelin_requests and
+ * The four Careline Desk status bars, computed live from carelin_requests and
  * their replies (replaces the old static site_config `carelin_kpis`):
  *   1. Open today    — requests currently open; delta = new requests today
  *   2. Answered today — requests whose first reply landed today; delta vs yesterday

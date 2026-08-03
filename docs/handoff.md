@@ -104,7 +104,7 @@ If not yet done, run the Phase 5a exit-criteria walkthrough end-to-end (from `do
 1. **Realtime — sport scoreboard:** edit a `sport_results` row in tab B; tab A's `/student/sport` updates within ~1 second.
 2. **Realtime — Carelin desk:** submit a Carelin request in tab B; tab A's `/admin/carelin` updates.
 3. **Realtime — admin bookings:** book a room in tab B; tab A's `/admin/bookings` updates.
-4. **Storage — P'share:** create a new post via `/admin/pshare/new` with an uploaded header image; publish; `/student/pshare/<slug>` shows the image. Replace via edit. Delete → storage object gone.
+4. **Storage — P'Share:** create a new post via `/admin/pshare/new` with an uploaded header image; publish; `/student/pshare/<slug>` shows the image. Replace via edit. Delete → storage object gone.
 5. **Storage — Portfolio:** edit a project; upload thumbnail. Thumbnail renders in `/admin/portfolio` row. Replace. Delete → object gone.
 6. **Tag editor:** edit a project; add 3 tags including yellow (verify `textColor: ink`); save; reopen — all preserved. Remove → gone.
 7. **Portfolio create:** `/admin/portfolio/new`; create a fresh project with title_en, Draft status, 2 tags, thumbnail. Appears at `/admin/portfolio` and at `/student/portfolio` (when Published).

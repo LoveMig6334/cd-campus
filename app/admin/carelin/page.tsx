@@ -27,7 +27,7 @@ export default async function AdminCarelin() {
       <RealtimeRefresh tables={["carelin_requests"]} channelKey="rt-carelin" />
       <AdminTopbar
         titleTh="ซีดีแคร์ลิน"
-        eyebrow="Carelin Desk · the campus care line"
+        eyebrow="Careline Desk · the campus care line"
         actions={
           <>
             <AdminSearch />

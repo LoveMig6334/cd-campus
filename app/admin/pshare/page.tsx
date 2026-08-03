@@ -16,7 +16,7 @@ export default async function AdminPshareList() {
     <>
       <AdminTopbar
         titleTh="พี่แชร์"
-        eyebrow="P'share Studio"
+        eyebrow="P'Share Studio"
         actions={
           <Link
             href="/admin/pshare/new"

@@ -96,7 +96,7 @@ export default function Menu() {
             eyebrow="01 · Student / Mobile"
             titleEn="For students"
             titleTh="สำหรับนักเรียน"
-            body="Phone shell with the date header, six-tile menu, calendar, sport day, room booking, portfolios, P'share, and CD Carelin."
+            body="Phone shell with the date header, six-tile menu, calendar, sports day, room booking, portfolios, P'Share, and CD Careline."
             accent="blue"
             halftone="halftone-bl"
           />
@@ -105,7 +105,7 @@ export default function Menu() {
             eyebrow="02 · Admin / Desktop"
             titleEn="For staff"
             titleTh="สำหรับผู้ดูแล"
-            body="Sidebar shell with overview KPIs, bookings, portfolio review, P'share Studio, and the Carelin Desk triage."
+            body="Sidebar shell with overview KPIs, bookings, portfolio review, P'Share Studio, and the Careline Desk triage."
             accent="ink"
             halftone="halftone-bk"
           />

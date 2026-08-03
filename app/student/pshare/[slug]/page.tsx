@@ -27,7 +27,7 @@ export default async function StudentPsharePost({
     <>
       <PageHead
         titleTh="พี่แชร์ น้องชัวร์"
-        titleEn="P'share"
+        titleEn="P'Share"
         backHref="/student/pshare"
       />
       <MobileBody className="space-y-3.5">

@@ -12,7 +12,7 @@ Move the editorial-zine prototype at `prototype/cd-smart-campus.html` into the N
 | Phase 1 — Shells                 | ✅ shipped                               |                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Phase 2 — Static page port       | ✅ shipped (2a–2e)                       |                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Phase 3 — Interactivity          | **superseded by the Supabase migration** | Sub-phases 3a (auth foundation) / 3b (schema + RLS + seed) / 3c (read swap) / 3d (minimum write set) all shipped. See [`docs/superpowers/specs/2026-05-12-supabase-migration-design.md`](./superpowers/specs/2026-05-12-supabase-migration-design.md) for the design + [`docs/superpowers/plans/2026-05-12-supabase-3d-writes.md`](./superpowers/plans/2026-05-12-supabase-3d-writes.md) for the most recent plan. |
-| Phase 4 — P'share dynamic routes | **rolled into the new Phase 4**          | `/student/pshare/[slug]` reader is tracked alongside the full write surface.                                                                                                                                                                                                                                                                                                                                       |
+| Phase 4 — P'Share dynamic routes | **rolled into the new Phase 4**          | `/student/pshare/[slug]` reader is tracked alongside the full write surface.                                                                                                                                                                                                                                                                                                                                       |
 | Phase 5 — Polish                 | **deferred**                             | Follows the full write surface.                                                                                                                                                                                                                                                                                                                                                                                    |
 
 **Active phase:** Phase 4 — Full write surface. Wire every still-inert prototype button (bookings, portfolio CRUD, calendar edit/delete, sport-result recording, site_config editor, root-only carelin delete) to a Server Action. See [`docs/handoff.md`](./handoff.md) for the next-session briefing.
@@ -42,8 +42,8 @@ The original phased plan below remains as historical reference; the route map, d
 
 | Package          | Version target | Why                                                                                               |
 | ---------------- | -------------- | ------------------------------------------------------------------------------------------------- |
-| `react-markdown` | ^10.1          | Render P'share post bodies. Works in both Server and Client components in React 19 / Next 16.     |
-| `remark-gfm`     | ^4.0           | GitHub-flavored markdown extras (tables, strikethrough, task lists, autolinks) for P'share posts. |
+| `react-markdown` | ^10.1          | Render P'Share post bodies. Works in both Server and Client components in React 19 / Next 16.     |
+| `remark-gfm`     | ^4.0           | GitHub-flavored markdown extras (tables, strikethrough, task lists, autolinks) for P'Share posts. |
 | `clsx`           | ^2.1           | Conditional class composition.                                                                    |
 | `tailwind-merge` | ^3.0           | Safe Tailwind class merging when components compose `className` props. Requires Tailwind 4.       |
 
@@ -70,19 +70,19 @@ npm install react-markdown@^10 remark-gfm@^4 clsx@^2 tailwind-merge@^3
 | `/`                      | Landing — view toggle to `/student` or `/admin` |
 | `/student`               | Home (date header + 6-tile menu)                |
 | `/student/calendar`      | Mobile calendar                                 |
-| `/student/sport`         | Sport day live + leaderboard                    |
+| `/student/sport`         | Sports Day live + leaderboard                    |
 | `/student/booking`       | Room booking                                    |
 | `/student/portfolio`     | Senior portfolios                               |
-| `/student/pshare`        | P'share post grid                               |
-| `/student/pshare/[slug]` | P'share post reader                             |
-| `/student/carelin`       | CD Carelin public board                         |
+| `/student/pshare`        | P'Share post grid                               |
+| `/student/pshare/[slug]` | P'Share post reader                             |
+| `/student/carelin`       | CD Careline public board                         |
 | `/admin`                 | Overview (KPIs + charts)                        |
 | `/admin/calendar`        | Admin calendar                                  |
-| `/admin/sport`           | Sport day ops                                   |
+| `/admin/sport`           | Sports Day ops                                   |
 | `/admin/bookings`        | Bookings management                             |
 | `/admin/portfolio`       | Portfolio review                                |
-| `/admin/pshare`          | P'share Studio (markdown editor)                |
-| `/admin/carelin`         | Carelin Desk (request triage)                   |
+| `/admin/pshare`          | P'Share Studio (markdown editor)                |
+| `/admin/carelin`         | Careline Desk (request triage)                   |
 
 Each role gets its own root layout (phone shell vs sidebar shell). Using literal directory names (`student/`, `admin/`) rather than route groups so the URLs are explicit and the two shells don't collide on shared child paths like `/calendar`.
 
@@ -295,9 +295,9 @@ Port one section per PR, preserving prototype markup pattern-by-pattern:
 
 - 2a — Student Home (`HeroCard`, `MenuGrid`, `MenuTile`).
 - 2b — Student Calendar + Sport + Booking (read-only).
-- 2c — Student Portfolio + P'share grid + Carelin board (read-only).
+- 2c — Student Portfolio + P'Share grid + Carelin board (read-only).
 - 2d — Admin Overview + Calendar + Sport.
-- 2e — Admin Bookings + Portfolio + Carelin Desk (read-only table).
+- 2e — Admin Bookings + Portfolio + Careline Desk (read-only table).
 
 Mock data lives in `data/*.ts`, typed via `data/types.ts`. Pages are Server Components and import data directly.
 
@@ -316,7 +316,7 @@ Wrap interactive widgets in `'use client'`:
 
 **Exit criteria:** All prototype interactions reproduced, no console errors, no hydration mismatches.
 
-### Phase 4 — P'share dynamic routes (1 PR)
+### Phase 4 — P'Share dynamic routes (1 PR)
 
 - `data/pshare-posts.ts` returns posts with `{ slug, title, body, author, tags, publishedAt }`.
 - `app/student/pshare/page.tsx` — Server Component renders the post grid; cards link to `/student/pshare/[slug]`.
@@ -345,7 +345,7 @@ Most items below have since shipped — annotated with their phase. The Supabase
 - ~~A backend (REST or DB)~~ — ✅ Phase 3b/3c (Postgres + RLS, all reads through `lib/queries/`).
 - ~~Server Actions for form submission~~ — ✅ Phase 3d for the minimum write set; Phase 4 fills in the rest.
 - i18n routing — content stays bilingual hard-coded (still deferred).
-- Markdown body storage — solved by 3d: P'share `body_md` lives in Postgres; the reader UI is on Phase 4's list.
+- Markdown body storage — solved by 3d: P'Share `body_md` lives in Postgres; the reader UI is on Phase 4's list.
 - Supabase Realtime + Storage — deferred to Phase 5+.
 
 ## Open questions to resolve before Phase 1

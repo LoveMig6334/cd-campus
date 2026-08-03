@@ -52,7 +52,7 @@ export async function seedSiteConfig(
     {
       key: "sport_day",
       value: json({
-        label: "★ Chitralada Sport Day 2026",
+        label: "★ Chitralada Sports Day 2026",
         startDate: "2026-05-23",
         totalDays: 3,
       }),

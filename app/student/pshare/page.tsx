@@ -13,7 +13,7 @@ export default async function StudentPshare() {
     <>
       <PageHead
         titleTh="พี่แชร์ น้องชัวร์"
-        titleEn="P'share N'sure"
+        titleEn="P'Share N'sure"
         action={
           <IconButton label="Search · ค้นหา">
             <svg

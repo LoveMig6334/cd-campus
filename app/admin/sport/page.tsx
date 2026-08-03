@@ -22,7 +22,7 @@ export default async function AdminSport() {
     <>
       <AdminTopbar
         titleTh="กีฬาสี"
-        eyebrow={`Sport Day · Day ${sportDay.dayOfN} of ${sportDay.totalDays}${sportDay.isLive ? " · Live" : ""}`}
+        eyebrow={`Sports Day · Day ${sportDay.dayOfN} of ${sportDay.totalDays}${sportDay.isLive ? " · Live" : ""}`}
         actions={
           <>
             <LiveIndicator label="Broadcasting live" />

@@ -13,7 +13,7 @@ export default async function StudentCarelin() {
     <>
       <PageHead
         titleTh="ซีดีแคร์ลิน"
-        titleEn="CD Carelin"
+        titleEn="CD Careline"
         action={
           <IconButton label="Filter · ตัวกรอง">
             <svg

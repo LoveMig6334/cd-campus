@@ -30,7 +30,7 @@ All tokens are defined in `app/globals.css` under `@theme` and consumed via Tail
 | `--color-house-green`  | `#3FAE6C` | Green house, success status, "Answered" pill                                                                                                   |
 | `--color-house-purple` | `#8E5BD9` | Purple house, "Review" status                                                                                                                  |
 | `--color-house-orange` | `#F2843B` | Orange house                                                                                                                                   |
-| `--color-house-pink`   | `#E94D8F` | Pink house, **CD Carelin accent**, downward delta                                                                                              |
+| `--color-house-pink`   | `#E94D8F` | Pink house, **CD Careline accent**, downward delta                                                                                              |
 
 **60/30/10 balance.** Cream/paper neutrals carry ~60% of the surface; the softened `blue` is ~30% (prefer the pale `blue-soft` tint for large fills, reserve solid `blue` for actions); `yellow` is the ~10% accent pop.
 
@@ -51,7 +51,7 @@ All tokens are defined in `app/globals.css` under `@theme` and consumed via Tail
 **Bilingual rule.** Thai and English coexist on the page. Headline blocks usually pair them: Thai (display italic) on top, English (mono caps) on bottom — or vice versa, whichever reads better. Examples:
 
 - `อังคารที่ 12 พฤษภาคม` + `Tuesday · 12 May 2026`
-- `พี่แชร์ น้องชัวร์` + `P'share N'sure`
+- `พี่แชร์ น้องชัวร์` + `P'Share N'sure`
 - `ปฏิทินกิจกรรม` + `Calendar`
 
 Don't strip one of the two — the bilingualism is a brand feature, not duplication.
@@ -123,7 +123,7 @@ Apply on `__art` panels of menu tiles, hero cards, page-intro decorations. Never
 ### Halftone tag (hashtag chip)
 
 - Mono lowercase text on cream background, 1px ink border, 3×6 padding.
-- Used for P'share post tags. Tags lead with `#` and use `kebab-case`.
+- Used for P'Share post tags. Tags lead with `#` and use `kebab-case`.
 
 ### Sparkle
 
@@ -156,7 +156,7 @@ A specialized `prose`-like style for Markdown bodies:
 
 - 1440px max-width
 - 240px sticky sidebar, paper bg, 5×5 ink offset shadow
-- Main column: topbar (44px italic display title + actions slot), KPI strip (4 cards), content grid (2/1 ratio for the dashboard, 1.4/1 for the P'share Studio)
+- Main column: topbar (44px italic display title + actions slot), KPI strip (4 cards), content grid (2/1 ratio for the dashboard, 1.4/1 for the P'Share Studio)
 - Collapses to 220px sidebar at <1100px and stacks at <720px
 
 ## Voice & motifs

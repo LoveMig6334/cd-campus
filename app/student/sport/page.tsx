@@ -19,7 +19,7 @@ export default function StudentSport() {
       <RealtimeRefresh tables={["sport_results"]} channelKey="rt-sport" />
       <PageHead
         titleTh="กีฬาสี"
-        titleEn="Sport Day · Live"
+        titleEn="Sports Day · Live"
         action={
           <IconButton label="Live · ถ่ายทอดสด">
             <svg

@@ -20,7 +20,7 @@ export default async function CarelinDetailPage({
     <>
       <AdminTopbar
         titleTh="คำขอ"
-        eyebrow="Carelin · request"
+        eyebrow="Careline · request"
         actions={
           <Link
             href="/admin/carelin"

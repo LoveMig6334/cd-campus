@@ -36,7 +36,7 @@ const NAV: NavItem[] = [
   },
   {
     href: "/admin/sport",
-    en: "Sport Day",
+    en: "Sports Day",
     th: "กีฬาสี",
     icon: (
       <>
@@ -69,7 +69,7 @@ const NAV: NavItem[] = [
   },
   {
     href: "/admin/pshare",
-    en: "P'share Studio",
+    en: "P'Share Studio",
     th: "พี่แชร์",
     icon: (
       <>
@@ -80,7 +80,7 @@ const NAV: NavItem[] = [
   },
   {
     href: "/admin/carelin",
-    en: "Carelin Desk",
+    en: "Careline Desk",
     th: "แคร์ลิน",
     icon: (
       <path d="M21 11c0 4 -4 7 -9 7l-3 3v-3c-3 -1 -6 -3 -6 -7s4 -7 9 -7s9 3 9 7z" />

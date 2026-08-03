@@ -1,8 +1,8 @@
 # CD Smart Campus
 
-A Next.js prototype for the **Chitralada 2026** smart-campus app — a single workspace tying together the school's calendar, room bookings, sport-day live ops, alumni portfolios, peer-led knowledge sharing (**P'share N'sure**), and the **CD Carelin** care line.
+A Next.js prototype for the **Chitralada 2026** smart-campus app — a single workspace tying together the school's calendar, room bookings, sports-day live ops, alumni portfolios, peer-led knowledge sharing (**P'Share N'sure**), and the **CD Careline** care line.
 
-The static HTML mockup at `prototype/cd-smart-campus.html` was progressively migrated into this Next.js 16 + React 19 app. **Phase 3 is complete**: Supabase Auth + schema + RLS, all reads, and the minimum-write-set Server Actions (admin management, Carelin requests + replies, scoreboard, calendar events, P'share studio) are live. See [`docs/migration-plan.md`](./docs/migration-plan.md) for the original phased plan, [`docs/superpowers/specs/2026-05-12-supabase-migration-design.md`](./docs/superpowers/specs/2026-05-12-supabase-migration-design.md) for the Supabase migration design, and [`docs/design-system.md`](./docs/design-system.md) for the visual language.
+The static HTML mockup at `prototype/cd-smart-campus.html` was progressively migrated into this Next.js 16 + React 19 app. **Phase 3 is complete**: Supabase Auth + schema + RLS, all reads, and the minimum-write-set Server Actions (admin management, Carelin requests + replies, scoreboard, calendar events, P'Share studio) are live. See [`docs/migration-plan.md`](./docs/migration-plan.md) for the original phased plan, [`docs/superpowers/specs/2026-05-12-supabase-migration-design.md`](./docs/superpowers/specs/2026-05-12-supabase-migration-design.md) for the Supabase migration design, and [`docs/design-system.md`](./docs/design-system.md) for the visual language.
 
 ## Stack
 
@@ -12,7 +12,7 @@ The static HTML mockup at `prototype/cd-smart-campus.html` was progressively mig
 - **Tailwind CSS** 4 — CSS-first via `@theme` (no `tailwind.config.js`)
 - **Supabase** — Postgres + Auth via `@supabase/ssr` + `@supabase/supabase-js`; schema lives in `supabase/migrations/`, idempotent TS seed in `supabase/seed/`
 - **ESLint** 9 + `eslint-config-next`
-- `react-markdown` + `remark-gfm` — P'share post bodies
+- `react-markdown` + `remark-gfm` — P'Share post bodies
 - `clsx` + `tailwind-merge` (via `lib/cn.ts`) — class composition
 
 ## Two role views
@@ -20,7 +20,7 @@ The static HTML mockup at `prototype/cd-smart-campus.html` was progressively mig
 | View        | URL        | Shape                                                                                                             |
 | ----------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
 | **Student** | `/student` | Mobile phone mockup with sticky header, 4-tab bottom nav (Home / Calendar / Booking / Sport)                      |
-| **Admin**   | `/admin`   | Desktop with sticky sidebar (Overview / Calendar / Sport / Bookings / Portfolios / P'share Studio / Carelin Desk) |
+| **Admin**   | `/admin`   | Desktop with sticky sidebar (Overview / Calendar / Sport / Bookings / Portfolios / P'Share Studio / Careline Desk) |
 
 Landing at `/` offers a toggle to either view.
 
