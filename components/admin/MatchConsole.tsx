@@ -256,8 +256,30 @@ export function MatchConsole({ match }: { match: MatchView }) {
               )}
             </div>
 
-            <div className="text-mute-700 mb-1 text-center font-mono text-[11px] tabular-nums">
-              {view.sets.map((s) => `${s.a}–${s.b}`).join("  ·  ")}
+            {/* Numbered set strip, one slot per possible set (mirrors the board) */}
+            <div className="mb-1 flex justify-center gap-1">
+              {Array.from({ length: config.bestOf }, (_, i) => {
+                const s = view.sets[i];
+                const isCurrent =
+                  view.status !== "finished" && i === view.currentSet - 1;
+                return (
+                  <span
+                    key={i}
+                    className={cn(
+                      "border-line min-w-[44px] border-[1.5px] px-1 py-0.5 text-center font-mono text-[10px] tabular-nums",
+                      isCurrent
+                        ? "bg-yellow text-ink"
+                        : s
+                          ? "bg-paper text-ink"
+                          : "bg-paper text-mute-300",
+                    )}
+                  >
+                    {i + 1}
+                    <br />
+                    {s ? `${s.a}:${s.b}` : ":"}
+                  </span>
+                );
+              })}
             </div>
 
             {view.status === "scheduled" && (

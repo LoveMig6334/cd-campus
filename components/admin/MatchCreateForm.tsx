@@ -18,11 +18,16 @@ export function MatchCreateForm() {
         className="grid grid-cols-1 gap-3 md:grid-cols-2"
       >
         <label className="block">
-          <span className={LABEL}>Sport · กีฬา</span>
+          <span className={LABEL}>Sport & format · กีฬาและรูปแบบ</span>
           <select name="sport" required className={FIELD}>
             {Object.values(SPORTS).map((s) => (
               <option key={s.id} value={s.id}>
-                {s.labelEn} · {s.labelTh}
+                {s.labelEn} · {s.labelTh} — Best of {s.bestOf}, to{" "}
+                {s.pointsToWin}
+                {s.finalSetPointsToWin
+                  ? ` (final set ${s.finalSetPointsToWin})`
+                  : ""}
+                {s.cap ? ` (cap ${s.cap})` : ""}
               </option>
             ))}
           </select>
