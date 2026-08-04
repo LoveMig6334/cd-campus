@@ -31,11 +31,15 @@
   --color-house-orange: #f2843b;
   --color-house-pink: #e94d8f;
 
-  /* Type */
-  --font-display: var(--font-instrument-serif), "IBM Plex Sans Thai", serif;
+  /* Type. Instrument Serif and Plex Mono carry no Thai glyphs, so both stacks
+     fall through to the self-hosted Plex Sans Thai (next/font hashes family
+     names, so the fallback must be the variable, not a literal name). */
+  --font-display: var(--font-instrument-serif), var(--font-ibm-plex-thai), serif;
   --font-sans:
     var(--font-ibm-plex-thai), "IBM Plex Sans", system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  --font-mono:
+    var(--font-ibm-plex-mono), var(--font-ibm-plex-thai), ui-monospace,
+    monospace;
 }
 
 /* Student-only dark theme — warm charcoal. Scoped to `.dark` on the phone
