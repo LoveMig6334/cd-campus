@@ -10,6 +10,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "seed": "tsx supabase/seed/index.ts",
+    "test": "vitest run",
     "gen:types": "supabase gen types typescript --linked > lib/supabase/database.types.ts"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "supabase": "^2.98.2",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
