@@ -325,6 +325,152 @@ export type Database = {
         }
         Relationships: []
       }
+      match_events: {
+        Row: {
+          actor_admin_id: string | null
+          created_at: string
+          id: string
+          match_id: string
+          payload: Json
+          seq: number
+          type: Database["public"]["Enums"]["match_event_type"]
+        }
+        Insert: {
+          actor_admin_id?: string | null
+          created_at?: string
+          id: string
+          match_id: string
+          payload?: Json
+          seq: number
+          type: Database["public"]["Enums"]["match_event_type"]
+        }
+        Update: {
+          actor_admin_id?: string | null
+          created_at?: string
+          id?: string
+          match_id?: string
+          payload?: Json
+          seq?: number
+          type?: Database["public"]["Enums"]["match_event_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_events_actor_admin_id_fkey"
+            columns: ["actor_admin_id"]
+            isOneToOne: false
+            referencedRelation: "admins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_events_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matches: {
+        Row: {
+          created_at: string
+          created_by_admin_id: string | null
+          current_set: number
+          ended_at: string | null
+          house_a: number
+          house_b: number
+          id: string
+          last_score_event_id: string | null
+          round_label: string | null
+          scheduled_at: string | null
+          serving: string
+          sets: Json
+          sport: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["match_status"]
+          timer_seconds: number
+          timer_started_at: string | null
+          updated_at: string
+          venue: string | null
+          version: number
+          winner_house_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by_admin_id?: string | null
+          current_set?: number
+          ended_at?: string | null
+          house_a: number
+          house_b: number
+          id?: string
+          last_score_event_id?: string | null
+          round_label?: string | null
+          scheduled_at?: string | null
+          serving?: string
+          sets?: Json
+          sport: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["match_status"]
+          timer_seconds?: number
+          timer_started_at?: string | null
+          updated_at?: string
+          venue?: string | null
+          version?: number
+          winner_house_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by_admin_id?: string | null
+          current_set?: number
+          ended_at?: string | null
+          house_a?: number
+          house_b?: number
+          id?: string
+          last_score_event_id?: string | null
+          round_label?: string | null
+          scheduled_at?: string | null
+          serving?: string
+          sets?: Json
+          sport?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["match_status"]
+          timer_seconds?: number
+          timer_started_at?: string | null
+          updated_at?: string
+          venue?: string | null
+          version?: number
+          winner_house_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_created_by_admin_id_fkey"
+            columns: ["created_by_admin_id"]
+            isOneToOne: false
+            referencedRelation: "admins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_house_a_fkey"
+            columns: ["house_a"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_house_b_fkey"
+            columns: ["house_b"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_winner_house_id_fkey"
+            columns: ["winner_house_id"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           applied_to: string | null
@@ -590,6 +736,49 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_match_event: {
+        Args: {
+          p_current_set: number
+          p_event_id: string
+          p_expected_version: number
+          p_match_id: string
+          p_payload: Json
+          p_serving: string
+          p_sets: Json
+          p_status: Database["public"]["Enums"]["match_status"]
+          p_type: Database["public"]["Enums"]["match_event_type"]
+          p_winner_house_id: number
+        }
+        Returns: {
+          created_at: string
+          created_by_admin_id: string | null
+          current_set: number
+          ended_at: string | null
+          house_a: number
+          house_b: number
+          id: string
+          last_score_event_id: string | null
+          round_label: string | null
+          scheduled_at: string | null
+          serving: string
+          sets: Json
+          sport: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["match_status"]
+          timer_seconds: number
+          timer_started_at: string | null
+          updated_at: string
+          venue: string | null
+          version: number
+          winner_house_id: number | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "matches"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       current_admin_id: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_root_admin: { Args: never; Returns: boolean }
@@ -604,6 +793,15 @@ export type Database = {
       booking_status: "Confirmed" | "Pending" | "Review"
       carelin_status: "open" | "answered"
       event_category: "sport" | "tradition" | "music" | "admin" | "academic"
+      match_event_type:
+        | "start"
+        | "pause"
+        | "resume"
+        | "score"
+        | "undo"
+        | "finish"
+        | "cancel"
+      match_status: "scheduled" | "live" | "paused" | "finished" | "cancelled"
       project_status: "Published" | "Draft"
       pshare_status: "draft" | "published" | "review"
       room_kind: "music" | "meeting"
@@ -743,6 +941,16 @@ export const Constants = {
       booking_status: ["Confirmed", "Pending", "Review"],
       carelin_status: ["open", "answered"],
       event_category: ["sport", "tradition", "music", "admin", "academic"],
+      match_event_type: [
+        "start",
+        "pause",
+        "resume",
+        "score",
+        "undo",
+        "finish",
+        "cancel",
+      ],
+      match_status: ["scheduled", "live", "paused", "finished", "cancelled"],
       project_status: ["Published", "Draft"],
       pshare_status: ["draft", "published", "review"],
       room_kind: ["music", "meeting"],
