@@ -270,7 +270,8 @@ export async function endMatch(
     }
     const state = stateOf(m);
     const config = SPORTS[m.sport];
-    const winner = matchWinner(config, state) ?? leaderForEarlyEnd(config, state);
+    const winner =
+      matchWinner(config, state) ?? leaderForEarlyEnd(config, state);
     if (!winner) {
       return { error: "Scores are level — play a point before ending" };
     }

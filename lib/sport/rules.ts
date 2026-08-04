@@ -133,7 +133,9 @@ export function deriveFlags(
   const needed = setsToWin(config);
 
   const deuce =
-    set.a === set.b && set.a >= target - 1 && setWinner(config, set, idx) === null;
+    set.a === set.b &&
+    set.a >= target - 1 &&
+    setWinner(config, set, idx) === null;
 
   let setPoint: TeamKey | null = null;
   let matchPoint: TeamKey | null = null;

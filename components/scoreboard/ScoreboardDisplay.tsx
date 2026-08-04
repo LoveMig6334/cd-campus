@@ -94,7 +94,11 @@ export function ScoreboardDisplay({
 
   return (
     <main className="bg-cream text-ink relative h-screen w-screen overflow-hidden">
-      {showIdle ? <IdleScreen now={now} /> : <MatchScreen match={match!} now={now} />}
+      {showIdle ? (
+        <IdleScreen now={now} />
+      ) : (
+        <MatchScreen match={match!} now={now} />
+      )}
 
       <div
         className={cn(
@@ -156,63 +160,63 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
   ];
 
   const panels = teams.map(({ team, info }, i) => {
-        const bg = HOUSE_HEX[info.key];
-        const fg = contrastText(bg);
-        const isWinner = finished && match.winner === team;
-        const dimmed = finished && match.winner !== null && !isWinner;
-        return (
-          <section
-            key={team}
-            className={cn(
-              "flex flex-col items-center justify-center gap-[2vh] transition-opacity",
-              i === 0 ? "border-line border-r-[1.5px]" : "border-line border-l-[1.5px]",
-              dimmed && "opacity-50",
-            )}
-            style={{ background: bg, color: fg }}
-          >
-            <div className="flex items-center gap-3 font-mono text-[2.4vh] tracking-[0.24em] uppercase">
-              {info.nameEn} · {info.nameTh}
-              {!pre && !finished && match.serving === team && (
-                <span
-                  aria-label="Serving"
-                  title="Serving"
-                  className="inline-block size-[1.6vh] animate-pulse rounded-full"
-                  style={{ background: fg }}
-                />
-              )}
-            </div>
+    const bg = HOUSE_HEX[info.key];
+    const fg = contrastText(bg);
+    const isWinner = finished && match.winner === team;
+    const dimmed = finished && match.winner !== null && !isWinner;
+    return (
+      <section
+        key={team}
+        className={cn(
+          "flex flex-col items-center justify-center gap-[2vh] transition-opacity",
+          i === 0
+            ? "border-line border-r-[1.5px]"
+            : "border-line border-l-[1.5px]",
+          dimmed && "opacity-50",
+        )}
+        style={{ background: bg, color: fg }}
+      >
+        <div className="flex items-center gap-3 font-mono text-[2.4vh] tracking-[0.24em] uppercase">
+          {info.nameEn} · {info.nameTh}
+          {!pre && !finished && match.serving === team && (
+            <span
+              aria-label="Serving"
+              title="Serving"
+              className="inline-block size-[1.6vh] animate-pulse rounded-full"
+              style={{ background: fg }}
+            />
+          )}
+        </div>
 
-            {isWinner && (
-              <div className="border-current font-display border-b-[3px] text-[5vh] italic">
-                Winner · ชนะ
-              </div>
-            )}
+        {isWinner && (
+          <div className="font-display border-b-[3px] border-current text-[5vh] italic">
+            Winner · ชนะ
+          </div>
+        )}
 
-            {pre ? (
-              <div className="font-display text-[16vh] leading-none italic">
-                —
-              </div>
-            ) : (
-              <div className="font-display text-[34vh] leading-none italic tabular-nums">
-                {currentSet[team]}
-              </div>
-            )}
+        {pre ? (
+          <div className="font-display text-[16vh] leading-none italic">—</div>
+        ) : (
+          <div className="font-display text-[34vh] leading-none italic tabular-nums">
+            {currentSet[team]}
+          </div>
+        )}
 
-            {/* Completed-set pips */}
-            <div className="flex gap-[1.2vh]" aria-label={`Sets won: ${won[team]}`}>
-              {Array.from({ length: needed }, (_, s) => (
-                <span
-                  key={s}
-                  className="inline-block size-[2.2vh] rounded-full border-[2px]"
-                  style={{
-                    borderColor: fg,
-                    background: s < won[team] ? fg : "transparent",
-                  }}
-                />
-              ))}
-            </div>
-          </section>
-        );
+        {/* Completed-set pips */}
+        <div className="flex gap-[1.2vh]" aria-label={`Sets won: ${won[team]}`}>
+          {Array.from({ length: needed }, (_, s) => (
+            <span
+              key={s}
+              className="inline-block size-[2.2vh] rounded-full border-[2px]"
+              style={{
+                borderColor: fg,
+                background: s < won[team] ? fg : "transparent",
+              }}
+            />
+          ))}
+        </div>
+      </section>
+    );
   });
 
   return (
@@ -292,7 +296,9 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
 
             {finished && (
               <div className="text-center">
-                <div className="font-display text-[5vh] italic">จบการแข่งขัน</div>
+                <div className="font-display text-[5vh] italic">
+                  จบการแข่งขัน
+                </div>
                 <div className="text-mute-700 mt-[0.8vh] font-mono text-[1.8vh] tracking-[0.24em] uppercase">
                   Final · {won.a}–{won.b} sets
                 </div>

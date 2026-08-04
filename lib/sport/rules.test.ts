@@ -18,10 +18,7 @@ import {
 const VB = SPORTS.volleyball;
 const BM = SPORTS.badminton;
 
-function state(
-  sets: SetScore[],
-  serving: TeamKey = "a",
-): ScoreState {
+function state(sets: SetScore[], serving: TeamKey = "a"): ScoreState {
   return { sets, currentSet: sets.length, serving };
 }
 
@@ -111,7 +108,10 @@ describe("set transitions", () => {
     });
     // Right after a set rollover the fresh set is 0-0: -1 floors instead of
     // crossing back into the previous set.
-    const rolled = state([{ a: 25, b: 20 }, { a: 0, b: 0 }]);
+    const rolled = state([
+      { a: 25, b: 20 },
+      { a: 0, b: 0 },
+    ]);
     expect(applyPoint(VB, rolled, "b", -1)).toEqual({
       ok: false,
       reason: "floor",
@@ -124,7 +124,14 @@ describe("serving across sets", () => {
     expect(firstServerOfSet(VB, [], 1)).toBe("a");
     expect(firstServerOfSet(VB, [{ a: 25, b: 20 }], 2)).toBe("b");
     expect(
-      firstServerOfSet(VB, [{ a: 25, b: 20 }, { a: 20, b: 25 }], 3),
+      firstServerOfSet(
+        VB,
+        [
+          { a: 25, b: 20 },
+          { a: 20, b: 25 },
+        ],
+        3,
+      ),
     ).toBe("a");
   });
 
@@ -201,12 +208,25 @@ describe("match winner and end of match", () => {
 describe("early end (schedule ran out)", () => {
   it("prefers the sets leader, then current-set points, else null", () => {
     expect(
-      leaderForEarlyEnd(VB, state([{ a: 25, b: 20 }, { a: 5, b: 9 }])),
+      leaderForEarlyEnd(
+        VB,
+        state([
+          { a: 25, b: 20 },
+          { a: 5, b: 9 },
+        ]),
+      ),
     ).toBe("a");
     expect(leaderForEarlyEnd(VB, state([{ a: 10, b: 12 }]))).toBe("b");
     expect(leaderForEarlyEnd(VB, state([{ a: 10, b: 10 }]))).toBeNull();
     expect(
-      leaderForEarlyEnd(VB, state([{ a: 25, b: 20 }, { a: 20, b: 25 }, { a: 7, b: 7 }])),
+      leaderForEarlyEnd(
+        VB,
+        state([
+          { a: 25, b: 20 },
+          { a: 20, b: 25 },
+          { a: 7, b: 7 },
+        ]),
+      ),
     ).toBeNull();
   });
 });

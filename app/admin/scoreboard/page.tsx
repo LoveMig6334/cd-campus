@@ -75,7 +75,11 @@ export default async function AdminScoreboardPage({
             <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Team
             </span>
-            <select name="house" defaultValue={sp.house ?? ""} className={FIELD}>
+            <select
+              name="house"
+              defaultValue={sp.house ?? ""}
+              className={FIELD}
+            >
               <option value="">All</option>
               {HOUSES.map((h) => (
                 <option key={h.value} value={h.value}>
@@ -88,7 +92,11 @@ export default async function AdminScoreboardPage({
             <span className="text-mute-700 block font-mono text-[10px] tracking-[0.16em] uppercase">
               Sport
             </span>
-            <select name="sport" defaultValue={sp.sport ?? ""} className={FIELD}>
+            <select
+              name="sport"
+              defaultValue={sp.sport ?? ""}
+              className={FIELD}
+            >
               <option value="">All</option>
               {Object.values(SPORTS).map((s) => (
                 <option key={s.id} value={s.id}>

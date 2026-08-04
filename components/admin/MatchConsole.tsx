@@ -30,7 +30,9 @@ function stateOf(m: MatchView) {
 }
 
 function formatClock(m: MatchView, now: number): string {
-  const running = m.timerStartedAt ? (now - Date.parse(m.timerStartedAt)) / 1000 : 0;
+  const running = m.timerStartedAt
+    ? (now - Date.parse(m.timerStartedAt)) / 1000
+    : 0;
   const total = Math.max(0, Math.floor(m.timerSeconds + running));
   const mm = String(Math.floor(total / 60)).padStart(2, "0");
   const ss = String(total % 60).padStart(2, "0");
@@ -168,7 +170,11 @@ export function MatchConsole({ match }: { match: MatchView }) {
             {view.status === "finished" && (
               <span className="text-blue-deep">✓ Finished</span>
             )}
-            {inPlay && <span className="text-ink tabular-nums">{formatClock(view, now)}</span>}
+            {inPlay && (
+              <span className="text-ink tabular-nums">
+                {formatClock(view, now)}
+              </span>
+            )}
           </span>
         </div>
 
@@ -188,7 +194,9 @@ export function MatchConsole({ match }: { match: MatchView }) {
                     {info.nameEn} · {info.nameTh}
                   </span>
                   {view.serving === team && view.status === "live" && (
-                    <span aria-label="Serving" title="Serving">●</span>
+                    <span aria-label="Serving" title="Serving">
+                      ●
+                    </span>
                   )}
                 </div>
                 <div className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-80">
@@ -202,7 +210,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   onClick={() => tapScore(team, 1)}
                   disabled={!scoringOpen}
                   className={cn(
-                    "border-line bg-paper text-ink w-full cursor-pointer border-[1.5px] py-6 text-center font-display text-3xl italic transition-all [box-shadow:3px_3px_0_var(--color-ink)] active:translate-x-px active:translate-y-px active:[box-shadow:1px_1px_0_var(--color-ink)]",
+                    "border-line bg-paper text-ink font-display w-full cursor-pointer border-[1.5px] py-6 text-center text-3xl italic [box-shadow:3px_3px_0_var(--color-ink)] transition-all active:translate-x-px active:translate-y-px active:[box-shadow:1px_1px_0_var(--color-ink)]",
                     !scoringOpen && "cursor-not-allowed opacity-40",
                   )}
                 >
@@ -223,7 +231,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
             );
           })}
 
-          <div className="border-line bg-cream flex min-w-[220px] flex-col items-stretch gap-2 border-[1.5px] p-4 lg:order-none lg:-order-none lg:col-start-2 lg:row-start-1">
+          <div className="border-line bg-cream lg:-order-none flex min-w-[220px] flex-col items-stretch gap-2 border-[1.5px] p-4 lg:order-none lg:col-start-2 lg:row-start-1">
             <div className="text-center font-mono text-[10px] tracking-[0.18em] uppercase">
               Set {view.currentSet}
               {flags.deuce && (
@@ -249,9 +257,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
             </div>
 
             <div className="text-mute-700 mb-1 text-center font-mono text-[11px] tabular-nums">
-              {view.sets
-                .map((s) => `${s.a}–${s.b}`)
-                .join("  ·  ")}
+              {view.sets.map((s) => `${s.a}–${s.b}`).join("  ·  ")}
             </div>
 
             {view.status === "scheduled" && (
