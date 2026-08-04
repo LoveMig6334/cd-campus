@@ -34,7 +34,8 @@
   /* Type. Instrument Serif and Plex Mono carry no Thai glyphs, so both stacks
      fall through to the self-hosted Plex Sans Thai (next/font hashes family
      names, so the fallback must be the variable, not a literal name). */
-  --font-display: var(--font-instrument-serif), var(--font-ibm-plex-thai), serif;
+  --font-display:
+    var(--font-instrument-serif), var(--font-ibm-plex-thai), serif;
   --font-sans:
     var(--font-ibm-plex-thai), "IBM Plex Sans", system-ui, sans-serif;
   --font-mono:
@@ -110,4 +111,84 @@
 .cv-row {
   content-visibility: auto;
   contain-intrinsic-size: 0 64px;
+}
+
+/* Scoreboard display board animations (used via animate-[…] utilities). */
+@keyframes sb-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes sb-bob {
+  0%,
+  100% {
+    transform: translateY(-8%);
+  }
+  50% {
+    transform: translateY(8%);
+  }
+}
+@keyframes sb-slam-left {
+  from {
+    transform: translateX(-105%);
+  }
+  70% {
+    transform: translateX(1.5%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes sb-slam-right {
+  from {
+    transform: translateX(105%);
+  }
+  70% {
+    transform: translateX(-1.5%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes sb-drop {
+  from {
+    transform: translateY(-160%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes sb-rise {
+  from {
+    transform: translateY(160%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes sb-pop {
+  from {
+    transform: scale(0.55) rotate(-4deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+@keyframes sb-splash-out {
+  0%,
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
