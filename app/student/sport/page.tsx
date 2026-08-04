@@ -8,7 +8,9 @@ import { SportHero } from "@/components/student/SportHero";
 import { IconButton } from "@/components/ui/IconButton";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import { RealtimeRefresh } from "@/components/RealtimeRefresh";
+import { MatchResultCard } from "@/components/student/MatchResultCard";
 import { getLeaderboard } from "@/lib/queries/houses";
+import { getMatchHistory } from "@/lib/queries/matches";
 import { getStudentLiveResults } from "@/lib/queries/sportResults";
 import { getStudentUpcomingSport } from "@/lib/queries/events";
 import { getSportDay } from "@/lib/queries/siteConfig";
@@ -16,7 +18,10 @@ import { getSportDay } from "@/lib/queries/siteConfig";
 export default function StudentSport() {
   return (
     <>
-      <RealtimeRefresh tables={["sport_results"]} channelKey="rt-sport" />
+      <RealtimeRefresh
+        tables={["sport_results", "matches"]}
+        channelKey="rt-sport"
+      />
       <PageHead
         titleTh="กีฬาสี"
         titleEn="Sports Day · Live"
@@ -44,6 +49,9 @@ export default function StudentSport() {
         </Suspense>
         <Suspense fallback={<SportFeedsSkeleton />}>
           <SportFeeds />
+        </Suspense>
+        <Suspense fallback={<MatchHistorySkeleton />}>
+          <MatchHistorySection />
         </Suspense>
       </MobileBody>
     </>
@@ -91,6 +99,21 @@ async function SportFeeds() {
   );
 }
 
+async function MatchHistorySection() {
+  const matches = await getMatchHistory({ limit: 5 });
+  if (matches.length === 0) return null;
+  return (
+    <>
+      <SectionDivider>🏐 Match Results · ผลการแข่งขัน</SectionDivider>
+      <div className="space-y-2.5">
+        {matches.map((match) => (
+          <MatchResultCard key={match.id} match={match} />
+        ))}
+      </div>
+    </>
+  );
+}
+
 function SportTopSkeleton() {
   return (
     <div className="animate-pulse space-y-3.5">
@@ -115,5 +138,13 @@ function SportFeedsSkeleton() {
         <div className="border-line bg-paper h-14 border-[1.5px]" />
       </div>
     </>
+  );
+}
+
+function MatchHistorySkeleton() {
+  return (
+    <div className="animate-pulse space-y-2.5">
+      <div className="border-line bg-paper h-20 border-[1.5px]" />
+    </div>
   );
 }
