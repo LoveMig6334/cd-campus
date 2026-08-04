@@ -390,5 +390,7 @@ export type MatchView = {
   timerStartedAt: string | null;
   /** Optimistic-concurrency token for apply_match_event. */
   version: number;
+  /** The score event undo would revert; null = nothing to undo. */
+  lastScoreEventId: string | null;
   canUndo: boolean;
 };

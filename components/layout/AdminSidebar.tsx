@@ -46,6 +46,17 @@ const NAV: NavItem[] = [
     ),
   },
   {
+    href: "/admin/scoreboard",
+    en: "Live Match",
+    th: "สกอร์บอร์ด",
+    icon: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="1" />
+        <path d="M12 5v14M3 12h18" />
+      </>
+    ),
+  },
+  {
     href: "/admin/bookings",
     en: "Bookings",
     th: "จองห้อง",

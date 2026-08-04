@@ -65,6 +65,7 @@ export function mapMatchRow(row: MatchRowJoined): MatchView {
     timerSeconds: row.timer_seconds,
     timerStartedAt: row.timer_started_at,
     version: row.version,
+    lastScoreEventId: row.last_score_event_id,
     canUndo: row.last_score_event_id !== null,
   };
 }

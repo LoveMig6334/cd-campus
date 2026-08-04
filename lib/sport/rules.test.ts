@@ -171,7 +171,7 @@ describe("deuce / set point / match point flags", () => {
 describe("match winner and end of match", () => {
   it("wins badminton 2-0 and freezes further scoring", () => {
     let s = state([{ a: 20, b: 10 }]);
-    let r = applyPoint(BM, s, "a", 1);
+    const r = applyPoint(BM, s, "a", 1);
     if (!r.ok) throw new Error("unexpected");
     s = rally(BM, r.state, "a", 20);
     const final = applyPoint(BM, s, "a", 1);
