@@ -353,3 +353,42 @@ export type AdminTabItem = {
   label: string;
   count?: number;
 };
+
+/* ------------------------------------------------------------------ */
+/* Live match scoreboard */
+/* ------------------------------------------------------------------ */
+
+export type MatchStatus =
+  | "scheduled"
+  | "live"
+  | "paused"
+  | "finished"
+  | "cancelled";
+
+export type MatchHouse = { key: House; nameEn: string; nameTh: string };
+
+/** Serializable projection of a `matches` row, shared by all three surfaces. */
+export type MatchView = {
+  id: string;
+  sport: import("@/lib/sport/rules").SportId;
+  status: MatchStatus;
+  houseA: MatchHouse;
+  houseB: MatchHouse;
+  /** Current set last — same shape the scoring engine consumes. */
+  sets: import("@/lib/sport/rules").SetScore[];
+  currentSet: number;
+  serving: import("@/lib/sport/rules").TeamKey;
+  winner: import("@/lib/sport/rules").TeamKey | null;
+  venue: string | null;
+  roundLabel: string | null;
+  scheduledAt: string | null;
+  startedAt: string | null;
+  endedAt: string | null;
+  /** Accumulated running time (s) across pauses… */
+  timerSeconds: number;
+  /** …plus the live stretch since this stamp when non-null. */
+  timerStartedAt: string | null;
+  /** Optimistic-concurrency token for apply_match_event. */
+  version: number;
+  canUndo: boolean;
+};

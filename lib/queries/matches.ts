@@ -1,0 +1,181 @@
+import { createClient } from "@/lib/supabase/server";
+import type { MatchView } from "@/lib/types";
+import { isSportId, type SetScore, type TeamKey } from "@/lib/sport/rules";
+import type { DB } from "./util";
+import { dayRange, houseKeyFromId } from "./util";
+
+type MatchRow = DB["public"]["Tables"]["matches"]["Row"];
+type HouseNames = { name_en: string; name_th: string };
+type MatchRowJoined = MatchRow & {
+  house_a_info: HouseNames;
+  house_b_info: HouseNames;
+};
+
+const MATCH_SELECT =
+  "*, house_a_info:houses!matches_house_a_fkey(name_en, name_th), house_b_info:houses!matches_house_b_fkey(name_en, name_th)";
+
+function parseSets(raw: MatchRow["sets"]): SetScore[] {
+  if (!Array.isArray(raw)) throw new Error("matches.sets: expected array");
+  return raw.map((s) => {
+    if (
+      s === null ||
+      typeof s !== "object" ||
+      Array.isArray(s) ||
+      typeof s.a !== "number" ||
+      typeof s.b !== "number"
+    ) {
+      throw new Error("matches.sets: malformed set entry");
+    }
+    return { a: s.a, b: s.b };
+  });
+}
+
+export function mapMatchRow(row: MatchRowJoined): MatchView {
+  if (!isSportId(row.sport)) {
+    throw new Error(`matches.sport: unknown sport "${row.sport}"`);
+  }
+  return {
+    id: row.id,
+    sport: row.sport,
+    status: row.status,
+    houseA: {
+      key: houseKeyFromId(row.house_a),
+      nameEn: row.house_a_info.name_en,
+      nameTh: row.house_a_info.name_th,
+    },
+    houseB: {
+      key: houseKeyFromId(row.house_b),
+      nameEn: row.house_b_info.name_en,
+      nameTh: row.house_b_info.name_th,
+    },
+    sets: parseSets(row.sets),
+    currentSet: row.current_set,
+    serving: row.serving as TeamKey,
+    winner:
+      row.winner_house_id === null
+        ? null
+        : row.winner_house_id === row.house_a
+          ? "a"
+          : "b",
+    venue: row.venue,
+    roundLabel: row.round_label,
+    scheduledAt: row.scheduled_at,
+    startedAt: row.started_at,
+    endedAt: row.ended_at,
+    timerSeconds: row.timer_seconds,
+    timerStartedAt: row.timer_started_at,
+    version: row.version,
+    canUndo: row.last_score_event_id !== null,
+  };
+}
+
+export async function getMatchById(id: string): Promise<MatchView | null> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("matches")
+    .select(MATCH_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`getMatchById: ${error.message}`);
+  return data ? mapMatchRow(data) : null;
+}
+
+/**
+ * What the hall display shows, in priority order: the live/paused match, else
+ * a match finished within the last 60s (the board holds the result ~30s), else
+ * the next scheduled match, else null → IDLE holding screen.
+ */
+export async function getDisplayMatch(): Promise<MatchView | null> {
+  const db = await createClient();
+
+  const live = await db
+    .from("matches")
+    .select(MATCH_SELECT)
+    .in("status", ["live", "paused"])
+    .limit(1)
+    .maybeSingle();
+  if (live.error) throw new Error(`getDisplayMatch: ${live.error.message}`);
+  if (live.data) return mapMatchRow(live.data);
+
+  const cutoff = new Date(Date.now() - 60_000).toISOString();
+  const finished = await db
+    .from("matches")
+    .select(MATCH_SELECT)
+    .eq("status", "finished")
+    .gte("ended_at", cutoff)
+    .order("ended_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (finished.error) {
+    throw new Error(`getDisplayMatch: ${finished.error.message}`);
+  }
+  if (finished.data) return mapMatchRow(finished.data);
+
+  const next = await db
+    .from("matches")
+    .select(MATCH_SELECT)
+    .eq("status", "scheduled")
+    .order("scheduled_at", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (next.error) throw new Error(`getDisplayMatch: ${next.error.message}`);
+  return next.data ? mapMatchRow(next.data) : null;
+}
+
+/** The match the admin console operates on: live/paused, else next scheduled. */
+export async function getAdminActiveMatch(): Promise<MatchView | null> {
+  const db = await createClient();
+
+  const live = await db
+    .from("matches")
+    .select(MATCH_SELECT)
+    .in("status", ["live", "paused"])
+    .limit(1)
+    .maybeSingle();
+  if (live.error) {
+    throw new Error(`getAdminActiveMatch: ${live.error.message}`);
+  }
+  if (live.data) return mapMatchRow(live.data);
+
+  const next = await db
+    .from("matches")
+    .select(MATCH_SELECT)
+    .eq("status", "scheduled")
+    .order("scheduled_at", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (next.error) {
+    throw new Error(`getAdminActiveMatch: ${next.error.message}`);
+  }
+  return next.data ? mapMatchRow(next.data) : null;
+}
+
+export async function getMatchHistory(filters?: {
+  houseId?: number;
+  sport?: string;
+  dateISO?: string;
+  limit?: number;
+}): Promise<MatchView[]> {
+  const db = await createClient();
+  let q = db
+    .from("matches")
+    .select(MATCH_SELECT)
+    .eq("status", "finished")
+    .order("ended_at", { ascending: false });
+
+  if (filters?.houseId !== undefined) {
+    q = q.or(`house_a.eq.${filters.houseId},house_b.eq.${filters.houseId}`);
+  }
+  if (filters?.sport) q = q.eq("sport", filters.sport);
+  if (filters?.dateISO) {
+    const { start, next } = dayRange(filters.dateISO);
+    q = q.gte("ended_at", start).lt("ended_at", next);
+  }
+  if (filters?.limit !== undefined) q = q.limit(filters.limit);
+
+  const { data, error } = await q;
+  if (error) throw new Error(`getMatchHistory: ${error.message}`);
+  return (data ?? []).map(mapMatchRow);
+}
