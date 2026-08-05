@@ -142,7 +142,7 @@ function RollingClock({ now }: { now: number }) {
           <span key={i} className="inline-block overflow-hidden">
             <span
               key={ch}
-              className="inline-block motion-safe:animate-[sb-tick-up_0.3s_ease-out]"
+              className="inline-block animate-[sb-tick-up_0.3s_ease-out]"
             >
               {ch}
             </span>
@@ -159,16 +159,16 @@ function IdleScreen({ now }: { now: number }) {
     <div className="relative flex h-full flex-col items-center justify-center gap-[3vh] overflow-hidden">
       {/* Ambient dot field: two halftone layers drifting at parallax speeds */}
       <div aria-hidden className="absolute -inset-24 z-0">
-        <div className="sb-dots-ink absolute inset-0 opacity-60 motion-safe:animate-[sb-drift-a_18s_linear_infinite]" />
-        <div className="sb-dots-blue absolute inset-0 opacity-50 motion-safe:animate-[sb-drift-b_30s_linear_infinite]" />
+        <div className="sb-dots-ink absolute inset-0 animate-[sb-drift-a_8s_linear_infinite] opacity-60" />
+        <div className="sb-dots-blue absolute inset-0 animate-[sb-drift-b_13s_linear_infinite] opacity-50" />
       </div>
 
-      <div className="text-blue-deep absolute top-[3.5vh] z-10 font-mono text-[2vh] tracking-[0.3em] uppercase motion-safe:animate-[sb-drop_0.6s_ease-out_both]">
+      <div className="text-blue-deep absolute top-[3.5vh] z-10 animate-[sb-drop_0.6s_ease-out_both] font-mono text-[2vh] tracking-[0.3em] uppercase">
         ★ CD Smart Campus · Sports Day ★
       </div>
 
       <div className="z-10 flex flex-col items-center gap-[3vh]">
-        <div className="font-display text-center text-[10vh] leading-tight italic motion-safe:animate-[sb-pop_0.6s_ease-out_0.15s_both]">
+        <div className="font-display animate-[sb-pop_0.6s_ease-out_0.15s_both] text-center text-[10vh] leading-tight italic">
           การแข่งขันกีฬาสี
         </div>
 
@@ -177,7 +177,7 @@ function IdleScreen({ now }: { now: number }) {
           {(["green", "purple", "orange", "pink"] as const).map((k, i) => (
             <span
               key={k}
-              className="border-line inline-block size-[3.2vh] rounded-full border-[2px] motion-safe:animate-[sb-bob_2.2s_ease-in-out_infinite]"
+              className="border-line inline-block size-[3.2vh] animate-[sb-bob_2.2s_ease-in-out_infinite] rounded-full border-[2px]"
               style={{
                 background: HOUSE_HEX[k],
                 animationDelay: `${i * 0.22}s`,
@@ -195,7 +195,7 @@ function IdleScreen({ now }: { now: number }) {
 
       {/* Scrolling ticker (leftward) */}
       <div className="bg-ink text-yellow absolute bottom-0 z-10 w-full overflow-hidden py-[1.1vh]">
-        <div className="flex w-max whitespace-nowrap motion-safe:animate-[sb-marquee_24s_linear_infinite]">
+        <div className="flex w-max animate-[sb-marquee_24s_linear_infinite] whitespace-nowrap">
           <span className="font-mono text-[2vh] tracking-[0.3em] uppercase">
             {MARQUEE_TEXT.repeat(12)}
           </span>
@@ -216,11 +216,11 @@ function VsSplash({ match }: { match: MatchView }) {
   const sides = [
     {
       info: match.houseA,
-      anim: "motion-safe:animate-[sb-slam-left_0.55s_ease-out_both]",
+      anim: "animate-[sb-slam-left_0.55s_ease-out_both]",
     },
     {
       info: match.houseB,
-      anim: "motion-safe:animate-[sb-slam-right_0.55s_ease-out_both]",
+      anim: "animate-[sb-slam-right_0.55s_ease-out_both]",
     },
   ];
   return (
@@ -244,7 +244,7 @@ function VsSplash({ match }: { match: MatchView }) {
         })}
       </div>
       <div className="absolute inset-0 grid place-items-center">
-        <span className="border-line bg-paper text-ink font-display border-[3px] px-[3vw] py-[1vh] text-[16vh] leading-none italic [box-shadow:10px_10px_0_var(--color-ink)] motion-safe:animate-[sb-pop_0.5s_ease-out_0.45s_both]">
+        <span className="border-line bg-paper text-ink font-display animate-[sb-pop_0.5s_ease-out_0.45s_both] border-[3px] px-[3vw] py-[1vh] text-[16vh] leading-none italic [box-shadow:10px_10px_0_var(--color-ink)]">
           VS
         </span>
       </div>
@@ -289,8 +289,8 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
           "flex flex-col items-center justify-center gap-[2vh] border-[1.5px]",
           "border-line transition-opacity",
           team === "a"
-            ? "motion-safe:animate-[sb-slam-left_0.55s_ease-out_both]"
-            : "motion-safe:animate-[sb-slam-right_0.55s_ease-out_both]",
+            ? "animate-[sb-slam-left_0.55s_ease-out_both]"
+            : "animate-[sb-slam-right_0.55s_ease-out_both]",
           dimmed && "opacity-50",
         )}
         style={{ background: bg, color: fg }}
@@ -327,7 +327,7 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
   return (
     <div className="flex h-full flex-col">
       {/* Top band: sport eyebrow + match clock */}
-      <header className="flex flex-col items-center gap-[1.2vh] px-[2vw] pt-[2.4vh] pb-[1.6vh] motion-safe:animate-[sb-drop_0.5s_ease-out_0.2s_both]">
+      <header className="flex animate-[sb-drop_0.5s_ease-out_0.2s_both] flex-col items-center gap-[1.2vh] px-[2vw] pt-[2.4vh] pb-[1.6vh]">
         <div className="text-blue-deep text-center font-mono text-[2vh] tracking-[0.3em] uppercase">
           ★ {config.labelEn} · {config.labelTh}
           {match.roundLabel ? ` · ${match.roundLabel}` : ""}
@@ -369,7 +369,7 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
       <div className="grid min-h-0 flex-1 grid-cols-[1fr_auto_1fr] px-[1.2vw]">
         {panels[0]}
 
-        <div className="flex min-w-[16vw] flex-col items-center justify-center gap-[2vh] px-[1.6vw] motion-safe:animate-[sb-pop_0.5s_ease-out_0.35s_both]">
+        <div className="flex min-w-[16vw] animate-[sb-pop_0.5s_ease-out_0.35s_both] flex-col items-center justify-center gap-[2vh] px-[1.6vw]">
           <div className="text-mute-700 font-mono text-[1.8vh] tracking-[0.26em] uppercase">
             Sets won · เซต
           </div>
@@ -419,7 +419,7 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
 
       {/* Bottom: numbered set-history strip, one column per possible set */}
       <footer
-        className="grid gap-[0.8vw] px-[1.2vw] py-[1.8vh] motion-safe:animate-[sb-rise_0.5s_ease-out_0.25s_both]"
+        className="grid animate-[sb-rise_0.5s_ease-out_0.25s_both] gap-[0.8vw] px-[1.2vw] py-[1.8vh]"
         style={{ gridTemplateColumns: `repeat(${match.bestOf}, 1fr)` }}
       >
         {Array.from({ length: match.bestOf }, (_, i) => {
