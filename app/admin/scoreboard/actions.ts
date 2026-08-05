@@ -358,6 +358,24 @@ export async function createMatch(formData: FormData): Promise<void> {
   redirect("/admin/scoreboard");
 }
 
+export async function deleteMatch(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const db = await createClient();
+  // History cleanup only: live/scheduled matches are protected (cancel or end
+  // them first). match_events rows go with the match via ON DELETE CASCADE.
+  const { error } = await db
+    .from("matches")
+    .delete()
+    .eq("id", id)
+    .in("status", ["finished", "cancelled"]);
+  if (error) throw new Error(error.message);
+
+  revalidateSurfaces();
+}
+
 export async function cancelMatch(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");

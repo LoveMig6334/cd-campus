@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminTopbar } from "@/components/layout/AdminTopbar";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { Btn } from "@/components/admin/Btn";
+import { DeleteMatchButton } from "@/components/admin/DeleteMatchButton";
 import { MatchConsole } from "@/components/admin/MatchConsole";
 import { MatchCreateForm } from "@/components/admin/MatchCreateForm";
 import { RealtimeRefresh } from "@/components/RealtimeRefresh";
@@ -141,7 +142,10 @@ export default async function AdminScoreboardPage({
                   <th className="py-2 pr-3">Match</th>
                   <th className="py-2 pr-3">Sets</th>
                   <th className="py-2 pr-3">Set scores</th>
-                  <th className="py-2">Winner</th>
+                  <th className="py-2 pr-3">Winner</th>
+                  <th className="py-2">
+                    <span className="sr-only">Delete</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -192,7 +196,7 @@ export default async function AdminScoreboardPage({
                       <td className="py-2 pr-3 font-mono text-[11px] tabular-nums">
                         {m.sets.map((s) => `${s.a}–${s.b}`).join(", ")}
                       </td>
-                      <td className="py-2 whitespace-nowrap">
+                      <td className="py-2 pr-3 whitespace-nowrap">
                         {m.winner ? (
                           <>
                             <HouseDot houseKey={winner.key} />{" "}
@@ -203,6 +207,15 @@ export default async function AdminScoreboardPage({
                         ) : (
                           "—"
                         )}
+                      </td>
+                      <td className="py-2 text-right">
+                        <DeleteMatchButton
+                          id={m.id}
+                          summary={`${config.labelEn} — ${m.houseA.nameEn} vs ${m.houseB.nameEn}`}
+                          scoreline={`${won.a}–${won.b} · ${m.sets
+                            .map((s) => `${s.a}–${s.b}`)
+                            .join(", ")}`}
+                        />
                       </td>
                     </tr>
                   );
