@@ -228,10 +228,11 @@
     transform: translate3d(-66px, 44px, 0); /* 6 × 11px, 4 × 11px */
   }
 }
-/* Clock digits roll in from below when a digit changes. */
+/* Digits roll in from below on change. Starts at 135% so the incoming glyph
+   stays clear of the Roll wrapper's padded clip window. */
 @keyframes sb-tick-up {
   from {
-    transform: translateY(105%);
+    transform: translateY(135%);
     opacity: 0;
   }
   to {

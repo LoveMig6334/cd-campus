@@ -171,7 +171,14 @@ function Roll({
   className?: string;
 }) {
   return (
-    <span className={cn("inline-block overflow-hidden", className)}>
+    // The clip window is padded outward (and margin-compensated) so italic
+    // serif digits, which overhang their em box, aren't cut at the edges.
+    <span
+      className={cn(
+        "-m-[0.2em] inline-block overflow-hidden p-[0.2em]",
+        className,
+      )}
+    >
       <span
         key={String(value)}
         className="inline-block animate-[sb-tick-up_0.35s_ease-out]"
