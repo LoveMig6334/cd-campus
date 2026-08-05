@@ -162,6 +162,26 @@ export function ScoreboardDisplay({
 
 const MARQUEE_TEXT = "Sports Day · กีฬาสี ★ ";
 
+/** Value keyed to its content: a change remounts it and it rolls up. */
+function Roll({
+  value,
+  className,
+}: {
+  value: string | number;
+  className?: string;
+}) {
+  return (
+    <span className={cn("inline-block overflow-hidden", className)}>
+      <span
+        key={String(value)}
+        className="inline-block animate-[sb-tick-up_0.35s_ease-out]"
+      >
+        {value}
+      </span>
+    </span>
+  );
+}
+
 /** Clock digits keyed by value so a change remounts the digit and it rolls up. */
 function RollingClock({ now }: { now: number }) {
   const d = new Date(now);
@@ -349,7 +369,7 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
           <div className="font-display text-[14vh] leading-none italic">—</div>
         ) : (
           <div className="font-display text-[28vh] leading-none italic tabular-nums">
-            {currentSet[team]}
+            <Roll value={currentSet[team]} />
           </div>
         )}
       </section>
@@ -414,7 +434,7 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
                   className="border-line font-display grid size-[9vh] place-items-center border-[1.5px] text-[6vh] italic tabular-nums"
                   style={{ background: bg, color: contrastText(bg) }}
                 >
-                  {won[team]}
+                  <Roll value={won[team]} />
                 </span>
               );
             })}
@@ -481,7 +501,13 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
                       : "bg-paper text-mute-300",
                 )}
               >
-                {set !== undefined ? `${set.a}:${set.b}` : ":"}
+                {set === undefined ? (
+                  ":"
+                ) : isCurrent ? (
+                  <Roll value={`${set.a}:${set.b}`} />
+                ) : (
+                  `${set.a}:${set.b}`
+                )}
               </div>
             </div>
           );
