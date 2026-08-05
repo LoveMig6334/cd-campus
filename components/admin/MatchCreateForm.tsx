@@ -1,7 +1,7 @@
 import { Btn } from "@/components/admin/Btn";
 import { Card, CardTitle } from "@/components/admin/Card";
 import { HOUSES } from "@/lib/ui/sport";
-import { SPORTS } from "@/lib/sport/rules";
+import { BEST_OF_CHOICES, SPORTS } from "@/lib/sport/rules";
 import { createMatch } from "@/app/admin/scoreboard/actions";
 
 const FIELD =
@@ -18,16 +18,11 @@ export function MatchCreateForm() {
         className="grid grid-cols-1 gap-3 md:grid-cols-2"
       >
         <label className="block">
-          <span className={LABEL}>Sport & format · กีฬาและรูปแบบ</span>
+          <span className={LABEL}>Sport · กีฬา</span>
           <select name="sport" required className={FIELD}>
             {Object.values(SPORTS).map((s) => (
               <option key={s.id} value={s.id}>
-                {s.labelEn} · {s.labelTh} — Best of {s.bestOf}, to{" "}
-                {s.pointsToWin}
-                {s.finalSetPointsToWin
-                  ? ` (final set ${s.finalSetPointsToWin})`
-                  : ""}
-                {s.cap ? ` (cap ${s.cap})` : ""}
+                {s.labelEn} · {s.labelTh}
               </option>
             ))}
           </select>
@@ -42,6 +37,34 @@ export function MatchCreateForm() {
             placeholder="e.g. Semi-final"
             className={FIELD}
           />
+        </label>
+
+        <label className="block">
+          <span className={LABEL}>Sets · จำนวนเซต</span>
+          <select name="best_of" required defaultValue="3" className={FIELD}>
+            {BEST_OF_CHOICES.map((n) => (
+              <option key={n} value={n}>
+                Best of {n} · ชนะ {Math.floor(n / 2) + 1} เซต
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className={LABEL}>Points per set · แต้มต่อเซต</span>
+          <input
+            name="points_to_win"
+            type="number"
+            required
+            defaultValue={15}
+            min={1}
+            max={99}
+            step={1}
+            className={FIELD}
+          />
+          <span className="text-mute-500 mt-1 block font-mono text-[9px] tracking-[0.12em] uppercase">
+            Advisory target — sets end when the referee presses End set
+          </span>
         </label>
 
         <label className="block">

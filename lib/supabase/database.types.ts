@@ -372,6 +372,7 @@ export type Database = {
       }
       matches: {
         Row: {
+          best_of: number
           created_at: string
           created_by_admin_id: string | null
           current_set: number
@@ -380,6 +381,7 @@ export type Database = {
           house_b: number
           id: string
           last_score_event_id: string | null
+          points_to_win: number
           round_label: string | null
           scheduled_at: string | null
           serving: string
@@ -395,6 +397,7 @@ export type Database = {
           winner_house_id: number | null
         }
         Insert: {
+          best_of?: number
           created_at?: string
           created_by_admin_id?: string | null
           current_set?: number
@@ -403,6 +406,7 @@ export type Database = {
           house_b: number
           id?: string
           last_score_event_id?: string | null
+          points_to_win?: number
           round_label?: string | null
           scheduled_at?: string | null
           serving?: string
@@ -418,6 +422,7 @@ export type Database = {
           winner_house_id?: number | null
         }
         Update: {
+          best_of?: number
           created_at?: string
           created_by_admin_id?: string | null
           current_set?: number
@@ -426,6 +431,7 @@ export type Database = {
           house_b?: number
           id?: string
           last_score_event_id?: string | null
+          points_to_win?: number
           round_label?: string | null
           scheduled_at?: string | null
           serving?: string
@@ -750,6 +756,7 @@ export type Database = {
           p_winner_house_id: number
         }
         Returns: {
+          best_of: number
           created_at: string
           created_by_admin_id: string | null
           current_set: number
@@ -758,6 +765,7 @@ export type Database = {
           house_b: number
           id: string
           last_score_event_id: string | null
+          points_to_win: number
           round_label: string | null
           scheduled_at: string | null
           serving: string
@@ -801,6 +809,7 @@ export type Database = {
         | "undo"
         | "finish"
         | "cancel"
+        | "end_set"
       match_status: "scheduled" | "live" | "paused" | "finished" | "cancelled"
       project_status: "Published" | "Draft"
       pshare_status: "draft" | "published" | "review"
@@ -949,6 +958,7 @@ export const Constants = {
         "undo",
         "finish",
         "cancel",
+        "end_set",
       ],
       match_status: ["scheduled", "live", "paused", "finished", "cancelled"],
       project_status: ["Published", "Draft"],

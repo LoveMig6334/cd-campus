@@ -147,11 +147,14 @@ export default async function AdminScoreboardPage({
               <tbody>
                 {history.map((m) => {
                   const config = SPORTS[m.sport];
-                  const won = setsWon(config, {
-                    sets: m.sets,
-                    currentSet: m.currentSet,
-                    serving: m.serving,
-                  });
+                  const won = setsWon(
+                    {
+                      sets: m.sets,
+                      currentSet: m.currentSet,
+                      serving: m.serving,
+                    },
+                    true, // finished — the last set counts
+                  );
                   const winner = m.winner === "a" ? m.houseA : m.houseB;
                   return (
                     <tr

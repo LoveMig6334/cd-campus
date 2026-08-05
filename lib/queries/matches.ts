@@ -37,6 +37,8 @@ export function mapMatchRow(row: MatchRowJoined): MatchView {
   return {
     id: row.id,
     sport: row.sport,
+    bestOf: row.best_of,
+    pointsToWin: row.points_to_win,
     status: row.status,
     houseA: {
       key: houseKeyFromId(row.house_a),

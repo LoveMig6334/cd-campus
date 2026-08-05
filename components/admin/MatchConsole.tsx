@@ -6,8 +6,10 @@ import type { TeamKey } from "@/lib/sport/rules";
 import {
   applyPoint,
   deriveFlags,
+  endCurrentSet,
   leaderForEarlyEnd,
   matchWinner,
+  setsToWin,
   setsWon,
   SPORTS,
 } from "@/lib/sport/rules";
@@ -17,6 +19,7 @@ import { Btn } from "@/components/admin/Btn";
 import {
   cancelMatch,
   endMatch,
+  endSet,
   pauseMatch,
   resumeMatch,
   scorePoint,
@@ -105,21 +108,42 @@ export function MatchConsole({ match }: { match: MatchView }) {
   }
 
   const config = SPORTS[view.sport];
-  const flags = deriveFlags(config, stateOf(view));
-  const won = setsWon(config, stateOf(view));
-  const matchWon = matchWinner(config, stateOf(view));
-  const endWinner = matchWon ?? leaderForEarlyEnd(config, stateOf(view));
+  const format = { bestOf: view.bestOf, pointsToWin: view.pointsToWin };
+  const flags = deriveFlags(format, stateOf(view));
+  const won = setsWon(stateOf(view), view.status === "finished");
+  // Advisory only — nothing freezes; the admin decides when sets/matches end.
+  const majority = matchWinner(format, stateOf(view));
+  const endWinner = leaderForEarlyEnd(stateOf(view));
   const inPlay = view.status === "live" || view.status === "paused";
-  const scoringOpen = view.status === "live" && matchWon === null;
+  const scoringOpen = view.status === "live";
+  const currentSetTied =
+    view.sets[view.currentSet - 1].a === view.sets[view.currentSet - 1].b;
+  const canEndSet =
+    view.status === "live" && !currentSetTied && view.currentSet < view.bestOf;
 
   const tapScore = (team: TeamKey, delta: 1 | -1) => {
     if (!scoringOpen) return;
     dispatch(
       (v) => {
-        const r = applyPoint(SPORTS[v.sport], stateOf(v), team, delta);
+        const r = applyPoint(stateOf(v), team, delta);
         return r.ok ? { ...v, ...r.state } : v;
       },
       (eventId) => scorePoint(view.id, eventId, team, delta),
+    );
+  };
+
+  const tapEndSet = () => {
+    if (!canEndSet) return;
+    dispatch(
+      (v) => {
+        const r = endCurrentSet(
+          SPORTS[v.sport].nextSetFirstServer,
+          { bestOf: v.bestOf, pointsToWin: v.pointsToWin },
+          stateOf(v),
+        );
+        return r.ok ? { ...v, ...r.state } : v;
+      },
+      (eventId) => endSet(view.id, eventId),
     );
   };
 
@@ -153,7 +177,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
             {config.labelTh}
           </span>
           <span className="text-mute-500 font-mono text-[10px] tracking-[0.18em] uppercase">
-            {config.labelEn}
+            {config.labelEn} · Best of {view.bestOf} · to {view.pointsToWin}
             {view.roundLabel ? ` · ${view.roundLabel}` : ""}
             {view.venue ? ` · ${view.venue}` : ""}
           </span>
@@ -200,7 +224,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   )}
                 </div>
                 <div className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-80">
-                  Sets {won[team]} / {Math.ceil(config.bestOf / 2)}
+                  Sets {won[team]} / {setsToWin(format)}
                 </div>
                 <div className="font-display text-[96px] leading-none italic tabular-nums">
                   {set[team]}
@@ -249,16 +273,16 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   Set point
                 </span>
               )}
-              {matchWon && (
+              {majority && (
                 <span className="bg-house-green text-ink mt-1 block px-2 py-1">
-                  Match decided
+                  Sets decided — end?
                 </span>
               )}
             </div>
 
             {/* Numbered set strip, one slot per possible set (mirrors the board) */}
             <div className="mb-1 flex justify-center gap-1">
-              {Array.from({ length: config.bestOf }, (_, i) => {
+              {Array.from({ length: view.bestOf }, (_, i) => {
                 const s = view.sets[i];
                 const isCurrent =
                   view.status !== "finished" && i === view.currentSet - 1;
@@ -307,18 +331,29 @@ export function MatchConsole({ match }: { match: MatchView }) {
             )}
 
             {view.status === "live" && (
-              <Btn
-                type="button"
-                className="py-3"
-                onClick={() =>
-                  dispatch(
-                    (v) => ({ ...v, status: "paused" as const }),
-                    (eventId) => pauseMatch(view.id, eventId),
-                  )
-                }
-              >
-                ‖ Pause
-              </Btn>
+              <>
+                <Btn
+                  type="button"
+                  variant="primary"
+                  className="py-3"
+                  disabled={!canEndSet}
+                  onClick={tapEndSet}
+                >
+                  ✓ End set {view.currentSet} · จบเซต
+                </Btn>
+                <Btn
+                  type="button"
+                  className="py-3"
+                  onClick={() =>
+                    dispatch(
+                      (v) => ({ ...v, status: "paused" as const }),
+                      (eventId) => pauseMatch(view.id, eventId),
+                    )
+                  }
+                >
+                  ‖ Pause
+                </Btn>
+              </>
             )}
             {view.status === "paused" && (
               <Btn
@@ -346,12 +381,12 @@ export function MatchConsole({ match }: { match: MatchView }) {
                     dispatch(null, (eventId) => undoLast(view.id, eventId))
                   }
                 >
-                  ↩ Undo last point
+                  ↩ Undo last
                 </Btn>
                 <Btn
                   type="button"
                   variant="ink"
-                  className={cn("py-3", matchWon && "animate-pulse")}
+                  className={cn("py-3", majority && "animate-pulse")}
                   disabled={endWinner === null}
                   onClick={() => setConfirmEnd(true)}
                 >
@@ -388,7 +423,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                       ? `${view.houseA.nameEn} · ${view.houseA.nameTh}`
                       : `${view.houseB.nameEn} · ${view.houseB.nameTh}`}
                   </strong>
-                  {matchWon === null && " (leading on score — early end)"}
+                  {majority === null && " (leading on score)"}
                 </>
               )}
             </p>

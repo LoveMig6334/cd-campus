@@ -13,11 +13,10 @@ function HouseDot({ hex }: { hex: string }) {
 
 export function MatchResultCard({ match }: { match: MatchView }) {
   const config = SPORTS[match.sport];
-  const won = setsWon(config, {
-    sets: match.sets,
-    currentSet: match.currentSet,
-    serving: match.serving,
-  });
+  const won = setsWon(
+    { sets: match.sets, currentSet: match.currentSet, serving: match.serving },
+    true, // finished match — the last set counts
+  );
   const winner = match.winner === "a" ? match.houseA : match.houseB;
 
   return (

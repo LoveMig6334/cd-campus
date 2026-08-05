@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { MatchView } from "@/lib/types";
-import { deriveFlags, setsWon, setWinner, SPORTS } from "@/lib/sport/rules";
+import { deriveFlags, setsWon, SPORTS } from "@/lib/sport/rules";
 import { contrastText, HOUSE_HEX } from "@/lib/sport/colors";
 import { cn } from "@/lib/cn";
 
@@ -226,15 +226,16 @@ function VsSplash({ match }: { match: MatchView }) {
 
 function MatchScreen({ match, now }: { match: MatchView; now: number }) {
   const config = SPORTS[match.sport];
+  const format = { bestOf: match.bestOf, pointsToWin: match.pointsToWin };
   const state = {
     sets: match.sets,
     currentSet: match.currentSet,
     serving: match.serving,
   };
-  const flags = deriveFlags(config, state);
-  const won = setsWon(config, state);
+  const flags = deriveFlags(format, state);
   const pre = match.status === "scheduled";
   const finished = match.status === "finished";
+  const won = setsWon(state, finished);
   const currentSet = match.sets[match.currentSet - 1];
 
   const running = match.timerStartedAt
@@ -359,7 +360,8 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
             })}
           </div>
           <div className="text-mute-500 font-mono text-[1.6vh] tracking-[0.2em] uppercase">
-            Set {match.currentSet} · Best of {config.bestOf}
+            Set {match.currentSet} · Best of {match.bestOf} · to{" "}
+            {match.pointsToWin}
           </div>
 
           {match.status === "paused" && (
@@ -390,15 +392,15 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
       {/* Bottom: numbered set-history strip, one column per possible set */}
       <footer
         className="grid gap-[0.8vw] px-[1.2vw] py-[1.8vh] motion-safe:animate-[sb-rise_0.5s_ease-out_0.25s_both]"
-        style={{ gridTemplateColumns: `repeat(${config.bestOf}, 1fr)` }}
+        style={{ gridTemplateColumns: `repeat(${match.bestOf}, 1fr)` }}
       >
-        {Array.from({ length: config.bestOf }, (_, i) => {
+        {Array.from({ length: match.bestOf }, (_, i) => {
           const set = match.sets[i];
           const isCurrent = !pre && !finished && i === match.currentSet - 1;
           const isDone =
             set !== undefined &&
             (i < match.currentSet - 1 ||
-              (finished && setWinner(config, set, i + 1) !== null));
+              (finished && i === match.currentSet - 1));
           return (
             <div key={i} className="flex flex-col items-center gap-[0.6vh]">
               <div

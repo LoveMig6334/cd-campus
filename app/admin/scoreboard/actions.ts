@@ -10,10 +10,11 @@ import type { Json } from "@/lib/supabase/database.types";
 import type { MatchStatus, MatchView } from "@/lib/types";
 import {
   applyPoint,
+  endCurrentSet,
   initialState,
   isSportId,
+  isValidFormat,
   leaderForEarlyEnd,
-  matchWinner,
   SPORTS,
   type ScoreState,
   type TeamKey,
@@ -32,6 +33,7 @@ type MatchEventType =
   | "pause"
   | "resume"
   | "score"
+  | "end_set"
   | "undo"
   | "finish";
 
@@ -189,12 +191,9 @@ export async function scorePoint(
   return applyEvent(matchId, eventId, (m) => {
     if (m.status !== "live") return { error: "Match is not live" };
     const before = stateOf(m);
-    const result = applyPoint(SPORTS[m.sport], before, team, delta);
-    if (!result.ok) {
-      // Floor taps are silent no-ops; the rest mean the match is decided.
-      if (result.reason === "floor") return { noop: true };
-      return { error: "Match is decided — end the competition" };
-    }
+    const result = applyPoint(before, team, delta);
+    // Floor taps (−1 at 0) are silent no-ops.
+    if (!result.ok) return { noop: true };
     return {
       apply: {
         type: "score",
@@ -260,6 +259,39 @@ export async function undoLast(
   });
 }
 
+export async function endSet(
+  matchId: string,
+  eventId: string,
+): Promise<MatchActionResult> {
+  return applyEvent(matchId, eventId, (m) => {
+    if (m.status !== "live") return { error: "Match is not live" };
+    const before = stateOf(m);
+    const result = endCurrentSet(
+      SPORTS[m.sport].nextSetFirstServer,
+      { bestOf: m.bestOf, pointsToWin: m.pointsToWin },
+      before,
+    );
+    if (!result.ok) {
+      return result.reason === "tied"
+        ? { error: "Set is tied — score a point before ending it" }
+        : { error: "Final set — end the competition instead" };
+    }
+    return {
+      apply: {
+        type: "end_set",
+        payload: {
+          setWonBy: result.setWonBy,
+          before: serializeState(before),
+          after: serializeState(result.state),
+        },
+        state: result.state,
+        status: "live",
+        winnerHouseId: null,
+      },
+    };
+  });
+}
+
 export async function endMatch(
   matchId: string,
   eventId: string,
@@ -269,16 +301,14 @@ export async function endMatch(
       return { error: "Match is not in play" };
     }
     const state = stateOf(m);
-    const config = SPORTS[m.sport];
-    const winner =
-      matchWinner(config, state) ?? leaderForEarlyEnd(config, state);
+    const winner = leaderForEarlyEnd(state);
     if (!winner) {
       return { error: "Scores are level — play a point before ending" };
     }
     return {
       apply: {
         type: "finish",
-        payload: { early: matchWinner(config, state) === null },
+        payload: {},
         state,
         status: "finished",
         winnerHouseId: winnerIdOf(m, winner),
@@ -297,6 +327,8 @@ export async function createMatch(formData: FormData): Promise<void> {
   const sport = String(formData.get("sport") ?? "");
   const houseA = Number(formData.get("house_a") ?? "");
   const houseB = Number(formData.get("house_b") ?? "");
+  const bestOf = Number(formData.get("best_of") ?? "");
+  const pointsToWin = Number(formData.get("points_to_win") ?? "");
   const venue = String(formData.get("venue") ?? "").trim();
   const roundLabel = String(formData.get("round_label") ?? "").trim();
   const scheduledRaw = String(formData.get("scheduled_at") ?? "").trim();
@@ -304,6 +336,7 @@ export async function createMatch(formData: FormData): Promise<void> {
   if (!isSportId(sport)) return;
   if (![1, 2, 3, 4].includes(houseA) || ![1, 2, 3, 4].includes(houseB)) return;
   if (houseA === houseB) return;
+  if (!isValidFormat({ bestOf, pointsToWin })) return;
   // datetime-local has no zone; school events are Asia/Bangkok.
   const scheduledAt = scheduledRaw ? `${scheduledRaw}:00+07:00` : null;
 
@@ -312,6 +345,8 @@ export async function createMatch(formData: FormData): Promise<void> {
     sport,
     house_a: houseA,
     house_b: houseB,
+    best_of: bestOf,
+    points_to_win: pointsToWin,
     venue: venue || null,
     round_label: roundLabel || null,
     scheduled_at: scheduledAt,

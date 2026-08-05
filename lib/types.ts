@@ -371,6 +371,9 @@ export type MatchHouse = { key: House; nameEn: string; nameTh: string };
 export type MatchView = {
   id: string;
   sport: import("@/lib/sport/rules").SportId;
+  /** Per-match format: odd set cap + advisory points target. */
+  bestOf: number;
+  pointsToWin: number;
   status: MatchStatus;
   houseA: MatchHouse;
   houseB: MatchHouse;
