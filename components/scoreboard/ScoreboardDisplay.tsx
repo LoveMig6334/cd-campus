@@ -128,54 +128,82 @@ export function ScoreboardDisplay({
   );
 }
 
-const MARQUEE_TEXT =
-  "★ CD Smart Campus · Sports Day · กีฬาสี ★ Volleyball · วอลเลย์บอล ★ Badminton · แบดมินตัน ";
+const MARQUEE_TEXT = "Sports Day · กีฬาสี ★ ";
+
+/** Clock digits keyed by value so a change remounts the digit and it rolls up. */
+function RollingClock({ now }: { now: number }) {
+  const d = new Date(now);
+  const digits = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+  return (
+    <div className="border-line bg-paper flex items-baseline gap-3 border-[1.5px] px-6 py-2 font-mono tabular-nums [box-shadow:5px_5px_0_var(--color-blue)]">
+      <span className="text-mute-700 text-[2vh]">เวลา</span>
+      <span className="flex text-[3.4vh] tracking-[0.12em]">
+        {digits.split("").map((ch, i) => (
+          <span key={i} className="inline-block overflow-hidden">
+            <span
+              key={ch}
+              className="inline-block motion-safe:animate-[sb-tick-up_0.3s_ease-out]"
+            >
+              {ch}
+            </span>
+          </span>
+        ))}
+      </span>
+      <span className="text-mute-700 text-[2vh]">น.</span>
+    </div>
+  );
+}
 
 function IdleScreen({ now }: { now: number }) {
-  const d = new Date(now);
   return (
     <div className="relative flex h-full flex-col items-center justify-center gap-[3vh] overflow-hidden">
-      {/* Halftone corner blocks (menu-page motif) */}
-      <div className="halftone-bk border-line absolute top-0 left-0 h-[16vh] w-[13vw] border-r-[1.5px] border-b-[1.5px]" />
-      <div className="halftone-bl border-line absolute top-0 right-0 h-[10vh] w-[20vw] border-b-[1.5px] border-l-[1.5px]" />
-      <div className="halftone-bl border-line absolute bottom-[6vh] left-0 h-[12vh] w-[9vw] border-t-[1.5px] border-r-[1.5px]" />
+      {/* Ambient dot field: two halftone layers drifting at parallax speeds */}
+      <div aria-hidden className="absolute -inset-24 z-0">
+        <div className="sb-dots-ink absolute inset-0 opacity-60 motion-safe:animate-[sb-drift-a_18s_linear_infinite]" />
+        <div className="sb-dots-blue absolute inset-0 opacity-50 motion-safe:animate-[sb-drift-b_30s_linear_infinite]" />
+      </div>
 
-      <div className="text-blue-deep font-mono text-[2vh] tracking-[0.3em] uppercase motion-safe:animate-[sb-drop_0.6s_ease-out_both]">
+      <div className="text-blue-deep absolute top-[3.5vh] z-10 font-mono text-[2vh] tracking-[0.3em] uppercase motion-safe:animate-[sb-drop_0.6s_ease-out_both]">
         ★ CD Smart Campus · Sports Day ★
       </div>
-      <div className="font-display text-center text-[13vh] leading-tight italic motion-safe:animate-[sb-pop_0.6s_ease-out_0.15s_both]">
-        กีฬาสี
+
+      <div className="z-10 flex flex-col items-center gap-[3vh]">
+        <div className="font-display text-center text-[10vh] leading-tight italic motion-safe:animate-[sb-pop_0.6s_ease-out_0.15s_both]">
+          การแข่งขันกีฬาสี
+        </div>
+
+        {/* Bobbing house dots, staggered */}
+        <div className="flex gap-[1.8vw]">
+          {(["green", "purple", "orange", "pink"] as const).map((k, i) => (
+            <span
+              key={k}
+              className="border-line inline-block size-[3.2vh] rounded-full border-[2px] motion-safe:animate-[sb-bob_2.2s_ease-in-out_infinite]"
+              style={{
+                background: HOUSE_HEX[k],
+                animationDelay: `${i * 0.22}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="text-mute-700 font-mono text-[2.2vh] tracking-[0.22em] uppercase">
+          No match in progress · ยังไม่มีการแข่งขัน
+        </div>
+
+        <RollingClock now={now} />
       </div>
 
-      {/* Bobbing house dots, staggered */}
-      <div className="flex gap-[1.8vw]">
-        {(["green", "purple", "orange", "pink"] as const).map((k, i) => (
-          <span
-            key={k}
-            className="border-line inline-block size-[3.2vh] rounded-full border-[2px] motion-safe:animate-[sb-bob_2.2s_ease-in-out_infinite]"
-            style={{ background: HOUSE_HEX[k], animationDelay: `${i * 0.22}s` }}
-          />
-        ))}
-      </div>
-
-      <div className="text-mute-700 font-mono text-[2.2vh] tracking-[0.22em] uppercase">
-        No match in progress · ยังไม่มีการแข่งขัน
-      </div>
-      <div className="border-line bg-paper border-[1.5px] px-6 py-2 font-mono text-[3.4vh] tracking-[0.2em] tabular-nums [box-shadow:5px_5px_0_var(--color-blue)]">
-        {pad2(d.getHours())}:{pad2(d.getMinutes())}
-      </div>
-
-      {/* Scrolling ticker */}
-      <div className="bg-ink text-yellow absolute bottom-0 w-full overflow-hidden py-[1.1vh]">
-        <div className="flex w-max whitespace-nowrap motion-safe:animate-[sb-marquee_28s_linear_infinite]">
+      {/* Scrolling ticker (leftward) */}
+      <div className="bg-ink text-yellow absolute bottom-0 z-10 w-full overflow-hidden py-[1.1vh]">
+        <div className="flex w-max whitespace-nowrap motion-safe:animate-[sb-marquee_24s_linear_infinite]">
           <span className="font-mono text-[2vh] tracking-[0.3em] uppercase">
-            {MARQUEE_TEXT.repeat(4)}
+            {MARQUEE_TEXT.repeat(12)}
           </span>
           <span
             aria-hidden
             className="font-mono text-[2vh] tracking-[0.3em] uppercase"
           >
-            {MARQUEE_TEXT.repeat(4)}
+            {MARQUEE_TEXT.repeat(12)}
           </span>
         </div>
       </div>

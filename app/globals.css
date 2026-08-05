@@ -192,3 +192,50 @@
     opacity: 0;
   }
 }
+
+/* Idle-screen ambient dot field: two halftone layers drifting at different
+   speeds/directions (parallax). Travel distances are exact multiples of each
+   layer's tile size so the loop is seamless. */
+.sb-dots-ink {
+  background-image: radial-gradient(
+    circle,
+    rgba(21, 21, 26, 0.28) 1px,
+    transparent 1.4px
+  );
+  background-size: 7px 7px;
+}
+.sb-dots-blue {
+  background-image: radial-gradient(
+    circle,
+    rgba(46, 152, 231, 0.38) 1.2px,
+    transparent 1.7px
+  );
+  background-size: 11px 11px;
+}
+@keyframes sb-drift-a {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-70px, -56px, 0); /* 10 × 7px, 8 × 7px */
+  }
+}
+@keyframes sb-drift-b {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-66px, 44px, 0); /* 6 × 11px, 4 × 11px */
+  }
+}
+/* Clock digits roll in from below when a digit changes. */
+@keyframes sb-tick-up {
+  from {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
