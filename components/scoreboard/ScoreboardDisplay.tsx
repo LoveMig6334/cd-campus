@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { MatchView } from "@/lib/types";
+import type { MatchStatus, MatchView } from "@/lib/types";
 import { deriveFlags, setsWon, SPORTS } from "@/lib/sport/rules";
 import { contrastText, HOUSE_HEX } from "@/lib/sport/colors";
 import { cn } from "@/lib/cn";
@@ -92,9 +92,10 @@ export function ScoreboardDisplay({
     match.status === "cancelled" ||
     (holdUntil !== null && now >= holdUntil);
 
-  // Idle → match transition plays a short VS splash. State is adjusted during
-  // render (React's "adjust state when props change" pattern) and expires off
-  // the ticking clock, so no timers or effect-set state are needed.
+  // Transitions play short overlay splashes: idle → match shows VS; status
+  // changes on the same match show START / PAUSE / RESUME / WINNER stamps.
+  // State is adjusted during render (React's "adjust state when props change"
+  // pattern) and expires off the ticking clock — no timers, refresh-safe.
   const [prevIdle, setPrevIdle] = useState(showIdle);
   const [introUntil, setIntroUntil] = useState<number | null>(null);
   if (prevIdle !== showIdle) {
@@ -103,6 +104,34 @@ export function ScoreboardDisplay({
   }
   const intro =
     match !== null && introUntil !== null && now < introUntil && !showIdle;
+
+  type SplashKind = "start" | "pause" | "resume" | "winner";
+  const [prevMatch, setPrevMatch] = useState<{
+    id: string;
+    status: MatchStatus;
+  } | null>(match ? { id: match.id, status: match.status } : null);
+  const [splash, setSplash] = useState<{
+    kind: SplashKind;
+    until: number;
+  } | null>(null);
+  if (match?.id !== prevMatch?.id || match?.status !== prevMatch?.status) {
+    const from =
+      prevMatch && match && prevMatch.id === match.id ? prevMatch.status : null;
+    setPrevMatch(match ? { id: match.id, status: match.status } : null);
+    if (match && from) {
+      if (from === "scheduled" && match.status === "live") {
+        setSplash({ kind: "start", until: now + 2400 });
+      } else if (from === "live" && match.status === "paused") {
+        setSplash({ kind: "pause", until: now + 2200 });
+      } else if (from === "paused" && match.status === "live") {
+        setSplash({ kind: "resume", until: now + 2200 });
+      } else if (match.status === "finished") {
+        setSplash({ kind: "winner", until: now + 5000 });
+      }
+    }
+  }
+  const activeSplash =
+    match !== null && splash !== null && now < splash.until ? splash : null;
 
   return (
     <main className="bg-cream text-ink relative h-screen w-screen overflow-hidden">
@@ -113,6 +142,9 @@ export function ScoreboardDisplay({
       )}
 
       {intro && match && <VsSplash match={match} />}
+      {!intro && activeSplash && match && (
+        <StatusSplash kind={activeSplash.kind} match={match} />
+      )}
 
       <div
         className={cn(
@@ -455,6 +487,96 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
           );
         })}
       </footer>
+    </div>
+  );
+}
+
+/** Transient full-screen stamp for match lifecycle moments. */
+function StatusSplash({
+  kind,
+  match,
+}: {
+  kind: "start" | "pause" | "resume" | "winner";
+  match: MatchView;
+}) {
+  if (kind === "winner") {
+    const winner = match.winner === "b" ? match.houseB : match.houseA;
+    const bg = HOUSE_HEX[winner.key];
+    const fg = contrastText(bg);
+    const won = setsWon(
+      {
+        sets: match.sets,
+        currentSet: match.currentSet,
+        serving: match.serving,
+      },
+      true,
+    );
+    return (
+      <div className="bg-ink/50 pointer-events-none absolute inset-0 z-20 grid animate-[sb-splash-out_5s_ease-in_both] place-items-center">
+        <div
+          className="border-line flex animate-[sb-pop_0.6s_ease-out_both] flex-col items-center gap-[1.6vh] border-[3px] px-[5vw] py-[4vh] text-center [box-shadow:12px_12px_0_var(--color-ink)]"
+          style={{ background: bg, color: fg }}
+        >
+          <div className="font-mono text-[2.4vh] tracking-[0.34em] uppercase">
+            ★ Winner ★
+          </div>
+          <div className="font-display text-[12vh] leading-none italic">
+            {winner.nameEn} · {winner.nameTh}
+          </div>
+          <div className="font-display text-[6vh] leading-none italic">
+            ชนะ!
+          </div>
+          <div className="font-mono text-[2.6vh] tracking-[0.2em] tabular-nums">
+            {won.a}–{won.b} SETS ·{" "}
+            {match.sets.map((s) => `${s.a}:${s.b}`).join("  ")}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const CARD: Record<
+    "start" | "pause" | "resume",
+    { className: string; titleTh: string; titleEn: string; totalS: string }
+  > = {
+    start: {
+      className: "bg-yellow text-ink",
+      titleTh: "เริ่มการแข่งขัน!",
+      titleEn: "★ Match start ★",
+      totalS: "2.4s",
+    },
+    pause: {
+      className: "bg-paper text-ink",
+      titleTh: "พักการแข่งขัน",
+      titleEn: "‖ Paused",
+      totalS: "2.2s",
+    },
+    resume: {
+      className: "bg-blue text-white",
+      titleTh: "เล่นต่อ!",
+      titleEn: "▶ Resume",
+      totalS: "2.2s",
+    },
+  };
+  const card = CARD[kind];
+  return (
+    <div
+      className="bg-ink/30 pointer-events-none absolute inset-0 z-20 grid place-items-center"
+      style={{ animation: `sb-splash-out ${card.totalS} ease-in both` }}
+    >
+      <div
+        className={cn(
+          "border-line flex animate-[sb-pop_0.5s_ease-out_both] flex-col items-center gap-[1.2vh] border-[3px] px-[5vw] py-[3vh] [box-shadow:10px_10px_0_var(--color-ink)]",
+          card.className,
+        )}
+      >
+        <div className="font-display text-[9vh] leading-none italic">
+          {card.titleTh}
+        </div>
+        <div className="font-mono text-[2.4vh] tracking-[0.3em] uppercase">
+          {card.titleEn}
+        </div>
+      </div>
     </div>
   );
 }
