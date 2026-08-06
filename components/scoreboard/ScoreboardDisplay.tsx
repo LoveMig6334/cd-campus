@@ -195,8 +195,8 @@ function RollingClock({ now }: { now: number }) {
   const digits = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
   return (
     <div className="border-line bg-paper flex items-baseline gap-3 border-[1.5px] px-6 py-2 font-mono tabular-nums [box-shadow:5px_5px_0_var(--color-blue)]">
-      <span className="text-mute-700 text-[2vh]">เวลา</span>
-      <span className="flex text-[3.4vh] tracking-[0.12em]">
+      <span className="text-mute-700 text-[2.8vh]">เวลา</span>
+      <span className="flex text-[4.76vh] tracking-[0.12em]">
         {digits.split("").map((ch, i) => (
           <span key={i} className="inline-block overflow-hidden">
             <span
@@ -208,7 +208,7 @@ function RollingClock({ now }: { now: number }) {
           </span>
         ))}
       </span>
-      <span className="text-mute-700 text-[2vh]">น.</span>
+      <span className="text-mute-700 text-[2.8vh]">น.</span>
     </div>
   );
 }
@@ -222,12 +222,12 @@ function IdleScreen({ now }: { now: number }) {
         <div className="sb-dots-blue absolute inset-0 animate-[sb-drift-b_13s_linear_infinite] opacity-50" />
       </div>
 
-      <div className="text-blue-deep absolute top-[3.5vh] z-10 animate-[sb-drop_0.6s_ease-out_both] font-mono text-[2vh] tracking-[0.3em] uppercase">
+      <div className="text-blue-deep absolute top-[3.5vh] z-10 animate-[sb-drop_0.6s_ease-out_both] font-mono text-[2.8vh] tracking-[0.3em] uppercase">
         ★ CD Smart Campus · Sports Day ★
       </div>
 
       <div className="z-10 flex flex-col items-center gap-[3vh]">
-        <div className="font-display animate-[sb-pop_0.6s_ease-out_0.15s_both] text-center text-[10vh] leading-tight italic">
+        <div className="font-display animate-[sb-pop_0.6s_ease-out_0.15s_both] text-center text-[14vh] leading-tight italic">
           การแข่งขันกีฬาสี
         </div>
 
@@ -245,7 +245,7 @@ function IdleScreen({ now }: { now: number }) {
           ))}
         </div>
 
-        <div className="text-mute-700 font-mono text-[2.2vh] tracking-[0.22em] uppercase">
+        <div className="text-mute-700 font-mono text-[3.08vh] tracking-[0.22em] uppercase">
           No match in progress · ยังไม่มีการแข่งขัน
         </div>
 
@@ -255,12 +255,12 @@ function IdleScreen({ now }: { now: number }) {
       {/* Scrolling ticker (leftward) */}
       <div className="bg-ink text-yellow absolute bottom-0 z-10 w-full overflow-hidden py-[1.1vh]">
         <div className="flex w-max animate-[sb-marquee_24s_linear_infinite] whitespace-nowrap">
-          <span className="font-mono text-[2vh] tracking-[0.3em] uppercase">
+          <span className="font-mono text-[2.8vh] tracking-[0.3em] uppercase">
             {MARQUEE_TEXT.repeat(12)}
           </span>
           <span
             aria-hidden
-            className="font-mono text-[2vh] tracking-[0.3em] uppercase"
+            className="font-mono text-[2.8vh] tracking-[0.3em] uppercase"
           >
             {MARQUEE_TEXT.repeat(12)}
           </span>
