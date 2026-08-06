@@ -227,7 +227,7 @@ function IdleScreen({ now }: { now: number }) {
       </div>
 
       <div className="z-10 flex flex-col items-center gap-[3vh]">
-        <div className="font-display animate-[sb-pop_0.6s_ease-out_0.15s_both] text-center text-[14vh] leading-tight italic">
+        <div className="font-display animate-[sb-pop_0.6s_ease-out_0.15s_both] text-center text-[14vh] leading-tight font-semibold italic">
           การแข่งขันกีฬาสี
         </div>
 
