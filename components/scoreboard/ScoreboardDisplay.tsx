@@ -194,9 +194,9 @@ function RollingClock({ now }: { now: number }) {
   const d = new Date(now);
   const digits = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
   return (
-    <div className="border-line bg-paper flex items-baseline gap-3 border-[1.5px] px-6 py-2 font-mono tabular-nums [box-shadow:5px_5px_0_var(--color-blue)]">
-      <span className="text-mute-700 text-[2.8vh]">เวลา</span>
-      <span className="flex text-[4.76vh] tracking-[0.12em]">
+    <div className="border-line bg-paper flex items-baseline gap-3 border-[1.5px] px-6 py-2 font-mono font-semibold tabular-nums [box-shadow:5px_5px_0_var(--color-blue)]">
+      <span className="text-mute-700 text-[3.64vh]">เวลา</span>
+      <span className="flex text-[6.19vh] tracking-[0.12em]">
         {digits.split("").map((ch, i) => (
           <span key={i} className="inline-block overflow-hidden">
             <span
@@ -208,7 +208,7 @@ function RollingClock({ now }: { now: number }) {
           </span>
         ))}
       </span>
-      <span className="text-mute-700 text-[2.8vh]">น.</span>
+      <span className="text-mute-700 text-[3.64vh]">น.</span>
     </div>
   );
 }
@@ -236,7 +236,7 @@ function IdleScreen({ now }: { now: number }) {
           {(["green", "purple", "orange", "pink"] as const).map((k, i) => (
             <span
               key={k}
-              className="border-line inline-block size-[3.2vh] animate-[sb-bob_2.2s_ease-in-out_infinite] rounded-full border-[2px]"
+              className="border-line inline-block size-[5.76vh] animate-[sb-bob_2.2s_ease-in-out_infinite] rounded-full border-[2px]"
               style={{
                 background: HOUSE_HEX[k],
                 animationDelay: `${i * 0.22}s`,
@@ -254,13 +254,13 @@ function IdleScreen({ now }: { now: number }) {
 
       {/* Scrolling ticker (leftward) */}
       <div className="bg-ink text-yellow absolute bottom-0 z-10 w-full overflow-hidden py-[1.1vh]">
-        <div className="flex w-max animate-[sb-marquee_24s_linear_infinite] whitespace-nowrap">
-          <span className="font-mono text-[2.8vh] tracking-[0.3em] uppercase">
+        <div className="flex w-max animate-[sb-marquee_40s_linear_infinite] whitespace-nowrap">
+          <span className="font-mono text-[3.64vh] tracking-[0.3em] uppercase">
             {MARQUEE_TEXT.repeat(12)}
           </span>
           <span
             aria-hidden
-            className="font-mono text-[2.8vh] tracking-[0.3em] uppercase"
+            className="font-mono text-[3.64vh] tracking-[0.3em] uppercase"
           >
             {MARQUEE_TEXT.repeat(12)}
           </span>
