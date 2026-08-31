@@ -389,6 +389,9 @@ export type Database = {
           scheduled_at: string | null
           serving: string
           sets: Json
+          shot_clock_ends_at: string | null
+          shot_clock_remaining: number | null
+          shot_clock_team: string | null
           sport: string
           started_at: string | null
           status: Database["public"]["Enums"]["match_status"]
@@ -417,6 +420,9 @@ export type Database = {
           scheduled_at?: string | null
           serving?: string
           sets?: Json
+          shot_clock_ends_at?: string | null
+          shot_clock_remaining?: number | null
+          shot_clock_team?: string | null
           sport: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
@@ -445,6 +451,9 @@ export type Database = {
           scheduled_at?: string | null
           serving?: string
           sets?: Json
+          shot_clock_ends_at?: string | null
+          shot_clock_remaining?: number | null
+          shot_clock_team?: string | null
           sport?: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
@@ -783,6 +792,9 @@ export type Database = {
           scheduled_at: string | null
           serving: string
           sets: Json
+          shot_clock_ends_at: string | null
+          shot_clock_remaining: number | null
+          shot_clock_team: string | null
           sport: string
           started_at: string | null
           status: Database["public"]["Enums"]["match_status"]
@@ -806,6 +818,46 @@ export type Database = {
       record_anon_hit: {
         Args: { p_action: string; p_ip: string }
         Returns: number
+      }
+      set_shot_clock: {
+        Args: { p_match_id: string; p_seconds: number; p_team: string }
+        Returns: {
+          best_of: number
+          created_at: string
+          created_by_admin_id: string | null
+          current_set: number
+          ended_at: string | null
+          fouls: Json
+          house_a: number
+          house_b: number
+          id: string
+          last_score_event_id: string | null
+          period_minutes: number | null
+          period_started_seconds: number
+          points_to_win: number
+          round_label: string | null
+          scheduled_at: string | null
+          serving: string
+          sets: Json
+          shot_clock_ends_at: string | null
+          shot_clock_remaining: number | null
+          shot_clock_team: string | null
+          sport: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["match_status"]
+          timer_seconds: number
+          timer_started_at: string | null
+          updated_at: string
+          venue: string | null
+          version: number
+          winner_house_id: number | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "matches"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {

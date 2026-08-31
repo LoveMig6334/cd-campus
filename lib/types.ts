@@ -380,6 +380,10 @@ export type MatchView = {
   fouls: import("@/lib/sport/rules").TeamCounts;
   /** Game seconds elapsed when the current period started (countdown offset). */
   periodStartedSeconds: number;
+  /** Shot clock (timed sports): possession team, running deadline / frozen value. */
+  shotClockTeam: import("@/lib/sport/rules").TeamKey | null;
+  shotClockEndsAt: string | null;
+  shotClockRemaining: number | null;
   status: MatchStatus;
   houseA: MatchHouse;
   houseB: MatchHouse;

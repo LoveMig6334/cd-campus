@@ -16,6 +16,7 @@ import {
   periodRemainingSeconds,
   setsToWin,
   setsWon,
+  shotClockRemaining,
   SPORTS,
   totalPoints,
   type MatchFormat,
@@ -42,9 +43,9 @@ function state(
 describe("format validation", () => {
   it("accepts odd best-of 1-9 and points 1-99 for set sports", () => {
     expect(isValidFormat("sets", F3_15)).toBe(true);
-    expect(isValidFormat("sets", { ...F3_15, bestOf: 1, pointsToWin: 99 })).toBe(
-      true,
-    );
+    expect(
+      isValidFormat("sets", { ...F3_15, bestOf: 1, pointsToWin: 99 }),
+    ).toBe(true);
     expect(isValidFormat("sets", { ...F3_15, bestOf: 4 })).toBe(false); // even
     expect(isValidFormat("sets", { ...F3_15, bestOf: 11 })).toBe(false);
     expect(isValidFormat("sets", { ...F3_15, pointsToWin: 0 })).toBe(false);
@@ -55,9 +56,13 @@ describe("format validation", () => {
     expect(isValidFormat("timed", BB4_7)).toBe(true);
     expect(isValidFormat("timed", { ...BB4_7, bestOf: 2 })).toBe(true); // even ok
     expect(isValidFormat("timed", { ...BB4_7, bestOf: 13 })).toBe(false);
-    expect(isValidFormat("timed", { ...BB4_7, periodMinutes: null })).toBe(false);
+    expect(isValidFormat("timed", { ...BB4_7, periodMinutes: null })).toBe(
+      false,
+    );
     expect(isValidFormat("timed", { ...BB4_7, periodMinutes: 61 })).toBe(false);
-    expect(isValidFormat("timed", { ...BB4_7, periodMinutes: 7.5 })).toBe(false);
+    expect(isValidFormat("timed", { ...BB4_7, periodMinutes: 7.5 })).toBe(
+      false,
+    );
   });
 
   it("derives the advisory sets-to-win majority", () => {
@@ -182,8 +187,12 @@ describe("advisory flags", () => {
   it("deuce at target-1 tie, set point for the leader at target-1+", () => {
     expect(deriveFlags(VB, F3_15, state([{ a: 14, b: 14 }])).deuce).toBe(true);
     expect(deriveFlags(VB, F3_15, state([{ a: 13, b: 13 }])).deuce).toBe(false);
-    expect(deriveFlags(VB, F3_15, state([{ a: 14, b: 12 }])).setPoint).toBe("a");
-    expect(deriveFlags(VB, F3_15, state([{ a: 16, b: 15 }])).setPoint).toBe("a");
+    expect(deriveFlags(VB, F3_15, state([{ a: 14, b: 12 }])).setPoint).toBe(
+      "a",
+    );
+    expect(deriveFlags(VB, F3_15, state([{ a: 16, b: 15 }])).setPoint).toBe(
+      "a",
+    );
     expect(
       deriveFlags(VB, F3_15, state([{ a: 14, b: 14 }])).setPoint,
     ).toBeNull();
@@ -367,5 +376,31 @@ describe("basketball clock", () => {
     ).toBe(420);
     expect(formatClock(390)).toBe("06:30");
     expect(formatClock(0)).toBe("00:00");
+  });
+});
+
+describe("shot clock", () => {
+  const t0 = Date.parse("2026-08-31T03:00:00Z");
+
+  it("counts down from ends_at while running, ceil to whole seconds, floored at 0", () => {
+    const sc = {
+      shotClockEndsAt: "2026-08-31T03:00:24Z",
+      shotClockRemaining: null,
+    };
+    expect(shotClockRemaining(sc, t0)).toBe(24);
+    expect(shotClockRemaining(sc, t0 + 10_400)).toBe(14);
+    expect(shotClockRemaining(sc, t0 + 30_000)).toBe(0);
+  });
+
+  it("shows the frozen value while paused and null when cleared", () => {
+    expect(
+      shotClockRemaining({ shotClockEndsAt: null, shotClockRemaining: 9 }, t0),
+    ).toBe(9);
+    expect(
+      shotClockRemaining(
+        { shotClockEndsAt: null, shotClockRemaining: null },
+        t0,
+      ),
+    ).toBeNull();
   });
 });

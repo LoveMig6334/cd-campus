@@ -65,6 +65,9 @@ export function mapMatchRow(row: MatchRowJoined): MatchView {
     periodMinutes: row.period_minutes,
     fouls: parseCounts(row.fouls, "fouls"),
     periodStartedSeconds: row.period_started_seconds,
+    shotClockTeam: row.shot_clock_team as TeamKey | null,
+    shotClockEndsAt: row.shot_clock_ends_at,
+    shotClockRemaining: row.shot_clock_remaining,
     status: row.status,
     houseA: {
       key: houseKeyFromId(row.house_a),

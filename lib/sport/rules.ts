@@ -170,10 +170,7 @@ export function completedSetWinner(set: SetScore): TeamKey | null {
  * Sets won so far. Only admin-closed sets count; pass includeCurrent for a
  * finished match, where the last set is closed by the finish itself.
  */
-export function setsWon(
-  state: ScoreState,
-  includeCurrent = false,
-): TeamCounts {
+export function setsWon(state: ScoreState, includeCurrent = false): TeamCounts {
   const won = { a: 0, b: 0 };
   const upto = includeCurrent ? state.sets.length : state.currentSet - 1;
   for (let i = 0; i < upto; i++) {
@@ -185,10 +182,10 @@ export function setsWon(
 
 /** Points summed over every period — the timed-sport score. */
 export function totalPoints(state: ScoreState): TeamCounts {
-  return state.sets.reduce(
-    (acc, s) => ({ a: acc.a + s.a, b: acc.b + s.b }),
-    { a: 0, b: 0 },
-  );
+  return state.sets.reduce((acc, s) => ({ a: acc.a + s.a, b: acc.b + s.b }), {
+    a: 0,
+    b: 0,
+  });
 }
 
 function leader(counts: TeamCounts): TeamKey | null {
@@ -510,4 +507,36 @@ export function headlineScore(
   finished: boolean,
 ): TeamCounts {
   return isTimed(config) ? totalPoints(state) : setsWon(state, finished);
+}
+
+/* ------------------------------------------------------------------ */
+/* Shot clock (timed sports)                                            */
+/* ------------------------------------------------------------------ */
+
+export const SHOT_CLOCK_FULL = 24;
+export const SHOT_CLOCK_REBOUND = 14;
+
+/** The shot-clock columns of a match row. */
+export type ShotClockFields = {
+  /** Set while the game clock runs; the shot clock expires at this instant. */
+  shotClockEndsAt: string | null;
+  /** Frozen remaining seconds while the game clock is stopped. */
+  shotClockRemaining: number | null;
+};
+
+/**
+ * Whole seconds left on the shot clock (ceil, floored at 0), the frozen value
+ * while paused, or null when no shot clock is set.
+ */
+export function shotClockRemaining(
+  sc: ShotClockFields,
+  now: number,
+): number | null {
+  if (sc.shotClockEndsAt !== null) {
+    return Math.max(
+      0,
+      Math.ceil((Date.parse(sc.shotClockEndsAt) - now) / 1000),
+    );
+  }
+  return sc.shotClockRemaining;
 }

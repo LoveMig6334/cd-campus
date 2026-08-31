@@ -18,6 +18,7 @@ import {
   periodLabel,
   periodRemainingSeconds,
   setsWon,
+  shotClockRemaining,
   SPORTS,
   stateOfMatch,
   totalPoints,
@@ -29,6 +30,7 @@ import {
   recordFoul,
   resumeMatch,
   scorePoint,
+  setShotClock,
   startMatch,
   undoLast,
   type MatchActionResult,
@@ -73,11 +75,17 @@ export function useMatchController(match: MatchView) {
     }
   }, [match]);
 
+  // Tick faster while a shot clock is running so its last seconds read true.
+  const shotClockRunning =
+    view.status === "live" && view.shotClockEndsAt !== null;
   useEffect(() => {
     if (view.status !== "live") return;
-    const t = setInterval(() => setNow(Date.now()), 1000);
+    const t = setInterval(
+      () => setNow(Date.now()),
+      shotClockRunning ? 250 : 1000,
+    );
     return () => clearInterval(t);
-  }, [view.status]);
+  }, [view.status, shotClockRunning]);
 
   function dispatch(
     predict: ((v: MatchView) => MatchView) | null,
@@ -132,6 +140,8 @@ export function useMatchController(match: MatchView) {
     view.status === "live" && endCurrentPeriod(config, format, state).ok;
   const nextPeriodIsOvertime =
     timed && onFinalPeriod && currentSet.a === currentSet.b;
+  const shotClock = timed ? shotClockRemaining(view, now) : null;
+  const shotClockTeam = timed ? view.shotClockTeam : null;
 
   const tapScore = (team: TeamKey, delta: PointDelta) => {
     if (!scoringOpen) return;
@@ -173,6 +183,34 @@ export function useMatchController(match: MatchView) {
         };
       },
       (eventId) => endSet(view.id, eventId),
+    );
+  };
+
+  const tapShotClock = (team: TeamKey, seconds: number) => {
+    if (!timed || !inPlay) return;
+    dispatch(
+      (v) => ({
+        ...v,
+        shotClockTeam: team,
+        shotClockEndsAt:
+          v.status === "live"
+            ? new Date(Date.now() + seconds * 1000).toISOString()
+            : null,
+        shotClockRemaining: v.status === "live" ? null : seconds,
+      }),
+      () => setShotClock(view.id, team, seconds),
+    );
+  };
+  const clearShotClock = () => {
+    if (!timed || !inPlay) return;
+    dispatch(
+      (v) => ({
+        ...v,
+        shotClockTeam: null,
+        shotClockEndsAt: null,
+        shotClockRemaining: null,
+      }),
+      () => setShotClock(view.id, view.shotClockTeam ?? "a", null),
     );
   };
 
@@ -222,6 +260,10 @@ export function useMatchController(match: MatchView) {
     canEndPeriod,
     canEndSet: canEndPeriod,
     nextPeriodIsOvertime,
+    shotClock,
+    shotClockTeam,
+    tapShotClock,
+    clearShotClock,
     tapScore,
     tapFoul,
     tapEndPeriod,

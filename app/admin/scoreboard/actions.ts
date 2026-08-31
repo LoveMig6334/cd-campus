@@ -391,6 +391,40 @@ export async function endMatch(
   });
 }
 
+/**
+ * Shot clock: not an event (resets are frequent, not score history) — goes
+ * straight through the set_shot_clock RPC, which stamps Postgres now().
+ * seconds null clears it.
+ */
+export async function setShotClock(
+  matchId: string,
+  team: TeamKey,
+  seconds: number | null,
+): Promise<MatchActionResult> {
+  await requireAdmin();
+  const db = await createClient();
+  const match = await getMatchById(matchId);
+  if (!match) return { ok: false, error: "Match not found" };
+  if (!isTimed(SPORTS[match.sport])) {
+    return { ok: false, error: "This sport has no shot clock" };
+  }
+  if (match.status !== "live" && match.status !== "paused") {
+    return { ok: false, error: "Match is not in play" };
+  }
+  const { error } = await db.rpc("set_shot_clock", {
+    p_match_id: matchId,
+    p_team: team,
+    // Postgres arg nullability isn't expressed in the generated types.
+    p_seconds: seconds as unknown as number,
+  });
+  if (error) return { ok: false, error: error.message };
+  revalidateSurfaces();
+  const fresh = await getMatchById(matchId);
+  return fresh
+    ? { ok: true, match: fresh }
+    : { ok: false, error: "Match disappeared" };
+}
+
 /* ------------------------------------------------------------------ */
 /* Create / cancel — standard form-action convention                   */
 /* ------------------------------------------------------------------ */
