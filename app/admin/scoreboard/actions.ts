@@ -9,13 +9,19 @@ import { KEY_BY_HOUSE_ID } from "@/lib/queries/util";
 import type { Json } from "@/lib/supabase/database.types";
 import type { MatchStatus, MatchView } from "@/lib/types";
 import {
+  applyFoul,
   applyPoint,
-  endCurrentSet,
+  endCurrentPeriod,
+  formatOf,
+  formatOfMatch,
   initialState,
   isSportId,
+  isTimed,
   isValidFormat,
   leaderForEarlyEnd,
   SPORTS,
+  stateOfMatch,
+  type PointDelta,
   type ScoreState,
   type TeamKey,
 } from "@/lib/sport/rules";
@@ -33,6 +39,7 @@ type MatchEventType =
   | "pause"
   | "resume"
   | "score"
+  | "foul"
   | "end_set"
   | "undo"
   | "finish";
@@ -54,9 +61,7 @@ const HOUSE_ID_BY_KEY = Object.fromEntries(
   Object.entries(KEY_BY_HOUSE_ID).map(([id, key]) => [key, Number(id)]),
 ) as Record<string, number>;
 
-function stateOf(m: MatchView): ScoreState {
-  return { sets: m.sets, currentSet: m.currentSet, serving: m.serving };
-}
+const stateOf = stateOfMatch;
 
 function winnerIdOf(m: MatchView, team: TeamKey): number {
   return HOUSE_ID_BY_KEY[team === "a" ? m.houseA.key : m.houseB.key];
@@ -65,7 +70,19 @@ function winnerIdOf(m: MatchView, team: TeamKey): number {
 function revalidateSurfaces() {
   revalidatePath("/scoreboard");
   revalidatePath("/admin/scoreboard");
+  revalidatePath("/console/match");
+  revalidatePath("/console/history");
+  revalidatePath("/console/display");
   revalidatePath("/student/sport");
+}
+
+// Both admin UIs share these form actions; the form says where to land after.
+const RETURN_PATHS = ["/admin/scoreboard", "/console/match"] as const;
+function returnPath(formData: FormData): string {
+  const v = String(formData.get("return_to") ?? "");
+  return (RETURN_PATHS as readonly string[]).includes(v)
+    ? v
+    : "/admin/scoreboard";
 }
 
 /**
@@ -101,6 +118,7 @@ async function applyEvent(
       p_sets: apply.state.sets as unknown as Json,
       p_current_set: apply.state.currentSet,
       p_serving: apply.state.serving,
+      p_fouls: apply.state.fouls as unknown as Json,
       p_status: apply.status,
       // Postgres arg nullability isn't expressed in the generated types.
       p_winner_house_id: apply.winnerHouseId as unknown as number,
@@ -186,7 +204,7 @@ export async function scorePoint(
   matchId: string,
   eventId: string,
   team: TeamKey,
-  delta: 1 | -1,
+  delta: PointDelta,
 ): Promise<MatchActionResult> {
   return applyEvent(matchId, eventId, (m) => {
     if (m.status !== "live") return { error: "Match is not live" };
@@ -197,6 +215,38 @@ export async function scorePoint(
     return {
       apply: {
         type: "score",
+        payload: {
+          team,
+          delta,
+          before: serializeState(before),
+          after: serializeState(result.state),
+        },
+        state: result.state,
+        status: "live",
+        winnerHouseId: null,
+      },
+    };
+  });
+}
+
+export async function recordFoul(
+  matchId: string,
+  eventId: string,
+  team: TeamKey,
+  delta: 1 | -1,
+): Promise<MatchActionResult> {
+  return applyEvent(matchId, eventId, (m) => {
+    if (m.status !== "live") return { error: "Match is not live" };
+    if (!isTimed(SPORTS[m.sport])) {
+      return { error: "This sport has no team fouls" };
+    }
+    const before = stateOf(m);
+    const result = applyFoul(before, team, delta);
+    // Floor taps (−1 at 0) are silent no-ops.
+    if (!result.ok) return { noop: true };
+    return {
+      apply: {
+        type: "foul",
         payload: {
           team,
           delta,
@@ -227,12 +277,15 @@ export async function undoLast(
 
   const { data: event, error: eventError } = await db
     .from("match_events")
-    .select("id, payload")
+    .select("id, type, payload")
     .eq("id", current.lastScoreEventId)
     .single();
   if (eventError) return { ok: false, error: eventError.message };
 
-  const payload = event.payload as { before?: ScoreState };
+  const payload = event.payload as {
+    before?: Partial<ScoreState>;
+    periodStartedSecondsBefore?: number;
+  };
   const before = payload.before;
   if (!before) return { ok: false, error: "Missing undo snapshot" };
 
@@ -243,15 +296,30 @@ export async function undoLast(
     if (m.lastScoreEventId !== event.id) {
       return { error: "Score changed — check before undoing again" };
     }
+    // Snapshots written before migration 0014 carry no fouls.
+    const restored: ScoreState = {
+      sets: before.sets ?? m.sets,
+      currentSet: before.currentSet ?? m.currentSet,
+      serving: before.serving ?? m.serving,
+      fouls: before.fouls ?? m.fouls,
+    };
+    const undoPayload: Record<string, Json> = {
+      undoneEventId: event.id,
+      before: serializeState(stateOf(m)),
+      after: serializeState(restored),
+    };
+    // Undoing a period ending also rewinds the countdown offset.
+    if (
+      event.type === "end_set" &&
+      typeof payload.periodStartedSecondsBefore === "number"
+    ) {
+      undoPayload.periodStartedSeconds = payload.periodStartedSecondsBefore;
+    }
     return {
       apply: {
         type: "undo",
-        payload: {
-          undoneEventId: event.id,
-          before: serializeState(stateOf(m)),
-          after: serializeState(before),
-        },
-        state: before,
+        payload: undoPayload,
+        state: restored,
         status: m.status,
         winnerHouseId: null,
       },
@@ -265,27 +333,33 @@ export async function endSet(
 ): Promise<MatchActionResult> {
   return applyEvent(matchId, eventId, (m) => {
     if (m.status !== "live") return { error: "Match is not live" };
+    const config = SPORTS[m.sport];
     const before = stateOf(m);
-    const result = endCurrentSet(
-      SPORTS[m.sport].nextSetFirstServer,
-      { bestOf: m.bestOf, pointsToWin: m.pointsToWin },
-      before,
-    );
+    const result = endCurrentPeriod(config, formatOfMatch(m), before);
     if (!result.ok) {
-      return result.reason === "tied"
-        ? { error: "Set is tied — score a point before ending it" }
-        : { error: "Final set — end the competition instead" };
+      if (result.reason === "tied") {
+        return { error: "Set is tied — score a point before ending it" };
+      }
+      return {
+        error: isTimed(config)
+          ? "Final period is decided — end the competition instead"
+          : "Final set — end the competition instead",
+      };
     }
     return {
       apply: {
         type: "end_set",
         payload: {
           setWonBy: result.setWonBy,
+          overtime: result.overtime,
+          periodStartedSecondsBefore: m.periodStartedSeconds,
           before: serializeState(before),
           after: serializeState(result.state),
         },
         state: result.state,
-        status: "live",
+        // Timed sports stop the clock between periods; the admin starts the
+        // next one with Resume ("Start Q2").
+        status: isTimed(config) ? "paused" : "live",
         winnerHouseId: null,
       },
     };
@@ -301,9 +375,9 @@ export async function endMatch(
       return { error: "Match is not in play" };
     }
     const state = stateOf(m);
-    const winner = leaderForEarlyEnd(state);
+    const winner = leaderForEarlyEnd(SPORTS[m.sport], state);
     if (!winner) {
-      return { error: "Scores are level — play a point before ending" };
+      return { error: "Scores are level — play on before ending" };
     }
     return {
       apply: {
@@ -327,16 +401,26 @@ export async function createMatch(formData: FormData): Promise<void> {
   const sport = String(formData.get("sport") ?? "");
   const houseA = Number(formData.get("house_a") ?? "");
   const houseB = Number(formData.get("house_b") ?? "");
-  const bestOf = Number(formData.get("best_of") ?? "");
-  const pointsToWin = Number(formData.get("points_to_win") ?? "");
   const venue = String(formData.get("venue") ?? "").trim();
   const roundLabel = String(formData.get("round_label") ?? "").trim();
   const scheduledRaw = String(formData.get("scheduled_at") ?? "").trim();
 
   if (!isSportId(sport)) return;
+  const config = SPORTS[sport];
+  const defaults = formatOf(config);
+  const bestOf = Number(formData.get("best_of") ?? defaults.bestOf);
+  // Timed sports have no points target; set sports have no period length.
+  const pointsToWin = isTimed(config)
+    ? defaults.pointsToWin
+    : Number(formData.get("points_to_win") ?? "");
+  const periodMinutes = isTimed(config)
+    ? Number(formData.get("period_minutes") ?? "")
+    : null;
   if (![1, 2, 3, 4].includes(houseA) || ![1, 2, 3, 4].includes(houseB)) return;
   if (houseA === houseB) return;
-  if (!isValidFormat({ bestOf, pointsToWin })) return;
+  if (!isValidFormat(config.kind, { bestOf, pointsToWin, periodMinutes })) {
+    return;
+  }
   // datetime-local has no zone; school events are Asia/Bangkok.
   const scheduledAt = scheduledRaw ? `${scheduledRaw}:00+07:00` : null;
 
@@ -347,6 +431,7 @@ export async function createMatch(formData: FormData): Promise<void> {
     house_b: houseB,
     best_of: bestOf,
     points_to_win: pointsToWin,
+    period_minutes: periodMinutes,
     venue: venue || null,
     round_label: roundLabel || null,
     scheduled_at: scheduledAt,
@@ -355,7 +440,7 @@ export async function createMatch(formData: FormData): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidateSurfaces();
-  redirect("/admin/scoreboard");
+  redirect(returnPath(formData));
 }
 
 export async function deleteMatch(formData: FormData): Promise<void> {
@@ -390,5 +475,5 @@ export async function cancelMatch(formData: FormData): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidateSurfaces();
-  redirect("/admin/scoreboard");
+  redirect(returnPath(formData));
 }

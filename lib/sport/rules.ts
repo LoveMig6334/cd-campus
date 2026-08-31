@@ -445,3 +445,69 @@ export function formatClock(totalSeconds: number): string {
   const ss = String(s % 60).padStart(2, "0");
   return `${mm}:${ss}`;
 }
+
+/* ------------------------------------------------------------------ */
+/* Adapters from a match row/view (structural — no import of MatchView) */
+/* ------------------------------------------------------------------ */
+
+export function stateOfMatch(m: {
+  sets: SetScore[];
+  currentSet: number;
+  serving: TeamKey;
+  fouls: TeamCounts;
+}): ScoreState {
+  return {
+    sets: m.sets,
+    currentSet: m.currentSet,
+    serving: m.serving,
+    fouls: m.fouls,
+  };
+}
+
+export function formatOfMatch(m: {
+  bestOf: number;
+  pointsToWin: number;
+  periodMinutes: number | null;
+}): MatchFormat {
+  return {
+    bestOf: m.bestOf,
+    pointsToWin: m.pointsToWin,
+    periodMinutes: m.periodMinutes,
+  };
+}
+
+export function clockOfMatch(m: MatchClock): MatchClock {
+  return {
+    timerSeconds: m.timerSeconds,
+    timerStartedAt: m.timerStartedAt,
+    periodStartedSeconds: m.periodStartedSeconds,
+    currentSet: m.currentSet,
+  };
+}
+
+/**
+ * The match clock as displayed: countdown of the current period for timed
+ * sports (held at 0), elapsed game time for set sports.
+ */
+export function displayClockSeconds(
+  config: SportConfig,
+  format: MatchFormat,
+  clock: MatchClock,
+  now: number,
+): number {
+  return isTimed(config)
+    ? periodRemainingSeconds(config, format, clock, now)
+    : elapsedSeconds(clock, now);
+}
+
+/**
+ * The headline result: "54–48" (total points) for timed sports, sets won
+ * for set sports (the current set counts when the match is finished).
+ */
+export function headlineScore(
+  config: SportConfig,
+  state: ScoreState,
+  finished: boolean,
+): TeamCounts {
+  return isTimed(config) ? totalPoints(state) : setsWon(state, finished);
+}
