@@ -46,7 +46,11 @@ function PanelBox({
   );
 }
 
-/** Left/right player panel: PLY · FL · PTS for the five on court. */
+/**
+ * Left/right player panel: PLY · FL · PTS for the five on court. One grid for
+ * header + rows so the columns line up, sized to content and centred as a
+ * whole (equal margins either side); rows spread over the panel height.
+ */
 function PlayerPanel({
   players,
   side,
@@ -58,44 +62,40 @@ function PlayerPanel({
   return (
     <PanelBox
       className={cn(
-        "flex h-full flex-col gap-[calc(var(--u)*1.6)] px-[1.2vw] py-[calc(var(--u)*2)]",
+        "grid h-full grid-cols-[auto_auto_auto] content-evenly justify-center justify-items-center gap-x-[1.4vw] px-[1vw] py-[calc(var(--u)*2)]",
         side === "left"
           ? "animate-[sb-slam-left_0.55s_ease-out_both]"
           : "animate-[sb-slam-right_0.55s_ease-out_both]",
       )}
     >
-      <div className="grid grid-cols-[1.3fr_1fr_1fr] text-center">
-        <span className={LABEL_AMBER}>Ply</span>
-        <span className={LABEL_AMBER}>Fl</span>
-        <span className={LABEL_AMBER}>Pts</span>
-      </div>
+      <span className={LABEL_AMBER}>Ply</span>
+      <span className={LABEL_AMBER}>Fl</span>
+      <span className={LABEL_AMBER}>Pts</span>
       {rows.map((p, i) => {
         const out = p !== undefined && p.fouls >= PLAYER_FOUL_LIMIT;
+        const cls = cn("contents", out && "opacity-45");
         return (
-          <div
-            key={p?.id ?? `empty-${i}`}
-            className={cn(
-              "grid grid-cols-[1.3fr_1fr_1fr] items-center justify-items-center",
-              out && "opacity-45",
-            )}
-          >
+          <div key={p?.id ?? `empty-${i}`} className={cls}>
             <Led
               value={p ? ledPad(p.number, 2) : "  "}
               color="amber"
               h="calc(var(--u)*7.2)"
               dim={!p}
+              className={cn(out && "opacity-45")}
             />
             <Led
               value={p ? String(p.fouls) : " "}
               color="red"
               h="calc(var(--u)*7.2)"
               dim={!p}
+              className={cn(out && "opacity-45")}
             />
             <Led
               value={p ? ledPad(p.points, 2) : "  "}
               color="red"
               h="calc(var(--u)*7.2)"
               dim={!p}
+              className={cn(out && "opacity-45")}
             />
           </div>
         );
