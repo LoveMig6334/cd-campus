@@ -20,6 +20,7 @@ import {
 } from "@/lib/sport/rules";
 import { contrastText, HOUSE_HEX } from "@/lib/sport/colors";
 import { cn } from "@/lib/cn";
+import { BasketballBoard } from "@/components/scoreboard/BasketballBoard";
 
 const FINISHED_HOLD_MS = 30_000;
 
@@ -168,6 +169,8 @@ export function ScoreboardDisplay({
     <main className="bg-cream text-ink relative h-screen w-screen overflow-hidden">
       {showIdle ? (
         <IdleScreen now={now} />
+      ) : isTimed(SPORTS[match!.sport]) ? (
+        <BasketballBoard key={match!.id} match={match!} now={now} />
       ) : (
         <MatchScreen key={match!.id} match={match!} now={now} />
       )}
