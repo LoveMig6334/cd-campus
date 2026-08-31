@@ -65,10 +65,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
       {timed && (
         <div className="border-line bg-yellow text-ink mb-3 flex items-center justify-between border-[1.5px] px-3 py-2 font-mono text-[11px] tracking-[0.12em] uppercase">
           <span>★ {config.labelEn} is managed in the New UI</span>
-          <Link
-            href="/console/match"
-            className="underline underline-offset-2"
-          >
+          <Link href="/console/match" className="underline underline-offset-2">
             Open console →
           </Link>
         </div>
@@ -119,11 +116,13 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   <span className="font-display text-[22px] leading-none italic">
                     {info.nameEn} · {info.nameTh}
                   </span>
-                  {!timed && view.serving === team && view.status === "live" && (
-                    <span aria-label="Serving" title="Serving">
-                      ●
-                    </span>
-                  )}
+                  {!timed &&
+                    view.serving === team &&
+                    view.status === "live" && (
+                      <span aria-label="Serving" title="Serving">
+                        ●
+                      </span>
+                    )}
                 </div>
                 <div className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-80">
                   {timed
@@ -134,28 +133,30 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   {timed ? total[team] : set[team]}
                 </div>
                 {!timed && (
-                <button
-                  type="button"
-                  onClick={() => tapScore(team, 1)}
-                  disabled={!scoringOpen}
-                  className={cn(
-                    "border-line bg-paper text-ink font-display w-full cursor-pointer border-[1.5px] py-6 text-center text-3xl italic [box-shadow:3px_3px_0_var(--color-ink)] transition-all active:translate-x-px active:translate-y-px active:[box-shadow:1px_1px_0_var(--color-ink)]",
-                    !scoringOpen && "cursor-not-allowed opacity-40",
-                  )}
-                >
-                  +1
-                </button>
-                <button
-                  type="button"
-                  onClick={() => tapScore(team, -1)}
-                  disabled={!scoringOpen}
-                  className={cn(
-                    "border-line bg-paper text-mute-700 w-full cursor-pointer border-[1.5px] py-2 font-mono text-[11px] tracking-[0.12em] uppercase",
-                    !scoringOpen && "cursor-not-allowed opacity-40",
-                  )}
-                >
-                  −1 correction
-                </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => tapScore(team, 1)}
+                      disabled={!scoringOpen}
+                      className={cn(
+                        "border-line bg-paper text-ink font-display w-full cursor-pointer border-[1.5px] py-6 text-center text-3xl italic [box-shadow:3px_3px_0_var(--color-ink)] transition-all active:translate-x-px active:translate-y-px active:[box-shadow:1px_1px_0_var(--color-ink)]",
+                        !scoringOpen && "cursor-not-allowed opacity-40",
+                      )}
+                    >
+                      +1
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => tapScore(team, -1)}
+                      disabled={!scoringOpen}
+                      className={cn(
+                        "border-line bg-paper text-mute-700 w-full cursor-pointer border-[1.5px] py-2 font-mono text-[11px] tracking-[0.12em] uppercase",
+                        !scoringOpen && "cursor-not-allowed opacity-40",
+                      )}
+                    >
+                      −1 correction
+                    </button>
+                  </>
                 )}
               </div>
             );
