@@ -226,8 +226,8 @@ export function useMatchController(match: MatchView) {
 
   // Roster edits are rare and need the server's id/uniqueness answer — no
   // optimistic prediction, just the shared queue + error surface.
-  const addPlayer = (team: TeamKey, number: number, name: string) =>
-    dispatch(null, () => addPlayerAction(view.id, team, number, name));
+  const addPlayer = (team: TeamKey, number: number) =>
+    dispatch(null, () => addPlayerAction(view.id, team, number));
   const removePlayer = (playerId: string) => {
     if (selectedPlayer === playerId) setSelectedPlayer(null);
     dispatch(null, () => removePlayerAction(view.id, playerId));

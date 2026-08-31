@@ -493,7 +493,6 @@ export async function addPlayer(
   matchId: string,
   team: TeamKey,
   number: number,
-  name: string,
 ): Promise<MatchActionResult> {
   await requireAdmin();
   const match = await getMatchById(matchId);
@@ -515,7 +514,6 @@ export async function addPlayer(
     match_id: matchId,
     team,
     number,
-    name: name.trim().slice(0, 40) || null,
     // First five join the court automatically.
     on_court:
       match.players.filter((p) => p.team === team && p.onCourt).length <

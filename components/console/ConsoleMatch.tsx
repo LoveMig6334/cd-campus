@@ -211,9 +211,11 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                             <span className="text-[18px] font-semibold tabular-nums">
                               #{p.number}
                             </span>
-                            <span className="max-w-[80px] truncate text-[10px]">
-                              {out ? "OUT" : (p.name ?? "")}
-                            </span>
+                            {out && (
+                              <span className="text-[10px] font-semibold tracking-wide uppercase">
+                                Out
+                              </span>
+                            )}
                             <span
                               className={cn(
                                 "text-[10px] tabular-nums",

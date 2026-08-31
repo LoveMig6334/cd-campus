@@ -19,7 +19,7 @@ type Props = {
   players: MatchPlayer[];
   houseA: MatchView["houseA"];
   houseB: MatchView["houseB"];
-  onAdd: (team: TeamKey, number: number, name: string) => void;
+  onAdd: (team: TeamKey, number: number) => void;
   onRemove: (playerId: string) => void;
   onToggle: (playerId: string) => void;
   /** −1 foul correction (only while live). */
@@ -38,7 +38,6 @@ function TeamRoster({
   fixable,
 }: Props & { team: TeamKey; info: MatchView["houseA"] }) {
   const [number, setNumber] = useState("");
-  const [name, setName] = useState("");
   const court = onCourt(players, team);
   const rest = bench(players, team);
   const all = [...court, ...rest];
@@ -48,9 +47,8 @@ function TeamRoster({
     e.preventDefault();
     const n = Number(number);
     if (!Number.isInteger(n) || n < 0 || n > 99) return;
-    onAdd(team, n, name);
+    onAdd(team, n);
     setNumber("");
-    setName("");
   }
 
   return (
@@ -76,7 +74,6 @@ function TeamRoster({
             <tr className="text-left text-[11px] tracking-wide text-gray-500 uppercase">
               <th className="py-1 pr-2 font-medium">On court</th>
               <th className="py-1 pr-2 font-medium">#</th>
-              <th className="py-1 pr-2 font-medium">Name</th>
               <th className="py-1 pr-2 text-right font-medium">FL</th>
               <th className="py-1 pr-2 text-right font-medium">PTS</th>
               <th className="py-1">
@@ -107,9 +104,6 @@ function TeamRoster({
                   </td>
                   <td className="py-1.5 pr-2 font-semibold tabular-nums">
                     #{p.number}
-                  </td>
-                  <td className="py-1.5 pr-2">
-                    {p.name ?? <span className="text-gray-400">—</span>}
                     {out && (
                       <Badge tone="gray" className="ml-2">
                         OUT
@@ -155,8 +149,8 @@ function TeamRoster({
       )}
 
       <form onSubmit={submit} className="flex items-end gap-2">
-        <label className="block w-20">
-          <span className="text-[11px] text-gray-500">#</span>
+        <label className="block w-28">
+          <span className="text-[11px] text-gray-500">Jersey #</span>
           <input
             type="number"
             min={0}
@@ -165,17 +159,6 @@ function TeamRoster({
             required
             value={number}
             onChange={(e) => setNumber(e.target.value)}
-            disabled={full}
-            className={cn(FIELD, "mt-0.5 px-2 py-1.5")}
-          />
-        </label>
-        <label className="block flex-1">
-          <span className="text-[11px] text-gray-500">Name (optional)</span>
-          <input
-            type="text"
-            maxLength={40}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
             disabled={full}
             className={cn(FIELD, "mt-0.5 px-2 py-1.5")}
           />
