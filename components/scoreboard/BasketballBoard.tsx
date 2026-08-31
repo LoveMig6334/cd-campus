@@ -62,7 +62,7 @@ function PlayerPanel({
   return (
     <PanelBox
       className={cn(
-        "grid h-full grid-cols-[auto_auto_auto] content-evenly justify-center justify-items-center gap-x-[1.4vw] px-[1vw] py-[calc(var(--u)*2)]",
+        "grid h-full grid-cols-[auto_auto_auto] content-center justify-center justify-items-center gap-x-[1.4vw] gap-y-[calc(var(--u)*1.6)] px-[1vw] py-[calc(var(--u)*2)]",
         side === "left"
           ? "animate-[sb-slam-left_0.55s_ease-out_both]"
           : "animate-[sb-slam-right_0.55s_ease-out_both]",
