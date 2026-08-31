@@ -19,7 +19,7 @@ import {
 } from "@/lib/sport/rules";
 import { HOUSE_HEX } from "@/lib/sport/colors";
 import { cn } from "@/lib/cn";
-import { Led, ledPad } from "@/components/scoreboard/LedDigits";
+import { Led, ledPad, ledPadEnd } from "@/components/scoreboard/LedDigits";
 
 const LAST_FOUL_HOLD_MS = 15_000;
 
@@ -282,7 +282,7 @@ export function BasketballBoard({
         </div>
 
         {/* Scores */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center px-[1vw]">
           <div className="justify-self-start">
             <Led
               value={ledPad(total.a, 3)}
@@ -315,7 +315,7 @@ export function BasketballBoard({
           </div>
           <div className="justify-self-end">
             <Led
-              value={ledPad(total.b, 3)}
+              value={ledPadEnd(total.b, 3)}
               color="amber"
               h="calc(var(--u)*16)"
               dim={pre}

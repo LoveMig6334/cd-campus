@@ -126,3 +126,8 @@ export function Led({
 export function ledPad(n: number, width: number): string {
   return String(Math.max(0, Math.floor(n))).padStart(width, " ");
 }
+
+/** Right-pad — mirror image of ledPad for the right-hand side of a board. */
+export function ledPadEnd(n: number, width: number): string {
+  return String(Math.max(0, Math.floor(n))).padEnd(width, " ");
+}
