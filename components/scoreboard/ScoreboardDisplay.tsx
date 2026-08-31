@@ -3,7 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { MatchStatus, MatchView } from "@/lib/types";
-import { deriveFlags, setsWon, SPORTS } from "@/lib/sport/rules";
+import type { DisplayMode } from "@/lib/sport/displayMode";
+import {
+  clockOfMatch,
+  deriveFlags,
+  displayClockSeconds,
+  formatClock,
+  formatOfMatch,
+  headlineScore,
+  isTimed,
+  periodLabel,
+  periodRemainingSeconds,
+  SPORTS,
+  stateOfMatch,
+} from "@/lib/sport/rules";
 import { contrastText, HOUSE_HEX } from "@/lib/sport/colors";
 import { cn } from "@/lib/cn";
 
@@ -20,9 +33,12 @@ function pad2(n: number): string {
  */
 export function ScoreboardDisplay({
   match,
+  mode = "match",
   serverNow,
 }: {
   match: MatchView | null;
+  /** Admin override: "idle" hides the match behind the holding screen. */
+  mode?: DisplayMode;
   serverNow: number;
 }) {
   const router = useRouter();
@@ -54,13 +70,20 @@ export function ScoreboardDisplay({
       if (cancelled) return;
       const supabase = createClient();
       const channel = supabase.channel("rt-scoreboard");
+      const schedule = () => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => router.refresh(), 300);
+      };
       channel.on(
         "postgres_changes",
         { event: "*", schema: "public", table: "matches" },
-        () => {
-          if (timer) clearTimeout(timer);
-          timer = setTimeout(() => router.refresh(), 300);
-        },
+        schedule,
+      );
+      // Admin display-mode switch (site_config.scoreboard_display).
+      channel.on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "site_config" },
+        schedule,
       );
       let everConnected = false;
       channel.subscribe((status) => {
@@ -88,6 +111,7 @@ export function ScoreboardDisplay({
       : null;
 
   const showIdle =
+    mode === "idle" ||
     match === null ||
     match.status === "cancelled" ||
     (holdUntil !== null && now >= holdUntil);
@@ -313,23 +337,30 @@ function VsSplash({ match }: { match: MatchView }) {
 
 function MatchScreen({ match, now }: { match: MatchView; now: number }) {
   const config = SPORTS[match.sport];
-  const format = { bestOf: match.bestOf, pointsToWin: match.pointsToWin };
-  const state = {
-    sets: match.sets,
-    currentSet: match.currentSet,
-    serving: match.serving,
-  };
-  const flags = deriveFlags(format, state);
+  const timed = isTimed(config);
+  const format = formatOfMatch(match);
+  const state = stateOfMatch(match);
+  const flags = deriveFlags(config, format, state);
   const pre = match.status === "scheduled";
   const finished = match.status === "finished";
-  const won = setsWon(state, finished);
+  // Sets won for set sports; total points for timed sports.
+  const won = headlineScore(config, state, finished);
   const currentSet = match.sets[match.currentSet - 1];
 
-  const running = match.timerStartedAt
-    ? (now - Date.parse(match.timerStartedAt)) / 1000
-    : 0;
-  const totalSeconds = Math.max(0, Math.floor(match.timerSeconds + running));
-  const clock = `${pad2(Math.floor(totalSeconds / 60))}:${pad2(totalSeconds % 60)}`;
+  const clockFields = clockOfMatch(match);
+  const clock = formatClock(
+    displayClockSeconds(config, format, clockFields, now),
+  );
+  const periodOver =
+    timed &&
+    !pre &&
+    !finished &&
+    periodRemainingSeconds(config, format, clockFields, now) === 0;
+  const bonusAt = config.kind === "timed" ? config.foulBonusAt : Infinity;
+  // One column per possible set; timed sports also show any overtime played.
+  const stripColumns = timed
+    ? Math.max(match.bestOf, match.sets.length)
+    : match.bestOf;
 
   const teams = [
     { team: "a" as const, info: match.houseA },
@@ -356,7 +387,7 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
       >
         <div className="flex items-center gap-3 font-mono text-[2.6vh] tracking-[0.24em] uppercase">
           {info.nameEn} · {info.nameTh}
-          {!pre && !finished && match.serving === team && (
+          {!timed && !pre && !finished && match.serving === team && (
             <span
               aria-label="Serving"
               title="Serving"
@@ -376,7 +407,25 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
           <div className="font-display text-[14vh] leading-none italic">—</div>
         ) : (
           <div className="font-display text-[28vh] leading-none italic tabular-nums">
-            <Roll value={currentSet[team]} />
+            <Roll value={timed ? won[team] : currentSet[team]} />
+          </div>
+        )}
+
+        {timed && !pre && (
+          <div className="flex items-center gap-[1.2vw]">
+            <span className="font-mono text-[2vh] tracking-[0.3em] uppercase opacity-85">
+              Fouls · ฟาล์ว
+            </span>
+            <span
+              className={cn(
+                "border-line font-display grid min-w-[8vh] place-items-center border-[1.5px] px-[1vw] py-[0.3vh] text-[7vh] leading-none italic tabular-nums",
+                match.fouls[team] >= bonusAt
+                  ? "bg-house-pink text-white"
+                  : "bg-ink text-house-green",
+              )}
+            >
+              <Roll value={match.fouls[team]} />
+            </span>
           </div>
         )}
       </section>
@@ -414,11 +463,17 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
               จบการแข่งขัน
             </span>
             <span className="text-mute-700 font-mono text-[2.2vh] tracking-[0.22em] uppercase">
-              Final · {won.a}–{won.b} sets
+              Final · {won.a}–{won.b}
+              {timed ? "" : " sets"}
             </span>
           </div>
         ) : (
-          <div className="border-line bg-ink text-yellow border-[1.5px] px-[2.4vw] py-[0.8vh] font-mono text-[6vh] leading-none tracking-[0.2em] tabular-nums">
+          <div
+            className={cn(
+              "border-line bg-ink text-yellow border-[1.5px] px-[2.4vw] py-[0.8vh] font-mono text-[6vh] leading-none tracking-[0.2em] tabular-nums",
+              periodOver && "text-house-pink animate-pulse",
+            )}
+          >
             {clock}
           </div>
         )}
@@ -429,27 +484,43 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
         {panels[0]}
 
         <div className="flex min-w-[16vw] animate-[sb-pop_0.5s_ease-out_0.35s_both] flex-col items-center justify-center gap-[2vh] px-[1.6vw]">
-          <div className="text-mute-700 font-mono text-[1.8vh] tracking-[0.26em] uppercase">
-            Sets won · เซต
-          </div>
-          <div className="flex items-center gap-[1.6vw]">
-            {teams.map(({ team, info }) => {
-              const bg = HOUSE_HEX[info.key];
-              return (
-                <span
-                  key={team}
-                  className="border-line font-display grid size-[9vh] place-items-center border-[1.5px] text-[6vh] italic tabular-nums"
-                  style={{ background: bg, color: contrastText(bg) }}
-                >
-                  <Roll value={won[team]} />
-                </span>
-              );
-            })}
-          </div>
-          <div className="text-mute-500 font-mono text-[1.6vh] tracking-[0.2em] uppercase">
-            Set {match.currentSet} · Best of {match.bestOf} · to{" "}
-            {match.pointsToWin}
-          </div>
+          {timed ? (
+            <>
+              <div className="text-mute-700 font-mono text-[1.8vh] tracking-[0.26em] uppercase">
+                Period · ควอเตอร์
+              </div>
+              <div className="border-line bg-ink text-yellow font-display grid min-w-[12vw] place-items-center border-[1.5px] px-[1.6vw] py-[1vh] text-[9vh] leading-none italic">
+                {pre ? "—" : periodLabel(config, format, match.currentSet)}
+              </div>
+              <div className="text-mute-500 font-mono text-[1.6vh] tracking-[0.2em] uppercase">
+                {match.bestOf} × {match.periodMinutes} min
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-mute-700 font-mono text-[1.8vh] tracking-[0.26em] uppercase">
+                Sets won · เซต
+              </div>
+              <div className="flex items-center gap-[1.6vw]">
+                {teams.map(({ team, info }) => {
+                  const bg = HOUSE_HEX[info.key];
+                  return (
+                    <span
+                      key={team}
+                      className="border-line font-display grid size-[9vh] place-items-center border-[1.5px] text-[6vh] italic tabular-nums"
+                      style={{ background: bg, color: contrastText(bg) }}
+                    >
+                      <Roll value={won[team]} />
+                    </span>
+                  );
+                })}
+              </div>
+              <div className="text-mute-500 font-mono text-[1.6vh] tracking-[0.2em] uppercase">
+                Set {match.currentSet} · Best of {match.bestOf} · to{" "}
+                {match.pointsToWin}
+              </div>
+            </>
+          )}
 
           {match.status === "paused" && (
             <div className="border-line bg-paper text-mute-700 border-[1.5px] px-4 py-2 font-mono text-[2vh] tracking-[0.24em] uppercase">
@@ -479,9 +550,9 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
       {/* Bottom: numbered set-history strip, one column per possible set */}
       <footer
         className="grid animate-[sb-rise_0.5s_ease-out_0.25s_both] gap-[0.8vw] px-[1.2vw] py-[1.8vh]"
-        style={{ gridTemplateColumns: `repeat(${match.bestOf}, 1fr)` }}
+        style={{ gridTemplateColumns: `repeat(${stripColumns}, 1fr)` }}
       >
-        {Array.from({ length: match.bestOf }, (_, i) => {
+        {Array.from({ length: stripColumns }, (_, i) => {
           const set = match.sets[i];
           const isCurrent = !pre && !finished && i === match.currentSet - 1;
           const isDone =
@@ -496,7 +567,7 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
                   isCurrent ? "text-blue-deep" : "text-mute-700",
                 )}
               >
-                {i + 1}
+                {timed ? periodLabel(config, format, i + 1) : i + 1}
               </div>
               <div
                 className={cn(
@@ -536,14 +607,9 @@ function StatusSplash({
     const winner = match.winner === "b" ? match.houseB : match.houseA;
     const bg = HOUSE_HEX[winner.key];
     const fg = contrastText(bg);
-    const won = setsWon(
-      {
-        sets: match.sets,
-        currentSet: match.currentSet,
-        serving: match.serving,
-      },
-      true,
-    );
+    const config = SPORTS[match.sport];
+    const won = headlineScore(config, stateOfMatch(match), true);
+    const timed = isTimed(config);
     return (
       <div className="bg-ink/50 pointer-events-none absolute inset-0 z-20 grid animate-[sb-splash-out_5s_ease-in_both] place-items-center">
         <div
@@ -560,7 +626,8 @@ function StatusSplash({
             ชนะ!
           </div>
           <div className="font-mono text-[2.6vh] tracking-[0.2em] tabular-nums">
-            {won.a}–{won.b} SETS ·{" "}
+            {won.a}–{won.b}
+            {timed ? "" : " SETS"} ·{" "}
             {match.sets.map((s) => `${s.a}:${s.b}`).join("  ")}
           </div>
         </div>
