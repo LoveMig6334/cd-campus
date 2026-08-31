@@ -377,10 +377,13 @@ export type Database = {
           created_by_admin_id: string | null
           current_set: number
           ended_at: string | null
+          fouls: Json
           house_a: number
           house_b: number
           id: string
           last_score_event_id: string | null
+          period_minutes: number | null
+          period_started_seconds: number
           points_to_win: number
           round_label: string | null
           scheduled_at: string | null
@@ -402,10 +405,13 @@ export type Database = {
           created_by_admin_id?: string | null
           current_set?: number
           ended_at?: string | null
+          fouls?: Json
           house_a: number
           house_b: number
           id?: string
           last_score_event_id?: string | null
+          period_minutes?: number | null
+          period_started_seconds?: number
           points_to_win?: number
           round_label?: string | null
           scheduled_at?: string | null
@@ -427,10 +433,13 @@ export type Database = {
           created_by_admin_id?: string | null
           current_set?: number
           ended_at?: string | null
+          fouls?: Json
           house_a?: number
           house_b?: number
           id?: string
           last_score_event_id?: string | null
+          period_minutes?: number | null
+          period_started_seconds?: number
           points_to_win?: number
           round_label?: string | null
           scheduled_at?: string | null
@@ -747,6 +756,7 @@ export type Database = {
           p_current_set: number
           p_event_id: string
           p_expected_version: number
+          p_fouls: Json
           p_match_id: string
           p_payload: Json
           p_serving: string
@@ -761,10 +771,13 @@ export type Database = {
           created_by_admin_id: string | null
           current_set: number
           ended_at: string | null
+          fouls: Json
           house_a: number
           house_b: number
           id: string
           last_score_event_id: string | null
+          period_minutes: number | null
+          period_started_seconds: number
           points_to_win: number
           round_label: string | null
           scheduled_at: string | null
@@ -810,6 +823,7 @@ export type Database = {
         | "finish"
         | "cancel"
         | "end_set"
+        | "foul"
       match_status: "scheduled" | "live" | "paused" | "finished" | "cancelled"
       project_status: "Published" | "Draft"
       pshare_status: "draft" | "published" | "review"
@@ -959,6 +973,7 @@ export const Constants = {
         "finish",
         "cancel",
         "end_set",
+        "foul",
       ],
       match_status: ["scheduled", "live", "paused", "finished", "cancelled"],
       project_status: ["Published", "Draft"],
