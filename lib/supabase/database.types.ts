@@ -370,6 +370,50 @@ export type Database = {
           },
         ]
       }
+      match_players: {
+        Row: {
+          created_at: string
+          fouls: number
+          id: string
+          match_id: string
+          name: string | null
+          number: number
+          on_court: boolean
+          points: number
+          team: string
+        }
+        Insert: {
+          created_at?: string
+          fouls?: number
+          id?: string
+          match_id: string
+          name?: string | null
+          number: number
+          on_court?: boolean
+          points?: number
+          team: string
+        }
+        Update: {
+          created_at?: string
+          fouls?: number
+          id?: string
+          match_id?: string
+          name?: string | null
+          number?: number
+          on_court?: boolean
+          points?: number
+          team?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_players_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           best_of: number
@@ -381,6 +425,7 @@ export type Database = {
           house_a: number
           house_b: number
           id: string
+          last_player_foul: Json | null
           last_score_event_id: string | null
           period_minutes: number | null
           period_started_seconds: number
@@ -395,6 +440,7 @@ export type Database = {
           sport: string
           started_at: string | null
           status: Database["public"]["Enums"]["match_status"]
+          timeouts: Json
           timer_seconds: number
           timer_started_at: string | null
           updated_at: string
@@ -412,6 +458,7 @@ export type Database = {
           house_a: number
           house_b: number
           id?: string
+          last_player_foul?: Json | null
           last_score_event_id?: string | null
           period_minutes?: number | null
           period_started_seconds?: number
@@ -426,6 +473,7 @@ export type Database = {
           sport: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
+          timeouts?: Json
           timer_seconds?: number
           timer_started_at?: string | null
           updated_at?: string
@@ -443,6 +491,7 @@ export type Database = {
           house_a?: number
           house_b?: number
           id?: string
+          last_player_foul?: Json | null
           last_score_event_id?: string | null
           period_minutes?: number | null
           period_started_seconds?: number
@@ -457,6 +506,7 @@ export type Database = {
           sport?: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["match_status"]
+          timeouts?: Json
           timer_seconds?: number
           timer_started_at?: string | null
           updated_at?: string
@@ -768,6 +818,9 @@ export type Database = {
           p_fouls: Json
           p_match_id: string
           p_payload: Json
+          p_player_fouls: number
+          p_player_id: string
+          p_player_points: number
           p_serving: string
           p_sets: Json
           p_status: Database["public"]["Enums"]["match_status"]
@@ -784,6 +837,7 @@ export type Database = {
           house_a: number
           house_b: number
           id: string
+          last_player_foul: Json | null
           last_score_event_id: string | null
           period_minutes: number | null
           period_started_seconds: number
@@ -798,6 +852,7 @@ export type Database = {
           sport: string
           started_at: string | null
           status: Database["public"]["Enums"]["match_status"]
+          timeouts: Json
           timer_seconds: number
           timer_started_at: string | null
           updated_at: string
@@ -831,6 +886,7 @@ export type Database = {
           house_a: number
           house_b: number
           id: string
+          last_player_foul: Json | null
           last_score_event_id: string | null
           period_minutes: number | null
           period_started_seconds: number
@@ -845,6 +901,7 @@ export type Database = {
           sport: string
           started_at: string | null
           status: Database["public"]["Enums"]["match_status"]
+          timeouts: Json
           timer_seconds: number
           timer_started_at: string | null
           updated_at: string
