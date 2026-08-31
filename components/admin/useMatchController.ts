@@ -12,6 +12,7 @@ import {
   endCurrentPeriod,
   formatClock,
   formatOfMatch,
+  isFouledOut,
   isTimed,
   leaderForEarlyEnd,
   matchWinner,
@@ -24,13 +25,17 @@ import {
   totalPoints,
 } from "@/lib/sport/rules";
 import {
+  addPlayer as addPlayerAction,
   endMatch,
   endSet,
   pauseMatch,
   recordFoul,
+  removePlayer as removePlayerAction,
   resumeMatch,
   scorePoint,
+  setOnCourt,
   setShotClock,
+  setTimeouts,
   startMatch,
   undoLast,
   type MatchActionResult,
@@ -60,6 +65,8 @@ export function useMatchController(match: MatchView) {
   const [view, setView] = useState(match);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  // Jersey chip tapped before a score/foul — credited then cleared.
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
   const confirmedRef = useRef(match);
   const queueRef = useRef<Promise<void>>(Promise.resolve());
@@ -143,26 +150,92 @@ export function useMatchController(match: MatchView) {
   const shotClock = timed ? shotClockRemaining(view, now) : null;
   const shotClockTeam = timed ? view.shotClockTeam : null;
 
+  // The selected player only counts when they belong to the tapped team.
+  const creditFor = (team: TeamKey) => {
+    const p = view.players.find((x) => x.id === selectedPlayer);
+    return p && p.team === team ? p : undefined;
+  };
+  const creditPlayers = (
+    players: MatchView["players"],
+    id: string,
+    points: number,
+    fouls: number,
+  ) =>
+    players.map((p) =>
+      p.id === id
+        ? {
+            ...p,
+            points: Math.max(0, p.points + points),
+            fouls: Math.max(0, p.fouls + fouls),
+          }
+        : p,
+    );
+
   const tapScore = (team: TeamKey, delta: PointDelta) => {
     if (!scoringOpen) return;
+    const player = creditFor(team);
+    setSelectedPlayer(null);
     dispatch(
       (v) => {
         const r = applyPoint(stateOfMatch(v), team, delta);
-        return r.ok ? { ...v, ...r.state } : v;
+        if (!r.ok) return v;
+        return {
+          ...v,
+          ...r.state,
+          players: player
+            ? creditPlayers(v.players, player.id, delta, 0)
+            : v.players,
+        };
       },
-      (eventId) => scorePoint(view.id, eventId, team, delta),
+      (eventId) => scorePoint(view.id, eventId, team, delta, player?.id),
     );
   };
 
   const tapFoul = (team: TeamKey, delta: 1 | -1) => {
     if (!scoringOpen || !timed) return;
+    const player = creditFor(team);
+    setSelectedPlayer(null);
+    if (player && delta > 0 && isFouledOut(player)) return;
     dispatch(
       (v) => {
         const r = applyFoul(stateOfMatch(v), team, delta);
-        return r.ok ? { ...v, ...r.state } : v;
+        if (!r.ok) return v;
+        return {
+          ...v,
+          ...r.state,
+          players: player
+            ? creditPlayers(v.players, player.id, 0, delta)
+            : v.players,
+        };
       },
-      (eventId) => recordFoul(view.id, eventId, team, delta),
+      (eventId) => recordFoul(view.id, eventId, team, delta, player?.id),
     );
+  };
+
+  const tapTimeout = (team: TeamKey) => adjustTimeouts(team, -1);
+  const adjustTimeouts = (team: TeamKey, delta: 1 | -1) => {
+    if (!timed || !inPlay) return;
+    const next = Math.min(9, Math.max(0, view.timeouts[team] + delta));
+    if (next === view.timeouts[team]) return;
+    dispatch(
+      (v) => ({ ...v, timeouts: { ...v.timeouts, [team]: next } }),
+      () => setTimeouts(view.id, team, next),
+    );
+  };
+
+  // Roster edits are rare and need the server's id/uniqueness answer — no
+  // optimistic prediction, just the shared queue + error surface.
+  const addPlayer = (team: TeamKey, number: number, name: string) =>
+    dispatch(null, () => addPlayerAction(view.id, team, number, name));
+  const removePlayer = (playerId: string) => {
+    if (selectedPlayer === playerId) setSelectedPlayer(null);
+    dispatch(null, () => removePlayerAction(view.id, playerId));
+  };
+  const toggleOnCourt = (playerId: string) => {
+    const p = view.players.find((x) => x.id === playerId);
+    if (!p) return;
+    if (p.onCourt && selectedPlayer === playerId) setSelectedPlayer(null);
+    dispatch(null, () => setOnCourt(view.id, playerId, !p.onCourt));
   };
 
   const tapEndPeriod = () => {
@@ -264,6 +337,14 @@ export function useMatchController(match: MatchView) {
     shotClockTeam,
     tapShotClock,
     clearShotClock,
+    selectedPlayer,
+    selectPlayer: setSelectedPlayer,
+    timeouts: view.timeouts,
+    tapTimeout,
+    adjustTimeouts,
+    addPlayer,
+    removePlayer,
+    toggleOnCourt,
     tapScore,
     tapFoul,
     tapEndPeriod,
