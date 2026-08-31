@@ -1,151 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import type { MatchView } from "@/lib/types";
-import type { TeamKey } from "@/lib/sport/rules";
-import {
-  applyPoint,
-  deriveFlags,
-  endCurrentSet,
-  leaderForEarlyEnd,
-  matchWinner,
-  setsToWin,
-  setsWon,
-  SPORTS,
-} from "@/lib/sport/rules";
+import { setsToWin } from "@/lib/sport/rules";
 import { contrastText, HOUSE_HEX } from "@/lib/sport/colors";
 import { cn } from "@/lib/cn";
 import { Btn } from "@/components/admin/Btn";
-import {
-  cancelMatch,
-  endMatch,
-  endSet,
-  pauseMatch,
-  resumeMatch,
-  scorePoint,
-  startMatch,
-  undoLast,
-  type MatchActionResult,
-} from "@/app/admin/scoreboard/actions";
+import { useMatchController } from "@/components/admin/useMatchController";
+import { cancelMatch } from "@/app/admin/scoreboard/actions";
 
-function stateOf(m: MatchView) {
-  return { sets: m.sets, currentSet: m.currentSet, serving: m.serving };
-}
-
-function formatClock(m: MatchView, now: number): string {
-  const running = m.timerStartedAt
-    ? (now - Date.parse(m.timerStartedAt)) / 1000
-    : 0;
-  const total = Math.max(0, Math.floor(m.timerSeconds + running));
-  const mm = String(Math.floor(total / 60)).padStart(2, "0");
-  const ss = String(total % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
-}
-
-/**
- * Courtside control console. Optimistic: each tap renders its predicted state
- * immediately (same engine as the server), while a promise queue serializes
- * the actual server calls — rapid taps never race each other, and every call
- * carries a fresh event id so a network retry can't double-count. Server
- * responses (and realtime refreshes from a second admin) reconcile the view;
- * failures roll back to the last server-confirmed state.
- */
+/** Courtside control console (classic admin UI). Logic lives in useMatchController. */
 export function MatchConsole({ match }: { match: MatchView }) {
-  const [view, setView] = useState(match);
-  const [error, setError] = useState<string | null>(null);
   const [confirmEnd, setConfirmEnd] = useState(false);
-  const [now, setNow] = useState(() => Date.now());
-
-  const confirmedRef = useRef(match);
-  const queueRef = useRef<Promise<void>>(Promise.resolve());
-  const pendingRef = useRef(0);
-
-  useEffect(() => {
-    if (
-      match.id !== confirmedRef.current.id ||
-      match.version >= confirmedRef.current.version
-    ) {
-      confirmedRef.current = match;
-      if (pendingRef.current === 0) setView(match);
-    }
-  }, [match]);
-
-  useEffect(() => {
-    if (view.status !== "live") return;
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, [view.status]);
-
-  function dispatch(
-    predict: ((v: MatchView) => MatchView) | null,
-    run: (eventId: string) => Promise<MatchActionResult>,
-  ) {
-    setError(null);
-    if (predict) setView(predict);
-    pendingRef.current += 1;
-    const eventId = crypto.randomUUID();
-    queueRef.current = queueRef.current.then(async () => {
-      let res: MatchActionResult;
-      try {
-        res = await run(eventId);
-      } catch {
-        res = { ok: false, error: "Network error — score not saved" };
-      }
-      pendingRef.current -= 1;
-      if (res.ok) {
-        if (
-          res.match.id !== confirmedRef.current.id ||
-          res.match.version >= confirmedRef.current.version
-        ) {
-          confirmedRef.current = res.match;
-        }
-        if (pendingRef.current === 0) setView(confirmedRef.current);
-      } else {
-        setError(res.error);
-        setView(confirmedRef.current); // drop the optimistic overlay
-      }
-    });
-  }
-
-  const config = SPORTS[view.sport];
-  const format = { bestOf: view.bestOf, pointsToWin: view.pointsToWin };
-  const flags = deriveFlags(format, stateOf(view));
-  const won = setsWon(stateOf(view), view.status === "finished");
-  // Advisory only — nothing freezes; the admin decides when sets/matches end.
-  const majority = matchWinner(format, stateOf(view));
-  const endWinner = leaderForEarlyEnd(stateOf(view));
-  const inPlay = view.status === "live" || view.status === "paused";
-  const scoringOpen = view.status === "live";
-  const currentSetTied =
-    view.sets[view.currentSet - 1].a === view.sets[view.currentSet - 1].b;
-  const canEndSet =
-    view.status === "live" && !currentSetTied && view.currentSet < view.bestOf;
-
-  const tapScore = (team: TeamKey, delta: 1 | -1) => {
-    if (!scoringOpen) return;
-    dispatch(
-      (v) => {
-        const r = applyPoint(stateOf(v), team, delta);
-        return r.ok ? { ...v, ...r.state } : v;
-      },
-      (eventId) => scorePoint(view.id, eventId, team, delta),
-    );
-  };
-
-  const tapEndSet = () => {
-    if (!canEndSet) return;
-    dispatch(
-      (v) => {
-        const r = endCurrentSet(
-          SPORTS[v.sport].nextSetFirstServer,
-          { bestOf: v.bestOf, pointsToWin: v.pointsToWin },
-          stateOf(v),
-        );
-        return r.ok ? { ...v, ...r.state } : v;
-      },
-      (eventId) => endSet(view.id, eventId),
-    );
-  };
+  const {
+    view,
+    error,
+    clearError,
+    clock,
+    config,
+    timed,
+    format,
+    flags,
+    won,
+    total,
+    majority,
+    endWinner,
+    inPlay,
+    scoringOpen,
+    canEndSet,
+    tapScore,
+    tapEndSet,
+    start,
+    pause,
+    resume,
+    undo,
+    finish,
+  } = useMatchController(match);
 
   const houses = [
     { team: "a" as const, info: view.houseA },
@@ -162,12 +53,24 @@ export function MatchConsole({ match }: { match: MatchView }) {
           <span>✕ {error}</span>
           <button
             type="button"
-            onClick={() => setError(null)}
+            onClick={clearError}
             className="hover:text-ink ml-3 cursor-pointer"
             aria-label="Dismiss"
           >
             ✕
           </button>
+        </div>
+      )}
+
+      {timed && (
+        <div className="border-line bg-yellow text-ink mb-3 flex items-center justify-between border-[1.5px] px-3 py-2 font-mono text-[11px] tracking-[0.12em] uppercase">
+          <span>★ {config.labelEn} is managed in the New UI</span>
+          <Link
+            href="/console/match"
+            className="underline underline-offset-2"
+          >
+            Open console →
+          </Link>
         </div>
       )}
 
@@ -177,7 +80,10 @@ export function MatchConsole({ match }: { match: MatchView }) {
             {config.labelTh}
           </span>
           <span className="text-mute-500 font-mono text-[10px] tracking-[0.18em] uppercase">
-            {config.labelEn} · Best of {view.bestOf} · to {view.pointsToWin}
+            {config.labelEn} ·{" "}
+            {timed
+              ? `${view.bestOf} × ${view.periodMinutes} min`
+              : `Best of ${view.bestOf} · to ${view.pointsToWin}`}
             {view.roundLabel ? ` · ${view.roundLabel}` : ""}
             {view.venue ? ` · ${view.venue}` : ""}
           </span>
@@ -194,11 +100,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
             {view.status === "finished" && (
               <span className="text-blue-deep">✓ Finished</span>
             )}
-            {inPlay && (
-              <span className="text-ink tabular-nums">
-                {formatClock(view, now)}
-              </span>
-            )}
+            {inPlay && <span className="text-ink tabular-nums">{clock}</span>}
           </span>
         </div>
 
@@ -217,18 +119,21 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   <span className="font-display text-[22px] leading-none italic">
                     {info.nameEn} · {info.nameTh}
                   </span>
-                  {view.serving === team && view.status === "live" && (
+                  {!timed && view.serving === team && view.status === "live" && (
                     <span aria-label="Serving" title="Serving">
                       ●
                     </span>
                   )}
                 </div>
                 <div className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-80">
-                  Sets {won[team]} / {setsToWin(format)}
+                  {timed
+                    ? `Total · fouls ${view.fouls[team]}`
+                    : `Sets ${won[team]} / ${setsToWin(format)}`}
                 </div>
                 <div className="font-display text-[96px] leading-none italic tabular-nums">
-                  {set[team]}
+                  {timed ? total[team] : set[team]}
                 </div>
+                {!timed && (
                 <button
                   type="button"
                   onClick={() => tapScore(team, 1)}
@@ -251,6 +156,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                 >
                   −1 correction
                 </button>
+                )}
               </div>
             );
           })}
@@ -312,12 +218,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   type="button"
                   variant="primary"
                   className="py-4"
-                  onClick={() =>
-                    dispatch(
-                      (v) => ({ ...v, status: "live" as const }),
-                      (eventId) => startMatch(view.id, eventId),
-                    )
-                  }
+                  onClick={start}
                 >
                   ▶ Start match
                 </Btn>
@@ -332,25 +233,18 @@ export function MatchConsole({ match }: { match: MatchView }) {
 
             {view.status === "live" && (
               <>
-                <Btn
-                  type="button"
-                  variant="primary"
-                  className="py-3"
-                  disabled={!canEndSet}
-                  onClick={tapEndSet}
-                >
-                  ✓ End set {view.currentSet} · จบเซต
-                </Btn>
-                <Btn
-                  type="button"
-                  className="py-3"
-                  onClick={() =>
-                    dispatch(
-                      (v) => ({ ...v, status: "paused" as const }),
-                      (eventId) => pauseMatch(view.id, eventId),
-                    )
-                  }
-                >
+                {!timed && (
+                  <Btn
+                    type="button"
+                    variant="primary"
+                    className="py-3"
+                    disabled={!canEndSet}
+                    onClick={tapEndSet}
+                  >
+                    ✓ End set {view.currentSet} · จบเซต
+                  </Btn>
+                )}
+                <Btn type="button" className="py-3" onClick={pause}>
                   ‖ Pause
                 </Btn>
               </>
@@ -360,12 +254,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                 type="button"
                 variant="primary"
                 className="py-3"
-                onClick={() =>
-                  dispatch(
-                    (v) => ({ ...v, status: "live" as const }),
-                    (eventId) => resumeMatch(view.id, eventId),
-                  )
-                }
+                onClick={resume}
               >
                 ▶ Resume
               </Btn>
@@ -377,9 +266,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                   type="button"
                   className="py-3"
                   disabled={!view.canUndo}
-                  onClick={() =>
-                    dispatch(null, (eventId) => undoLast(view.id, eventId))
-                  }
+                  onClick={undo}
                 >
                   ↩ Undo last
                 </Btn>
@@ -433,10 +320,7 @@ export function MatchConsole({ match }: { match: MatchView }) {
                 variant="ink"
                 onClick={() => {
                   setConfirmEnd(false);
-                  dispatch(
-                    (v) => ({ ...v, status: "finished" as const }),
-                    (eventId) => endMatch(view.id, eventId),
-                  );
+                  finish();
                 }}
               >
                 Confirm end

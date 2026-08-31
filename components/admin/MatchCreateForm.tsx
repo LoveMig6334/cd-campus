@@ -20,11 +20,13 @@ export function MatchCreateForm() {
         <label className="block">
           <span className={LABEL}>Sport · กีฬา</span>
           <select name="sport" required className={FIELD}>
-            {Object.values(SPORTS).map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.labelEn} · {s.labelTh}
-              </option>
-            ))}
+            {Object.values(SPORTS)
+              .filter((s) => s.kind === "sets")
+              .map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.labelEn} · {s.labelTh}
+                </option>
+              ))}
           </select>
         </label>
 
