@@ -384,6 +384,17 @@ export type MatchView = {
   shotClockTeam: import("@/lib/sport/rules").TeamKey | null;
   shotClockEndsAt: string | null;
   shotClockRemaining: number | null;
+  /** Timed sports: roster with per-player fouls/points (sorted by number). */
+  players: import("@/lib/sport/rules").MatchPlayer[];
+  /** Timed sports: timeouts left per team (FIBA 2 / 3 / 1). */
+  timeouts: import("@/lib/sport/rules").TeamCounts;
+  /** Latest player foul, for the board's PLAYER FOUL panel. */
+  lastPlayerFoul: {
+    team: import("@/lib/sport/rules").TeamKey;
+    number: number;
+    fouls: number;
+    at: string;
+  } | null;
   status: MatchStatus;
   houseA: MatchHouse;
   houseB: MatchHouse;

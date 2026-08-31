@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { MatchView } from "@/lib/types";
 import {
   isSportId,
+  type MatchPlayer,
   type SetScore,
   type TeamCounts,
   type TeamKey,
@@ -16,13 +17,49 @@ import { dayRange, houseKeyFromId } from "./util";
 
 type MatchRow = DB["public"]["Tables"]["matches"]["Row"];
 type HouseNames = { name_en: string; name_th: string };
+type PlayerRow = Pick<
+  DB["public"]["Tables"]["match_players"]["Row"],
+  "id" | "team" | "number" | "name" | "fouls" | "points" | "on_court"
+>;
 type MatchRowJoined = MatchRow & {
   house_a_info: HouseNames;
   house_b_info: HouseNames;
+  players: PlayerRow[];
 };
 
 const MATCH_SELECT =
-  "*, house_a_info:houses!matches_house_a_fkey(name_en, name_th), house_b_info:houses!matches_house_b_fkey(name_en, name_th)";
+  "*, house_a_info:houses!matches_house_a_fkey(name_en, name_th), house_b_info:houses!matches_house_b_fkey(name_en, name_th), players:match_players(id, team, number, name, fouls, points, on_court)";
+
+function mapPlayers(rows: PlayerRow[]): MatchPlayer[] {
+  return rows
+    .map((r) => ({
+      id: r.id,
+      team: r.team as TeamKey,
+      number: r.number,
+      name: r.name,
+      fouls: r.fouls,
+      points: r.points,
+      onCourt: r.on_court,
+    }))
+    .sort((a, b) => a.number - b.number);
+}
+
+function parseLastFoul(
+  raw: MatchRow["last_player_foul"],
+): MatchView["lastPlayerFoul"] {
+  if (raw === null || typeof raw !== "object" || Array.isArray(raw))
+    return null;
+  const { team, number, fouls, at } = raw;
+  if (
+    (team !== "a" && team !== "b") ||
+    typeof number !== "number" ||
+    typeof fouls !== "number" ||
+    typeof at !== "string"
+  ) {
+    return null;
+  }
+  return { team, number, fouls, at };
+}
 
 function parseSets(raw: MatchRow["sets"]): SetScore[] {
   if (!Array.isArray(raw)) throw new Error("matches.sets: expected array");
@@ -68,6 +105,9 @@ export function mapMatchRow(row: MatchRowJoined): MatchView {
     shotClockTeam: row.shot_clock_team as TeamKey | null,
     shotClockEndsAt: row.shot_clock_ends_at,
     shotClockRemaining: row.shot_clock_remaining,
+    players: mapPlayers(row.players ?? []),
+    timeouts: parseCounts(row.timeouts, "timeouts"),
+    lastPlayerFoul: parseLastFoul(row.last_player_foul),
     status: row.status,
     houseA: {
       key: houseKeyFromId(row.house_a),
