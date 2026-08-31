@@ -2,15 +2,18 @@ import { describe, expect, it } from "vitest";
 import {
   applyFoul,
   applyPoint,
+  bench,
   completedSetWinner,
   deriveFlags,
   endCurrentPeriod,
   firstServerOfSet,
   formatClock,
   initialState,
+  isFouledOut,
   isValidFormat,
   leaderForEarlyEnd,
   matchWinner,
+  onCourt,
   periodLabel,
   periodLengthSeconds,
   periodRemainingSeconds,
@@ -18,8 +21,10 @@ import {
   setsWon,
   shotClockRemaining,
   SPORTS,
+  timeoutsForPeriod,
   totalPoints,
   type MatchFormat,
+  type MatchPlayer,
   type ScoreState,
   type SetScore,
   type TeamKey,
@@ -402,5 +407,51 @@ describe("shot clock", () => {
         t0,
       ),
     ).toBeNull();
+  });
+});
+
+describe("players and timeouts", () => {
+  const p = (
+    id: string,
+    team: TeamKey,
+    number: number,
+    onCourt: boolean,
+    fouls = 0,
+  ): MatchPlayer => ({
+    id,
+    team,
+    number,
+    name: null,
+    fouls,
+    points: 0,
+    onCourt,
+  });
+  const roster = [
+    p("1", "a", 33, true),
+    p("2", "a", 4, true),
+    p("3", "a", 12, false),
+    p("4", "b", 7, true),
+    p("5", "b", 22, false, 5),
+  ];
+
+  it("splits on-court and bench per team, sorted by number", () => {
+    expect(onCourt(roster, "a").map((x) => x.number)).toEqual([4, 33]);
+    expect(bench(roster, "a").map((x) => x.number)).toEqual([12]);
+    expect(onCourt(roster, "b").map((x) => x.number)).toEqual([7]);
+    expect(bench(roster, "b").map((x) => x.number)).toEqual([22]);
+  });
+
+  it("fouls out at the limit", () => {
+    expect(isFouledOut(roster[4])).toBe(true);
+    expect(isFouledOut(roster[3])).toBe(false);
+  });
+
+  it("gives 2 timeouts in the first half, 3 in the second, 1 in overtime", () => {
+    expect(timeoutsForPeriod(BB4_7, 1)).toBe(2);
+    expect(timeoutsForPeriod(BB4_7, 2)).toBe(2);
+    expect(timeoutsForPeriod(BB4_7, 3)).toBe(3);
+    expect(timeoutsForPeriod(BB4_7, 4)).toBe(3);
+    expect(timeoutsForPeriod(BB4_7, 5)).toBe(1);
+    expect(timeoutsForPeriod({ ...BB4_7, bestOf: 2 }, 2)).toBe(3);
   });
 });

@@ -540,3 +540,49 @@ export function shotClockRemaining(
   }
   return sc.shotClockRemaining;
 }
+
+/* ------------------------------------------------------------------ */
+/* Players & timeouts (timed sports)                                    */
+/* ------------------------------------------------------------------ */
+
+export const PLAYER_FOUL_LIMIT = 5;
+export const ON_COURT_MAX = 5;
+export const ROSTER_MAX = 12;
+
+export type MatchPlayer = {
+  id: string;
+  team: TeamKey;
+  number: number;
+  name: string | null;
+  fouls: number;
+  points: number;
+  onCourt: boolean;
+};
+
+const byNumber = (a: MatchPlayer, b: MatchPlayer) => a.number - b.number;
+
+/** A team's on-court players, lowest jersey number first. */
+export function onCourt(players: MatchPlayer[], team: TeamKey): MatchPlayer[] {
+  return players.filter((p) => p.team === team && p.onCourt).sort(byNumber);
+}
+
+/** A team's bench, lowest jersey number first. */
+export function bench(players: MatchPlayer[], team: TeamKey): MatchPlayer[] {
+  return players.filter((p) => p.team === team && !p.onCourt).sort(byNumber);
+}
+
+export function isFouledOut(p: MatchPlayer): boolean {
+  return p.fouls >= PLAYER_FOUL_LIMIT;
+}
+
+/**
+ * Timeouts each team gets for the 1-based period (FIBA): 2 in the first
+ * half, 3 in the second, 1 per overtime. Mirrors the rule in the RPC.
+ */
+export function timeoutsForPeriod(
+  format: MatchFormat,
+  periodIndex: number,
+): number {
+  if (periodIndex > format.bestOf) return 1;
+  return periodIndex > Math.floor(format.bestOf / 2) ? 3 : 2;
+}
