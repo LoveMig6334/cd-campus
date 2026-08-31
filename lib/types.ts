@@ -374,6 +374,12 @@ export type MatchView = {
   /** Per-match format: odd set cap + advisory points target. */
   bestOf: number;
   pointsToWin: number;
+  /** Timed sports: regulation period length (minutes). Null for set sports. */
+  periodMinutes: number | null;
+  /** Timed sports: cumulative team fouls. Always {0,0} for set sports. */
+  fouls: import("@/lib/sport/rules").TeamCounts;
+  /** Game seconds elapsed when the current period started (countdown offset). */
+  periodStartedSeconds: number;
   status: MatchStatus;
   houseA: MatchHouse;
   houseB: MatchHouse;

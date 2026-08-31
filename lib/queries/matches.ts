@@ -1,6 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import type { MatchView } from "@/lib/types";
-import { isSportId, type SetScore, type TeamKey } from "@/lib/sport/rules";
+import {
+  isSportId,
+  type SetScore,
+  type TeamCounts,
+  type TeamKey,
+} from "@/lib/sport/rules";
+import {
+  DISPLAY_MODE_KEY,
+  parseDisplayMode,
+  type DisplayMode,
+} from "@/lib/sport/displayMode";
 import type { DB } from "./util";
 import { dayRange, houseKeyFromId } from "./util";
 
@@ -30,6 +40,19 @@ function parseSets(raw: MatchRow["sets"]): SetScore[] {
   });
 }
 
+function parseCounts(raw: MatchRow["fouls"], field: string): TeamCounts {
+  if (
+    raw === null ||
+    typeof raw !== "object" ||
+    Array.isArray(raw) ||
+    typeof raw.a !== "number" ||
+    typeof raw.b !== "number"
+  ) {
+    throw new Error(`matches.${field}: malformed counts`);
+  }
+  return { a: raw.a, b: raw.b };
+}
+
 export function mapMatchRow(row: MatchRowJoined): MatchView {
   if (!isSportId(row.sport)) {
     throw new Error(`matches.sport: unknown sport "${row.sport}"`);
@@ -39,6 +62,9 @@ export function mapMatchRow(row: MatchRowJoined): MatchView {
     sport: row.sport,
     bestOf: row.best_of,
     pointsToWin: row.points_to_win,
+    periodMinutes: row.period_minutes,
+    fouls: parseCounts(row.fouls, "fouls"),
+    periodStartedSeconds: row.period_started_seconds,
     status: row.status,
     houseA: {
       key: houseKeyFromId(row.house_a),
@@ -181,4 +207,16 @@ export async function getMatchHistory(filters?: {
   const { data, error } = await q;
   if (error) throw new Error(`getMatchHistory: ${error.message}`);
   return (data ?? []).map(mapMatchRow);
+}
+
+/** Hall-board mode; a missing row (migration not yet applied) means "match". */
+export async function getDisplayMode(): Promise<DisplayMode> {
+  const db = await createClient();
+  const { data, error } = await db
+    .from("site_config")
+    .select("value")
+    .eq("key", DISPLAY_MODE_KEY)
+    .maybeSingle();
+  if (error) throw new Error(`getDisplayMode: ${error.message}`);
+  return parseDisplayMode(data?.value);
 }
