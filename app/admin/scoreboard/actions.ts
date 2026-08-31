@@ -15,11 +15,14 @@ import {
   formatOf,
   formatOfMatch,
   initialState,
+  isFouledOut,
   isSportId,
   isTimed,
   isValidFormat,
   leaderForEarlyEnd,
   SPORTS,
+  ON_COURT_MAX,
+  ROSTER_MAX,
   stateOfMatch,
   type PointDelta,
   type ScoreState,
@@ -44,12 +47,16 @@ type MatchEventType =
   | "undo"
   | "finish";
 
+type PlayerCredit = { id: string; points: number; fouls: number };
+
 type ComputedEvent = {
   type: MatchEventType;
   payload: Json;
   state: ScoreState;
   status: MatchStatus;
   winnerHouseId: number | null;
+  /** Optional per-player credit applied atomically with the event. */
+  player?: PlayerCredit;
 };
 
 type Computed =
@@ -122,6 +129,9 @@ async function applyEvent(
       p_status: apply.status,
       // Postgres arg nullability isn't expressed in the generated types.
       p_winner_house_id: apply.winnerHouseId as unknown as number,
+      p_player_id: (apply.player?.id ?? null) as unknown as string,
+      p_player_points: apply.player?.points ?? 0,
+      p_player_fouls: apply.player?.fouls ?? 0,
     });
 
     if (!error) {
@@ -205,6 +215,7 @@ export async function scorePoint(
   eventId: string,
   team: TeamKey,
   delta: PointDelta,
+  playerId?: string,
 ): Promise<MatchActionResult> {
   return applyEvent(matchId, eventId, (m) => {
     if (m.status !== "live") return { error: "Match is not live" };
@@ -212,18 +223,24 @@ export async function scorePoint(
     const result = applyPoint(before, team, delta);
     // Floor taps (−1 at 0) are silent no-ops.
     if (!result.ok) return { noop: true };
+    const player = playerId
+      ? m.players.find((p) => p.id === playerId && p.team === team)
+      : undefined;
+    if (playerId && !player) return { error: "Player not on this team" };
     return {
       apply: {
         type: "score",
         payload: {
           team,
           delta,
+          playerId: player?.id ?? null,
           before: serializeState(before),
           after: serializeState(result.state),
         },
         state: result.state,
         status: "live",
         winnerHouseId: null,
+        player: player ? { id: player.id, points: delta, fouls: 0 } : undefined,
       },
     };
   });
@@ -234,6 +251,7 @@ export async function recordFoul(
   eventId: string,
   team: TeamKey,
   delta: 1 | -1,
+  playerId?: string,
 ): Promise<MatchActionResult> {
   return applyEvent(matchId, eventId, (m) => {
     if (m.status !== "live") return { error: "Match is not live" };
@@ -244,18 +262,28 @@ export async function recordFoul(
     const result = applyFoul(before, team, delta);
     // Floor taps (−1 at 0) are silent no-ops.
     if (!result.ok) return { noop: true };
+    const player = playerId
+      ? m.players.find((p) => p.id === playerId && p.team === team)
+      : undefined;
+    if (playerId && !player) return { error: "Player not on this team" };
+    if (player && delta > 0 && isFouledOut(player)) {
+      return { error: `#${player.number} has fouled out` };
+    }
+    if (player && delta < 0 && player.fouls === 0) return { noop: true };
     return {
       apply: {
         type: "foul",
         payload: {
           team,
           delta,
+          playerId: player?.id ?? null,
           before: serializeState(before),
           after: serializeState(result.state),
         },
         state: result.state,
         status: "live",
         winnerHouseId: null,
+        player: player ? { id: player.id, points: 0, fouls: delta } : undefined,
       },
     };
   });
@@ -285,9 +313,25 @@ export async function undoLast(
   const payload = event.payload as {
     before?: Partial<ScoreState>;
     periodStartedSecondsBefore?: number;
+    playerId?: string | null;
+    delta?: number;
   };
   const before = payload.before;
   if (!before) return { ok: false, error: "Missing undo snapshot" };
+
+  // Reverse the player credit of a score/foul event, if it had one.
+  let player: PlayerCredit | undefined;
+  if (
+    typeof payload.playerId === "string" &&
+    typeof payload.delta === "number"
+  ) {
+    player =
+      event.type === "score"
+        ? { id: payload.playerId, points: -payload.delta, fouls: 0 }
+        : event.type === "foul"
+          ? { id: payload.playerId, points: 0, fouls: -payload.delta }
+          : undefined;
+  }
 
   return applyEvent(matchId, eventId, (m) => {
     if (m.status !== "live" && m.status !== "paused") {
@@ -308,6 +352,11 @@ export async function undoLast(
       before: serializeState(stateOf(m)),
       after: serializeState(restored),
     };
+    if (player) {
+      undoPayload.playerId = player.id;
+      undoPayload.playerPoints = player.points;
+      undoPayload.playerFouls = player.fouls;
+    }
     // Undoing a period ending also rewinds the countdown offset.
     if (
       event.type === "end_set" &&
@@ -322,6 +371,7 @@ export async function undoLast(
         state: restored,
         status: m.status,
         winnerHouseId: null,
+        player,
       },
     };
   });
@@ -423,6 +473,119 @@ export async function setShotClock(
   return fresh
     ? { ok: true, match: fresh }
     : { ok: false, error: "Match disappeared" };
+}
+
+/* ------------------------------------------------------------------ */
+/* Roster & timeouts — plain admin writes (not events)                 */
+/* ------------------------------------------------------------------ */
+
+async function freshMatch(matchId: string): Promise<MatchActionResult> {
+  revalidateSurfaces();
+  const fresh = await getMatchById(matchId);
+  return fresh
+    ? { ok: true, match: fresh }
+    : { ok: false, error: "Match disappeared" };
+}
+
+export async function addPlayer(
+  matchId: string,
+  team: TeamKey,
+  number: number,
+  name: string,
+): Promise<MatchActionResult> {
+  await requireAdmin();
+  const match = await getMatchById(matchId);
+  if (!match) return { ok: false, error: "Match not found" };
+  if (!isTimed(SPORTS[match.sport])) {
+    return { ok: false, error: "This sport has no roster" };
+  }
+  if (!Number.isInteger(number) || number < 0 || number > 99) {
+    return { ok: false, error: "Jersey number must be 0–99" };
+  }
+  if (match.players.filter((p) => p.team === team).length >= ROSTER_MAX) {
+    return { ok: false, error: `Roster is full (${ROSTER_MAX})` };
+  }
+  if (match.players.some((p) => p.team === team && p.number === number)) {
+    return { ok: false, error: `#${number} is already on this team` };
+  }
+  const db = await createClient();
+  const { error } = await db.from("match_players").insert({
+    match_id: matchId,
+    team,
+    number,
+    name: name.trim().slice(0, 40) || null,
+    // First five join the court automatically.
+    on_court:
+      match.players.filter((p) => p.team === team && p.onCourt).length <
+      ON_COURT_MAX,
+  });
+  if (error) return { ok: false, error: error.message };
+  return freshMatch(matchId);
+}
+
+export async function removePlayer(
+  matchId: string,
+  playerId: string,
+): Promise<MatchActionResult> {
+  await requireAdmin();
+  const db = await createClient();
+  const { error } = await db
+    .from("match_players")
+    .delete()
+    .eq("id", playerId)
+    .eq("match_id", matchId);
+  if (error) return { ok: false, error: error.message };
+  return freshMatch(matchId);
+}
+
+export async function setOnCourt(
+  matchId: string,
+  playerId: string,
+  onCourt: boolean,
+): Promise<MatchActionResult> {
+  await requireAdmin();
+  const match = await getMatchById(matchId);
+  if (!match) return { ok: false, error: "Match not found" };
+  const player = match.players.find((p) => p.id === playerId);
+  if (!player) return { ok: false, error: "Player not found" };
+  if (
+    onCourt &&
+    match.players.filter((p) => p.team === player.team && p.onCourt).length >=
+      ON_COURT_MAX
+  ) {
+    return { ok: false, error: `Only ${ON_COURT_MAX} players on court` };
+  }
+  const db = await createClient();
+  const { error } = await db
+    .from("match_players")
+    .update({ on_court: onCourt })
+    .eq("id", playerId)
+    .eq("match_id", matchId);
+  if (error) return { ok: false, error: error.message };
+  return freshMatch(matchId);
+}
+
+export async function setTimeouts(
+  matchId: string,
+  team: TeamKey,
+  value: number,
+): Promise<MatchActionResult> {
+  await requireAdmin();
+  if (!Number.isInteger(value) || value < 0 || value > 9) {
+    return { ok: false, error: "Timeouts must be 0–9" };
+  }
+  const match = await getMatchById(matchId);
+  if (!match) return { ok: false, error: "Match not found" };
+  if (!isTimed(SPORTS[match.sport])) {
+    return { ok: false, error: "This sport has no timeouts" };
+  }
+  const db = await createClient();
+  const { error } = await db
+    .from("matches")
+    .update({ timeouts: { ...match.timeouts, [team]: value } })
+    .eq("id", matchId);
+  if (error) return { ok: false, error: error.message };
+  return freshMatch(matchId);
 }
 
 /* ------------------------------------------------------------------ */
