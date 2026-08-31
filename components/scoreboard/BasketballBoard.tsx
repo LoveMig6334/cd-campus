@@ -282,12 +282,12 @@ export function BasketballBoard({
         </div>
 
         {/* Scores */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center px-[1vw]">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-[1vw]">
           <div className="justify-self-start">
             <Led
               value={ledPad(total.a, 3)}
               color="amber"
-              h="calc(var(--u)*16)"
+              h="calc(var(--u)*13)"
               dim={pre}
             />
           </div>
@@ -297,13 +297,13 @@ export function BasketballBoard({
               <Led
                 value={lastFoul ? ledPad(lastFoul.number, 2) : "  "}
                 color="red"
-                h="calc(var(--u)*7)"
+                h="calc(var(--u)*6)"
                 dim={!lastFoul}
               />
               <Led
                 value={lastFoul ? String(lastFoul.fouls) : " "}
                 color="red"
-                h="calc(var(--u)*7)"
+                h="calc(var(--u)*6)"
                 dim={!lastFoul}
               />
             </div>
@@ -317,7 +317,7 @@ export function BasketballBoard({
             <Led
               value={ledPadEnd(total.b, 3)}
               color="amber"
-              h="calc(var(--u)*16)"
+              h="calc(var(--u)*13)"
               dim={pre}
             />
           </div>
