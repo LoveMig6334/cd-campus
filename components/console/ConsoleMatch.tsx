@@ -1,13 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MatchView } from "@/lib/types";
-import { periodLabel, setsToWin } from "@/lib/sport/rules";
+import {
+  periodLabel,
+  setsToWin,
+  SHOT_CLOCK_FULL,
+  SHOT_CLOCK_REBOUND,
+} from "@/lib/sport/rules";
 import { HOUSE_HEX } from "@/lib/sport/colors";
 import { cn } from "@/lib/cn";
 import { useMatchController } from "@/components/admin/useMatchController";
 import { cancelMatch } from "@/app/admin/scoreboard/actions";
 import { Badge, Button, Panel } from "@/components/console/ui";
+import { SOUNDS, useSounds } from "@/components/console/useSounds";
 
 const SCORE_BTN = "rounded-2xl text-[32px] font-semibold active:scale-[0.98]";
 
@@ -27,6 +33,25 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
       : c.endWinner === "b"
         ? view.houseB
         : null;
+
+  const { play } = useSounds();
+  // Buzzer when the period clock runs out (transition only — not on reload
+  // of an already-expired period); horn when the shot clock hits 0.
+  const prevPeriodOver = useRef(c.periodOver);
+  useEffect(() => {
+    if (c.periodOver && !prevPeriodOver.current) play("buzzer");
+    prevPeriodOver.current = c.periodOver;
+  }, [c.periodOver, play]);
+  const prevShotClock = useRef(c.shotClock);
+  useEffect(() => {
+    const prev = prevShotClock.current;
+    if (c.shotClock === 0 && prev !== null && prev > 0) play("shot");
+    prevShotClock.current = c.shotClock;
+  }, [c.shotClock, play]);
+  const endPeriod = () => {
+    play("buzzer");
+    c.tapEndPeriod();
+  };
 
   const foulBonusAt = config.kind === "timed" ? config.foulBonusAt : Infinity;
   const overtimeMinutes = config.kind === "timed" ? config.overtimeMinutes : 0;
@@ -300,7 +325,7 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                 variant="sky"
                 className="py-3"
                 disabled={!c.canEndPeriod}
-                onClick={c.tapEndPeriod}
+                onClick={endPeriod}
               >
                 {timed
                   ? c.nextPeriodIsOvertime
@@ -359,6 +384,100 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
           )}
         </Panel>
       </div>
+
+      {timed && c.inPlay && (
+        <Panel title="Shot clock · ช็อตคล็อก">
+          <div className="grid items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
+            {houses.map(({ team, info }) => {
+              const hex = HOUSE_HEX[info.key];
+              const owns = c.shotClockTeam === team;
+              return (
+                <div
+                  key={team}
+                  className={cn(
+                    "flex flex-col gap-2 rounded-xl border p-3 transition-colors",
+                    owns ? "border-transparent" : "border-gray-200",
+                  )}
+                  style={owns ? { background: `${hex}22` } : undefined}
+                >
+                  <div className="flex items-center gap-2 text-[13px] font-semibold text-gray-700">
+                    <span
+                      className="inline-block size-2.5 rounded-full"
+                      style={{ background: hex }}
+                    />
+                    {info.nameEn} · {info.nameTh}
+                    {owns && (
+                      <Badge tone="gold" className="ml-auto">
+                        Possession
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="primary"
+                      className="h-16 rounded-2xl text-[24px] font-semibold"
+                      onClick={() => c.tapShotClock(team, SHOT_CLOCK_FULL)}
+                    >
+                      {SHOT_CLOCK_FULL}
+                    </Button>
+                    <Button
+                      variant="sky"
+                      className="h-16 flex-col gap-0 rounded-2xl text-[24px] font-semibold"
+                      onClick={() => c.tapShotClock(team, SHOT_CLOCK_REBOUND)}
+                    >
+                      {SHOT_CLOCK_REBOUND}
+                      <span className="text-[10px] font-medium tracking-wide uppercase opacity-90">
+                        Rebound
+                      </span>
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+
+            <div className="flex flex-col items-center gap-2 md:order-none md:col-start-2 md:row-start-1">
+              <div
+                className={cn(
+                  "grid min-w-[120px] place-items-center rounded-2xl px-6 py-3 text-[64px] leading-none font-semibold tabular-nums",
+                  c.shotClock === null
+                    ? "bg-gray-100 text-gray-300"
+                    : c.shotClock <= 5
+                      ? "animate-pulse bg-red-50 text-red-600"
+                      : "bg-marine text-white",
+                )}
+              >
+                {c.shotClock ?? "–"}
+              </div>
+              <Button
+                variant="ghost"
+                disabled={c.shotClock === null}
+                onClick={c.clearShotClock}
+              >
+                Clear · ล้าง
+              </Button>
+            </div>
+          </div>
+        </Panel>
+      )}
+
+      <Panel title="Sound · เสียง">
+        <div className="flex flex-wrap gap-2">
+          {SOUNDS.map((s) => (
+            <Button
+              key={s.id}
+              variant="ghost"
+              className="py-3"
+              onClick={() => play(s.id)}
+            >
+              🔊 {s.labelEn} · {s.labelTh}
+            </Button>
+          ))}
+          <span className="self-center text-[12px] text-gray-500">
+            Plays from this device · buzzer sounds at 0:00 and on End quarter,
+            horn when the shot clock expires
+          </span>
+        </div>
+      </Panel>
 
       {confirmEnd && (
         <div

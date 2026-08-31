@@ -14,6 +14,7 @@ import {
   isTimed,
   periodLabel,
   periodRemainingSeconds,
+  shotClockRemaining,
   SPORTS,
   stateOfMatch,
 } from "@/lib/sport/rules";
@@ -53,10 +54,16 @@ export function ScoreboardDisplay({
     offsetRef.current = serverNow - Date.now();
   }, [serverNow]);
 
+  // Faster ticks while a shot clock runs so its last seconds read true.
+  const shotClockRunning =
+    match?.shotClockEndsAt !== null && match?.shotClockEndsAt !== undefined;
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now() + offsetRef.current), 1000);
+    const t = setInterval(
+      () => setNow(Date.now() + offsetRef.current),
+      shotClockRunning ? 500 : 1000,
+    );
     return () => clearInterval(t);
-  }, []);
+  }, [shotClockRunning]);
 
   // Same lazy-client pattern as components/RealtimeRefresh.tsx, but with a
   // 300ms debounce (score taps should land in ~1s) and connection-status UI.
@@ -357,6 +364,14 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
     !finished &&
     periodRemainingSeconds(config, format, clockFields, now) === 0;
   const bonusAt = config.kind === "timed" ? config.foulBonusAt : Infinity;
+  const shotClock =
+    timed && !pre && !finished ? shotClockRemaining(match, now) : null;
+  const shotClockHouse =
+    match.shotClockTeam === "a"
+      ? match.houseA
+      : match.shotClockTeam === "b"
+        ? match.houseB
+        : null;
   // One column per possible set; timed sports also show any overtime played.
   const stripColumns = timed
     ? Math.max(match.bestOf, match.sets.length)
@@ -495,6 +510,26 @@ function MatchScreen({ match, now }: { match: MatchView; now: number }) {
               <div className="text-mute-500 font-mono text-[1.6vh] tracking-[0.2em] uppercase">
                 {match.bestOf} × {match.periodMinutes} min
               </div>
+              {shotClock !== null && shotClockHouse && (
+                <div className="flex flex-col items-center gap-[0.5vh]">
+                  <div className="text-mute-700 font-mono text-[1.6vh] tracking-[0.26em] uppercase">
+                    Shot clock
+                  </div>
+                  <div
+                    className={cn(
+                      "border-line font-display grid min-w-[10vw] place-items-center border-[1.5px] px-[1.4vw] py-[0.6vh] text-[11vh] leading-none italic tabular-nums",
+                      shotClock <= 5 &&
+                        "bg-house-pink! animate-pulse text-white!",
+                    )}
+                    style={{
+                      background: HOUSE_HEX[shotClockHouse.key],
+                      color: contrastText(HOUSE_HEX[shotClockHouse.key]),
+                    }}
+                  >
+                    {shotClock}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <>
