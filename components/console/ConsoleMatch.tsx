@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { MatchView } from "@/lib/types";
 import {
+  isFouledOut,
+  onCourt,
   periodLabel,
   setsToWin,
   SHOT_CLOCK_FULL,
@@ -14,6 +16,7 @@ import { useMatchController } from "@/components/admin/useMatchController";
 import { cancelMatch } from "@/app/admin/scoreboard/actions";
 import { Badge, Button, Panel } from "@/components/console/ui";
 import { SOUNDS, useSounds } from "@/components/console/useSounds";
+import { ConsoleRoster } from "@/components/console/ConsoleRoster";
 
 const SCORE_BTN = "rounded-2xl text-[32px] font-semibold active:scale-[0.98]";
 
@@ -166,6 +169,51 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
               {isWinner && <Badge tone="gold">Winner · ชนะ</Badge>}
 
               <div className="flex w-full flex-col gap-2 px-5 pb-5">
+                {timed && (
+                  <div className="mb-1 flex flex-wrap justify-center gap-1.5">
+                    {onCourt(view.players, team).length === 0 && (
+                      <span className="text-[12px] text-gray-400">
+                        No players on court — add them in the roster below
+                      </span>
+                    )}
+                    {onCourt(view.players, team).map((p) => {
+                      const selected = c.selectedPlayer === p.id;
+                      const out = isFouledOut(p);
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          disabled={!c.scoringOpen}
+                          onClick={() => c.selectPlayer(selected ? null : p.id)}
+                          className={cn(
+                            "flex min-w-[64px] cursor-pointer flex-col items-center rounded-xl border px-2.5 py-1.5 leading-tight transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                            selected
+                              ? "border-marine bg-marine text-white"
+                              : out
+                                ? "border-gray-200 bg-gray-50 text-gray-400"
+                                : "hover:border-sky border-gray-200 bg-white text-gray-800",
+                          )}
+                          aria-pressed={selected}
+                        >
+                          <span className="text-[18px] font-semibold tabular-nums">
+                            #{p.number}
+                          </span>
+                          <span className="max-w-[80px] truncate text-[10px]">
+                            {out ? "OUT" : (p.name ?? "")}
+                          </span>
+                          <span
+                            className={cn(
+                              "text-[10px] tabular-nums",
+                              selected ? "opacity-80" : "text-gray-500",
+                            )}
+                          >
+                            FL {p.fouls} · {p.points} pts
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {timed ? (
                   <div className="grid grid-cols-3 gap-2">
                     {([1, 2, 3] as const).map((n) => (
@@ -241,6 +289,37 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                         onClick={() => c.tapFoul(team, 1)}
                       >
                         + Foul
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {timed && (
+                  <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-medium tracking-wide text-gray-500 uppercase">
+                        T.O.L. · ขอเวลานอก
+                      </span>
+                      <span className="text-marine text-[28px] leading-none font-semibold tabular-nums">
+                        {c.timeouts[team]}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        className="px-3"
+                        disabled={!c.inPlay || c.timeouts[team] >= 9}
+                        onClick={() => c.adjustTimeouts(team, 1)}
+                        aria-label="Add a timeout"
+                      >
+                        +
+                      </Button>
+                      <Button
+                        variant="gold"
+                        disabled={!c.inPlay || c.timeouts[team] === 0}
+                        onClick={() => c.tapTimeout(team)}
+                      >
+                        Timeout
                       </Button>
                     </div>
                   </div>
@@ -458,6 +537,17 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
             </div>
           </div>
         </Panel>
+      )}
+
+      {timed && (
+        <ConsoleRoster
+          players={view.players}
+          houseA={view.houseA}
+          houseB={view.houseB}
+          onAdd={c.addPlayer}
+          onRemove={c.removePlayer}
+          onToggle={c.toggleOnCourt}
+        />
       )}
 
       <Panel title="Sound · เสียง">
