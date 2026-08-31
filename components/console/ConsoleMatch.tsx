@@ -251,7 +251,7 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                         key={n}
                         variant="primary"
                         className={cn("h-24", SCORE_BTN)}
-                        disabled={!c.scoringOpen}
+                        disabled={!c.scoringOpen || c.selectedTeam !== team}
                         onClick={() => c.tapScore(team, n)}
                       >
                         +{n}
@@ -270,11 +270,18 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                 )}
                 <Button
                   variant="ghost"
-                  disabled={!c.scoringOpen}
+                  disabled={
+                    !c.scoringOpen || (timed && c.selectedTeam !== team)
+                  }
                   onClick={() => c.tapScore(team, -1)}
                 >
                   −1 correction
                 </Button>
+                {timed && c.scoringOpen && c.selectedTeam !== team && (
+                  <span className="text-center text-[12px] text-gray-500">
+                    Tap a player above, then +1 / +2 / +3
+                  </span>
+                )}
 
                 {timed && (
                   <div

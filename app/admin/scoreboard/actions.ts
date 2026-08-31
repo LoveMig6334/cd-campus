@@ -223,10 +223,16 @@ export async function scorePoint(
     const result = applyPoint(before, team, delta);
     // Floor taps (−1 at 0) are silent no-ops.
     if (!result.ok) return { noop: true };
+    // Timed sports: every point belongs to a player (team score is derived).
+    if (isTimed(SPORTS[m.sport]) && !playerId) {
+      return { error: "Pick a player — points are credited per player" };
+    }
     const player = playerId
       ? m.players.find((p) => p.id === playerId && p.team === team)
       : undefined;
     if (playerId && !player) return { error: "Player not on this team" };
+    // A −1 correction on a player with 0 points is a silent no-op.
+    if (player && delta < 0 && player.points === 0) return { noop: true };
     return {
       apply: {
         type: "score",

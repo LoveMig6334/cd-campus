@@ -174,6 +174,9 @@ export function useMatchController(match: MatchView) {
   const tapScore = (team: TeamKey, delta: PointDelta) => {
     if (!scoringOpen) return;
     const player = creditFor(team);
+    // Timed sports: no player selected → nothing happens (buttons are disabled).
+    if (timed && !player) return;
+    if (player && delta < 0 && player.points === 0) return;
     setSelectedPlayer(null);
     dispatch(
       (v) => {
@@ -340,6 +343,9 @@ export function useMatchController(match: MatchView) {
     clearShotClock,
     selectedPlayer,
     selectPlayer: setSelectedPlayer,
+    /** Team whose player is selected — timed sports can only score for it. */
+    selectedTeam:
+      view.players.find((p) => p.id === selectedPlayer)?.team ?? null,
     timeouts: view.timeouts,
     tapTimeout,
     adjustTimeouts,
