@@ -191,24 +191,25 @@ export function useMatchController(match: MatchView) {
     );
   };
 
-  const tapFoul = (team: TeamKey, delta: 1 | -1) => {
+  /** A foul always belongs to a player; the team count follows on the server. */
+  const tapFoul = (playerId: string, delta: 1 | -1 = 1) => {
     if (!scoringOpen || !timed) return;
-    const player = creditFor(team);
-    setSelectedPlayer(null);
-    if (player && delta > 0 && isFouledOut(player)) return;
+    const player = view.players.find((p) => p.id === playerId);
+    if (!player) return;
+    if (delta > 0 && isFouledOut(player)) return;
+    if (delta < 0 && player.fouls === 0) return;
+    if (selectedPlayer === playerId) setSelectedPlayer(null);
     dispatch(
       (v) => {
-        const r = applyFoul(stateOfMatch(v), team, delta);
+        const r = applyFoul(stateOfMatch(v), player.team, delta);
         if (!r.ok) return v;
         return {
           ...v,
           ...r.state,
-          players: player
-            ? creditPlayers(v.players, player.id, 0, delta)
-            : v.players,
+          players: creditPlayers(v.players, player.id, 0, delta),
         };
       },
-      (eventId) => recordFoul(view.id, eventId, team, delta, player?.id),
+      (eventId) => recordFoul(view.id, eventId, player.team, delta, player.id),
     );
   };
 

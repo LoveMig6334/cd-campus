@@ -180,36 +180,64 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                       const selected = c.selectedPlayer === p.id;
                       const out = isFouledOut(p);
                       return (
-                        <button
+                        <div
                           key={p.id}
-                          type="button"
-                          disabled={!c.scoringOpen}
-                          onClick={() => c.selectPlayer(selected ? null : p.id)}
                           className={cn(
-                            "flex min-w-[64px] cursor-pointer flex-col items-center rounded-xl border px-2.5 py-1.5 leading-tight transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                            "flex min-w-[72px] flex-col overflow-hidden rounded-xl border transition-colors",
                             selected
-                              ? "border-marine bg-marine text-white"
+                              ? "border-marine"
                               : out
-                                ? "border-gray-200 bg-gray-50 text-gray-400"
-                                : "hover:border-sky border-gray-200 bg-white text-gray-800",
+                                ? "border-gray-200"
+                                : "border-gray-200",
                           )}
-                          aria-pressed={selected}
                         >
-                          <span className="text-[18px] font-semibold tabular-nums">
-                            #{p.number}
-                          </span>
-                          <span className="max-w-[80px] truncate text-[10px]">
-                            {out ? "OUT" : (p.name ?? "")}
-                          </span>
-                          <span
+                          <button
+                            type="button"
+                            disabled={!c.scoringOpen}
+                            onClick={() =>
+                              c.selectPlayer(selected ? null : p.id)
+                            }
                             className={cn(
-                              "text-[10px] tabular-nums",
-                              selected ? "opacity-80" : "text-gray-500",
+                              "flex cursor-pointer flex-col items-center px-2.5 py-1.5 leading-tight transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                              selected
+                                ? "bg-marine text-white"
+                                : out
+                                  ? "bg-gray-50 text-gray-400"
+                                  : "hover:bg-sky-soft bg-white text-gray-800",
                             )}
+                            aria-pressed={selected}
+                            aria-label={`Select #${p.number} for the next score`}
                           >
-                            FL {p.fouls} · {p.points} pts
-                          </span>
-                        </button>
+                            <span className="text-[18px] font-semibold tabular-nums">
+                              #{p.number}
+                            </span>
+                            <span className="max-w-[80px] truncate text-[10px]">
+                              {out ? "OUT" : (p.name ?? "")}
+                            </span>
+                            <span
+                              className={cn(
+                                "text-[10px] tabular-nums",
+                                selected ? "opacity-80" : "text-gray-500",
+                              )}
+                            >
+                              FL {p.fouls} · {p.points} pts
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!c.scoringOpen || out}
+                            onClick={() => c.tapFoul(p.id, 1)}
+                            className={cn(
+                              "cursor-pointer border-t px-2 py-1 text-[11px] font-semibold tracking-wide uppercase transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                              out
+                                ? "border-gray-200 bg-gray-100 text-gray-400"
+                                : "border-red-200 bg-red-50 text-red-600 hover:bg-red-100",
+                            )}
+                            aria-label={`Foul on #${p.number}`}
+                          >
+                            {out ? "Out" : "Foul"}
+                          </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -273,24 +301,10 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                         )}
                       </span>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        className="px-3"
-                        disabled={!c.scoringOpen}
-                        onClick={() => c.tapFoul(team, -1)}
-                        aria-label="Remove a foul"
-                      >
-                        −
-                      </Button>
-                      <Button
-                        variant="sky"
-                        disabled={!c.scoringOpen}
-                        onClick={() => c.tapFoul(team, 1)}
-                      >
-                        + Foul
-                      </Button>
-                    </div>
+                    <span className="max-w-[140px] text-right text-[11px] text-gray-500">
+                      Tap <strong>Foul</strong> on a player — the team count
+                      follows
+                    </span>
                   </div>
                 )}
 
@@ -547,6 +561,8 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
           onAdd={c.addPlayer}
           onRemove={c.removePlayer}
           onToggle={c.toggleOnCourt}
+          onFoulMinus={(id) => c.tapFoul(id, -1)}
+          fixable={c.scoringOpen}
         />
       )}
 

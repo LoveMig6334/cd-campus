@@ -22,6 +22,9 @@ type Props = {
   onAdd: (team: TeamKey, number: number, name: string) => void;
   onRemove: (playerId: string) => void;
   onToggle: (playerId: string) => void;
+  /** −1 foul correction (only while live). */
+  onFoulMinus: (playerId: string) => void;
+  fixable: boolean;
 };
 
 function TeamRoster({
@@ -31,6 +34,8 @@ function TeamRoster({
   onAdd,
   onRemove,
   onToggle,
+  onFoulMinus,
+  fixable,
 }: Props & { team: TeamKey; info: MatchView["houseA"] }) {
   const [number, setNumber] = useState("");
   const [name, setName] = useState("");
@@ -118,6 +123,16 @@ function TeamRoster({
                     )}
                   >
                     {p.fouls}
+                    <button
+                      type="button"
+                      disabled={!fixable || p.fouls === 0}
+                      onClick={() => onFoulMinus(p.id)}
+                      className="ml-1.5 cursor-pointer rounded border border-gray-200 px-1.5 text-[11px] text-gray-500 hover:border-red-200 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label={`Remove a foul from #${p.number}`}
+                      title="−1 foul correction"
+                    >
+                      −1
+                    </button>
                   </td>
                   <td className="py-1.5 pr-2 text-right tabular-nums">
                     {p.points}

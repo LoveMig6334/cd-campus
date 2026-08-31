@@ -262,14 +262,16 @@ export async function recordFoul(
     const result = applyFoul(before, team, delta);
     // Floor taps (−1 at 0) are silent no-ops.
     if (!result.ok) return { noop: true };
-    const player = playerId
-      ? m.players.find((p) => p.id === playerId && p.team === team)
-      : undefined;
-    if (playerId && !player) return { error: "Player not on this team" };
-    if (player && delta > 0 && isFouledOut(player)) {
+    // Team fouls are derived: every foul belongs to a player.
+    if (!playerId) {
+      return { error: "Pick a player — team fouls come from player fouls" };
+    }
+    const player = m.players.find((p) => p.id === playerId && p.team === team);
+    if (!player) return { error: "Player not on this team" };
+    if (delta > 0 && isFouledOut(player)) {
       return { error: `#${player.number} has fouled out` };
     }
-    if (player && delta < 0 && player.fouls === 0) return { noop: true };
+    if (delta < 0 && player.fouls === 0) return { noop: true };
     return {
       apply: {
         type: "foul",
@@ -283,7 +285,7 @@ export async function recordFoul(
         state: result.state,
         status: "live",
         winnerHouseId: null,
-        player: player ? { id: player.id, points: 0, fouls: delta } : undefined,
+        player: { id: player.id, points: 0, fouls: delta },
       },
     };
   });
