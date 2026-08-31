@@ -1,5 +1,5 @@
 import type { MatchView } from "@/lib/types";
-import { setsWon, SPORTS } from "@/lib/sport/rules";
+import { headlineScore, SPORTS, stateOfMatch } from "@/lib/sport/rules";
 import { HOUSE_HEX } from "@/lib/sport/colors";
 
 function HouseDot({ hex }: { hex: string }) {
@@ -13,10 +13,8 @@ function HouseDot({ hex }: { hex: string }) {
 
 export function MatchResultCard({ match }: { match: MatchView }) {
   const config = SPORTS[match.sport];
-  const won = setsWon(
-    { sets: match.sets, currentSet: match.currentSet, serving: match.serving },
-    true, // finished match — the last set counts
-  );
+  // Sets won, or total points for timed sports (finished — last set counts).
+  const won = headlineScore(config, stateOfMatch(match), true);
   const winner = match.winner === "a" ? match.houseA : match.houseB;
 
   return (

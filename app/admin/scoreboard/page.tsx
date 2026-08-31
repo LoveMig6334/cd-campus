@@ -7,7 +7,7 @@ import { MatchConsole } from "@/components/admin/MatchConsole";
 import { MatchCreateForm } from "@/components/admin/MatchCreateForm";
 import { RealtimeRefresh } from "@/components/RealtimeRefresh";
 import { getAdminActiveMatch, getMatchHistory } from "@/lib/queries/matches";
-import { setsWon, SPORTS } from "@/lib/sport/rules";
+import { headlineScore, SPORTS, stateOfMatch } from "@/lib/sport/rules";
 import { HOUSE_HEX } from "@/lib/sport/colors";
 import { HOUSES } from "@/lib/ui/sport";
 
@@ -52,13 +52,21 @@ export default async function AdminScoreboardPage({
         titleTh="สกอร์บอร์ดสด"
         eyebrow="Live match console"
         actions={
-          <Link
-            href="/scoreboard"
-            target="_blank"
-            className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
-          >
-            ⧉ Open display board
-          </Link>
+          <>
+            <Link
+              href="/console/match"
+              className="bg-blue border-line inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] text-white uppercase [box-shadow:3px_3px_0_var(--color-ink)]"
+            >
+              ✦ New UI
+            </Link>
+            <Link
+              href="/scoreboard"
+              target="_blank"
+              className="border-line bg-paper text-mute-700 inline-block border-[1.5px] px-3 py-1.5 font-mono text-[10px] tracking-[0.14em] uppercase"
+            >
+              ⧉ Open display board
+            </Link>
+          </>
         }
       />
 
@@ -151,14 +159,8 @@ export default async function AdminScoreboardPage({
               <tbody>
                 {history.map((m) => {
                   const config = SPORTS[m.sport];
-                  const won = setsWon(
-                    {
-                      sets: m.sets,
-                      currentSet: m.currentSet,
-                      serving: m.serving,
-                    },
-                    true, // finished — the last set counts
-                  );
+                  // Sets won, or total points for timed sports.
+                  const won = headlineScore(config, stateOfMatch(m), true);
                   const winner = m.winner === "a" ? m.houseA : m.houseB;
                   return (
                     <tr
