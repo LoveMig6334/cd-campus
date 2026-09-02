@@ -120,6 +120,12 @@ export function ScoreboardDisplay({
         { event: "*", schema: "public", table: "matches" },
         schedule,
       );
+      // Roster edits (add / remove / on-court toggle) touch only this table.
+      channel.on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "match_players" },
+        schedule,
+      );
       // Admin display-mode switch (site_config.scoreboard_display).
       channel.on(
         "postgres_changes",
