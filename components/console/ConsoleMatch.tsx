@@ -461,6 +461,23 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
             </>
           )}
 
+          {/* Dead-ball clock stop: fills the rest of the column so it's the
+              easiest tap on the page. No status change, no board splash. */}
+          {timed && view.status === "live" && (
+            <div className="mt-2 flex flex-1 items-stretch">
+              <Button
+                variant={c.clockRunning ? "primary" : "gold"}
+                className="min-h-[140px] w-full rounded-2xl text-[24px] font-semibold active:scale-[0.98]"
+                onClick={c.toggleClock}
+                aria-pressed={!c.clockRunning}
+              >
+                {c.clockRunning
+                  ? "⏸ หยุดเวลา · Stop clock"
+                  : "▶ เดินเวลา · Start clock"}
+              </Button>
+            </div>
+          )}
+
           {view.status === "finished" && (
             <div className="text-center text-[13px] text-gray-600">
               Winner: <strong>{winnerInfo.nameEn}</strong> · {winnerInfo.nameTh}

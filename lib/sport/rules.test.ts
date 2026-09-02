@@ -8,6 +8,8 @@ import {
   endCurrentPeriod,
   firstServerOfSet,
   formatClock,
+  freezeClock,
+  unfreezeClock,
   initialState,
   isFouledOut,
   isValidFormat,
@@ -453,5 +455,53 @@ describe("players and timeouts", () => {
     expect(timeoutsForPeriod(BB4_7, 4)).toBe(3);
     expect(timeoutsForPeriod(BB4_7, 5)).toBe(1);
     expect(timeoutsForPeriod({ ...BB4_7, bestOf: 2 }, 2)).toBe(3);
+  });
+});
+
+describe("freezeClock / unfreezeClock", () => {
+  const t0 = Date.parse("2026-09-02T10:00:00.000Z");
+  const running = {
+    timerSeconds: 100,
+    timerStartedAt: new Date(t0 - 12_500).toISOString(),
+    shotClockEndsAt: new Date(t0 + 8_200).toISOString(),
+    shotClockRemaining: null,
+  };
+
+  it("freezeClock banks the running stretch and holds the shot clock", () => {
+    expect(freezeClock(running, t0)).toEqual({
+      timerSeconds: 112,
+      timerStartedAt: null,
+      shotClockEndsAt: null,
+      shotClockRemaining: 9,
+    });
+  });
+
+  it("freezeClock leaves an already-frozen clock alone", () => {
+    const frozen = {
+      timerSeconds: 40,
+      timerStartedAt: null,
+      shotClockEndsAt: null,
+      shotClockRemaining: 14,
+    };
+    expect(freezeClock(frozen, t0)).toEqual(frozen);
+  });
+
+  it("unfreezeClock restarts the stretch and resumes the shot clock", () => {
+    const frozen = {
+      timerSeconds: 40,
+      timerStartedAt: null,
+      shotClockEndsAt: null,
+      shotClockRemaining: 14,
+    };
+    expect(unfreezeClock(frozen, t0)).toEqual({
+      timerSeconds: 40,
+      timerStartedAt: new Date(t0).toISOString(),
+      shotClockEndsAt: new Date(t0 + 14_000).toISOString(),
+      shotClockRemaining: null,
+    });
+  });
+
+  it("unfreezeClock leaves a running clock alone", () => {
+    expect(unfreezeClock(running, t0)).toEqual(running);
   });
 });

@@ -20,6 +20,8 @@ import {
   periodRemainingSeconds,
   setsWon,
   shotClockRemaining,
+  freezeClock,
+  unfreezeClock,
   SPORTS,
   stateOfMatch,
   totalPoints,
@@ -32,6 +34,8 @@ import {
   recordFoul,
   removePlayer as removePlayerAction,
   resumeMatch,
+  startClock,
+  stopClock,
   scorePoint,
   setOnCourt,
   setShotClock,
@@ -269,11 +273,12 @@ export function useMatchController(match: MatchView) {
       (v) => ({
         ...v,
         shotClockTeam: team,
+        // Runs only while the game clock runs (server keys off timer_started_at).
         shotClockEndsAt:
-          v.status === "live"
+          v.timerStartedAt !== null
             ? new Date(Date.now() + seconds * 1000).toISOString()
             : null,
-        shotClockRemaining: v.status === "live" ? null : seconds,
+        shotClockRemaining: v.timerStartedAt !== null ? null : seconds,
       }),
       () => setShotClock(view.id, team, seconds),
     );
@@ -306,6 +311,22 @@ export function useMatchController(match: MatchView) {
       (v) => ({ ...v, status: "live" as const }),
       (eventId) => resumeMatch(view.id, eventId),
     );
+  // Dead-ball clock stop: freezes the clock without leaving `live`.
+  const clockRunning = view.status === "live" && !view.clockStopped;
+  const toggleClock = () => {
+    if (!timed || view.status !== "live") return;
+    if (view.clockStopped) {
+      dispatch(
+        (v) => ({ ...unfreezeClock(v, Date.now()), clockStopped: false }),
+        (eventId) => startClock(view.id, eventId),
+      );
+    } else {
+      dispatch(
+        (v) => ({ ...freezeClock(v, Date.now()), clockStopped: true }),
+        (eventId) => stopClock(view.id, eventId),
+      );
+    }
+  };
   const undo = () => dispatch(null, (eventId) => undoLast(view.id, eventId));
   const finish = () =>
     dispatch(
@@ -359,6 +380,8 @@ export function useMatchController(match: MatchView) {
     start,
     pause,
     resume,
+    clockRunning,
+    toggleClock,
     undo,
     finish,
   };

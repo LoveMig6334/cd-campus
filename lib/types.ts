@@ -412,6 +412,8 @@ export type MatchView = {
   timerSeconds: number;
   /** …plus the live stretch since this stamp when non-null. */
   timerStartedAt: string | null;
+  /** Dead-ball clock stop (timed sports): live, but the clock is held. */
+  clockStopped: boolean;
   /** Optimistic-concurrency token for apply_match_event. */
   version: number;
   /** The score event undo would revert; null = nothing to undo. */

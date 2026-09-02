@@ -586,3 +586,47 @@ export function timeoutsForPeriod(
   if (periodIndex > format.bestOf) return 1;
   return periodIndex > Math.floor(format.bestOf / 2) ? 3 : 2;
 }
+
+/* ------------------------------------------------------------------ */
+/* Clock stop (timed sports)                                            */
+/* ------------------------------------------------------------------ */
+
+export type FreezableClock = {
+  timerSeconds: number;
+  timerStartedAt: string | null;
+  shotClockEndsAt: string | null;
+  shotClockRemaining: number | null;
+};
+
+/**
+ * Bank the running stretch into `timerSeconds` and hold the shot clock —
+ * the client-side mirror of what apply_match_event does on clock_stop.
+ */
+export function freezeClock<T extends FreezableClock>(m: T, now: number): T {
+  if (m.timerStartedAt === null) return m;
+  const stretch = Math.max(0, (now - Date.parse(m.timerStartedAt)) / 1000);
+  return {
+    ...m,
+    timerSeconds: Math.floor(m.timerSeconds + stretch),
+    timerStartedAt: null,
+    shotClockEndsAt: null,
+    shotClockRemaining:
+      m.shotClockEndsAt === null
+        ? m.shotClockRemaining
+        : Math.max(0, Math.ceil((Date.parse(m.shotClockEndsAt) - now) / 1000)),
+  };
+}
+
+/** Restart the stretch from `now` and let a held shot clock run again. */
+export function unfreezeClock<T extends FreezableClock>(m: T, now: number): T {
+  if (m.timerStartedAt !== null) return m;
+  return {
+    ...m,
+    timerStartedAt: new Date(now).toISOString(),
+    shotClockEndsAt:
+      m.shotClockRemaining === null
+        ? m.shotClockEndsAt
+        : new Date(now + m.shotClockRemaining * 1000).toISOString(),
+    shotClockRemaining: null,
+  };
+}

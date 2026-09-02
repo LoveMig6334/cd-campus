@@ -417,6 +417,7 @@ export type Database = {
       matches: {
         Row: {
           best_of: number
+          clock_stopped: boolean
           created_at: string
           created_by_admin_id: string | null
           current_set: number
@@ -450,6 +451,7 @@ export type Database = {
         }
         Insert: {
           best_of?: number
+          clock_stopped?: boolean
           created_at?: string
           created_by_admin_id?: string | null
           current_set?: number
@@ -483,6 +485,7 @@ export type Database = {
         }
         Update: {
           best_of?: number
+          clock_stopped?: boolean
           created_at?: string
           created_by_admin_id?: string | null
           current_set?: number
@@ -829,6 +832,7 @@ export type Database = {
         }
         Returns: {
           best_of: number
+          clock_stopped: boolean
           created_at: string
           created_by_admin_id: string | null
           current_set: number
@@ -878,6 +882,7 @@ export type Database = {
         Args: { p_match_id: string; p_seconds: number; p_team: string }
         Returns: {
           best_of: number
+          clock_stopped: boolean
           created_at: string
           created_by_admin_id: string | null
           current_set: number
@@ -933,6 +938,8 @@ export type Database = {
         | "cancel"
         | "end_set"
         | "foul"
+        | "clock_stop"
+        | "clock_start"
       match_status: "scheduled" | "live" | "paused" | "finished" | "cancelled"
       project_status: "Published" | "Draft"
       pshare_status: "draft" | "published" | "review"
@@ -1083,6 +1090,8 @@ export const Constants = {
         "cancel",
         "end_set",
         "foul",
+        "clock_stop",
+        "clock_start",
       ],
       match_status: ["scheduled", "live", "paused", "finished", "cancelled"],
       project_status: ["Published", "Draft"],

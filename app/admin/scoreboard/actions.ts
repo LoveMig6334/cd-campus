@@ -45,7 +45,9 @@ type MatchEventType =
   | "foul"
   | "end_set"
   | "undo"
-  | "finish";
+  | "finish"
+  | "clock_stop"
+  | "clock_start";
 
 type PlayerCredit = { id: string; points: number; fouls: number };
 
@@ -186,6 +188,45 @@ export async function pauseMatch(
         payload: {},
         state: stateOf(m),
         status: "paused",
+        winnerHouseId: null,
+      },
+    };
+  });
+}
+
+/** Dead-ball clock stop: hold the clock without leaving `live`. */
+export async function stopClock(
+  matchId: string,
+  eventId: string,
+): Promise<MatchActionResult> {
+  return applyEvent(matchId, eventId, (m): Computed => {
+    if (m.status !== "live") return { error: "Match is not live" };
+    if (m.clockStopped) return { noop: true };
+    return {
+      apply: {
+        type: "clock_stop",
+        payload: {},
+        state: stateOf(m),
+        status: "live",
+        winnerHouseId: null,
+      },
+    };
+  });
+}
+
+export async function startClock(
+  matchId: string,
+  eventId: string,
+): Promise<MatchActionResult> {
+  return applyEvent(matchId, eventId, (m): Computed => {
+    if (m.status !== "live") return { error: "Match is not live" };
+    if (!m.clockStopped) return { noop: true };
+    return {
+      apply: {
+        type: "clock_start",
+        payload: {},
+        state: stateOf(m),
+        status: "live",
         winnerHouseId: null,
       },
     };

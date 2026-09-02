@@ -135,6 +135,7 @@ export function mapMatchRow(row: MatchRowJoined): MatchView {
     endedAt: row.ended_at,
     timerSeconds: row.timer_seconds,
     timerStartedAt: row.timer_started_at,
+    clockStopped: row.clock_stopped,
     version: row.version,
     lastScoreEventId: row.last_score_event_id,
     canUndo: row.last_score_event_id !== null,
