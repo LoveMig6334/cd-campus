@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import type { MatchView } from "@/lib/types";
 import {
   isFouledOut,
@@ -15,7 +15,8 @@ import { cn } from "@/lib/cn";
 import { useMatchController } from "@/components/admin/useMatchController";
 import { cancelMatch } from "@/app/admin/scoreboard/actions";
 import { Badge, Button, Panel } from "@/components/console/ui";
-import { SOUNDS, useSounds } from "@/components/console/useSounds";
+import { useBoardRemote } from "@/components/console/useBoardRemote";
+import { BOARD_SOUNDS } from "@/lib/sport/boardSounds";
 import { ConsoleRoster } from "@/components/console/ConsoleRoster";
 
 const SCORE_BTN = "rounded-2xl text-[32px] font-semibold active:scale-[0.98]";
@@ -37,24 +38,10 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
         ? view.houseB
         : null;
 
-  const { play } = useSounds();
-  // Buzzer when the period clock runs out (transition only — not on reload
-  // of an already-expired period); horn when the shot clock hits 0.
-  const prevPeriodOver = useRef(c.periodOver);
-  useEffect(() => {
-    if (c.periodOver && !prevPeriodOver.current) play("buzzer");
-    prevPeriodOver.current = c.periodOver;
-  }, [c.periodOver, play]);
-  const prevShotClock = useRef(c.shotClock);
-  useEffect(() => {
-    const prev = prevShotClock.current;
-    if (c.shotClock === 0 && prev !== null && prev > 0) play("shot");
-    prevShotClock.current = c.shotClock;
-  }, [c.shotClock, play]);
-  const endPeriod = () => {
-    play("buzzer");
-    c.tapEndPeriod();
-  };
+  // Sounds play on the scoreboard kiosk (hall speakers), which derives the
+  // buzzer / horn moments itself; the buttons below only nudge it remotely.
+  const { playOnBoard } = useBoardRemote();
+  const endPeriod = () => c.tapEndPeriod();
 
   const foulBonusAt = config.kind === "timed" ? config.foulBonusAt : Infinity;
   const overtimeMinutes = config.kind === "timed" ? config.overtimeMinutes : 0;
@@ -577,18 +564,18 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
 
       <Panel title="Sound · เสียง">
         <div className="flex flex-wrap gap-2">
-          {SOUNDS.map((s) => (
+          {BOARD_SOUNDS.map((s) => (
             <Button
               key={s.id}
               variant="ghost"
               className="py-3"
-              onClick={() => play(s.id)}
+              onClick={() => void playOnBoard(s.id)}
             >
               🔊 {s.labelEn} · {s.labelTh}
             </Button>
           ))}
           <span className="self-center text-[12px] text-gray-500">
-            Plays from this device · buzzer sounds at 0:00 and on End quarter,
+            Plays on the scoreboard · buzzer sounds at 0:00 and on End quarter,
             horn when the shot clock expires
           </span>
         </div>

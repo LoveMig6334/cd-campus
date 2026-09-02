@@ -19,13 +19,45 @@ import {
   stateOfMatch,
 } from "@/lib/sport/rules";
 import { contrastText, HOUSE_HEX } from "@/lib/sport/colors";
+import {
+  isBoardSoundId,
+  soundsForTransition,
+  type BoardSoundState,
+} from "@/lib/sport/boardSounds";
 import { cn } from "@/lib/cn";
 import { BasketballBoard } from "@/components/scoreboard/BasketballBoard";
+import { useBoardSounds } from "@/components/scoreboard/useBoardSounds";
 
 const FINISHED_HOLD_MS = 30_000;
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
+}
+
+const NO_SOUND_STATE: BoardSoundState = {
+  matchId: null,
+  period: 0,
+  finished: false,
+  periodOver: false,
+  shotClock: null,
+};
+
+/** What the sound rules see this tick; only timed sports make any noise. */
+function boardSoundState(match: MatchView | null, now: number): BoardSoundState {
+  if (match === null) return NO_SOUND_STATE;
+  const config = SPORTS[match.sport];
+  if (!isTimed(config)) return NO_SOUND_STATE;
+  const format = formatOfMatch(match);
+  const inPlay = match.status === "live" || match.status === "paused";
+  return {
+    matchId: match.id,
+    period: match.currentSet,
+    finished: match.status === "finished",
+    periodOver:
+      inPlay &&
+      periodRemainingSeconds(config, format, clockOfMatch(match), now) === 0,
+    shotClock: inPlay ? shotClockRemaining(match, now) : null,
+  };
 }
 
 /**
@@ -46,6 +78,7 @@ export function ScoreboardDisplay({
   const router = useRouter();
   const [connected, setConnected] = useState(true);
   const [now, setNow] = useState(serverNow);
+  const { play, unlocked } = useBoardSounds();
   // Server-clock offset so the elapsed timer and the 30s finished-hold don't
   // trust the kiosk machine's clock. Set in the effect below before the first
   // tick; until then `now` is the server's own render timestamp.
@@ -93,6 +126,11 @@ export function ScoreboardDisplay({
         { event: "*", schema: "public", table: "site_config" },
         schedule,
       );
+      // Operator-triggered sounds from the console's Sound panel.
+      channel.on("broadcast", { event: "sound" }, ({ payload }) => {
+        const id: unknown = payload?.id;
+        if (isBoardSoundId(id)) play(id);
+      });
       let everConnected = false;
       channel.subscribe((status) => {
         const ok = status === "SUBSCRIBED";
@@ -109,7 +147,21 @@ export function ScoreboardDisplay({
       if (timer) clearTimeout(timer);
       teardown?.();
     };
-  }, [router]);
+  }, [router, play]);
+
+  // Buzzer at 0:00 / End period, horn when the shot clock expires — played
+  // here so the sound comes out of the hall speakers, not the operator's
+  // device. Transition-based, so a reload of an expired period stays quiet.
+  // Runs after every render (each clock tick) and diffs against the last
+  // sample, so no dependency list is needed.
+  const soundState = boardSoundState(match, now);
+  const prevSoundState = useRef(soundState);
+  useEffect(() => {
+    for (const id of soundsForTransition(prevSoundState.current, soundState)) {
+      play(id);
+    }
+    prevSoundState.current = soundState;
+  });
 
   // FINISHED holds for 30s measured from endedAt (refresh-safe), then IDLE —
   // derived from the ticking clock, so no timer state to manage.
@@ -190,6 +242,16 @@ export function ScoreboardDisplay({
         <span className="bg-house-pink inline-block size-2 animate-pulse rounded-full" />
         Reconnecting · กำลังเชื่อมต่อ
       </div>
+
+      {/* Browser autoplay policy: any tap or key on the page unlocks audio. */}
+      {!unlocked && (
+        <div
+          className="border-line bg-yellow text-ink absolute bottom-4 left-4 z-30 flex items-center gap-2 border-[1.5px] px-3 py-1.5 font-mono text-[12px] tracking-[0.16em] uppercase"
+          role="status"
+        >
+          🔇 Tap to enable sound · แตะเพื่อเปิดเสียง
+        </div>
+      )}
     </main>
   );
 }

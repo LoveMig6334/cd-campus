@@ -20,6 +20,25 @@ open -a "Google Chrome" --args --kiosk --noerrdialogs --disable-session-crashed-
 
 Exit kiosk mode with `Alt+F4` (Windows) / `Cmd+Q` (macOS).
 
+## Sound (buzzer + shot-clock horn)
+
+The board plays the period buzzer and the shot-clock horn itself, so plug
+the kiosk machine into the hall PA. The console's "Sound" buttons also
+trigger the board remotely for a manual buzzer.
+
+Browsers refuse to play audio until the page has been tapped once. If the
+board shows a yellow "🔇 TAP TO ENABLE SOUND · แตะเพื่อเปิดเสียง" badge
+bottom-left, tap or press any key on the kiosk once and it disappears. To
+skip that step on an unattended machine (for example after a reboot
+mid-match), add this flag to the launch command:
+
+```
+--autoplay-policy=no-user-gesture-required
+```
+
+Run a quick check before the first match: press a Sound button on the
+console and confirm the sound comes from the hall speakers.
+
 ## Switching what the board shows
 
 In the admin console (`/console/display`) you can flip the board between
