@@ -63,6 +63,11 @@ export async function seedSiteConfig(
       value: json({ term: 1, startDate: "2026-04-19", totalWeeks: 16 }),
       updated_by_admin_id: adminId,
     },
+    {
+      key: "scoreboard_display",
+      value: json({ mode: "match" }),
+      updated_by_admin_id: adminId,
+    },
   ];
   const { error } = await db
     .from("site_config")

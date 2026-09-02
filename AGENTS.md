@@ -28,6 +28,7 @@ Quick reminders for Next 16 / React 19 (don't trust your training data):
 
 - Student: `app/student/...` → mobile phone mockup shell.
 - Admin: `app/admin/...` → desktop sidebar shell (gated by `proxy.ts`).
+- Console: `app/console/...` → full-screen scoreboard admin ("New UI": match / history / display), own marine sidebar, gated by `proxy.ts` like `/admin`. Reuses the Server Actions in `app/admin/scoreboard/actions.ts` and the shared `useMatchController` hook. Sports have a `kind` (`sets` | `timed`) in `lib/sport/rules.ts`; basketball is `timed` — periods reuse `sets`/`current_set`/`best_of`, `end_set` means "end period", fouls are game-cumulative via the `foul` event, and the clock counts down per period (`period_started_seconds`). Only `/console` has basketball controls; the classic console defers to it. Basketball also has a per-match roster (`match_players`, per-player fouls/points credited inside `apply_match_event`), timeouts and a shot clock on the match row, and its own LED-style hall board (`components/scoreboard/BasketballBoard.tsx`, digits in `LedDigits.tsx`); volleyball/badminton keep the zine board.
 - Auth: `app/login/...` + `app/auth/signout/`.
 - Each role group has its own `layout.tsx`. Don't mix them.
 

@@ -3,7 +3,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const isAdminPath = path === "/admin" || path.startsWith("/admin/");
+  // /console is the full-screen scoreboard admin UI — same gate as /admin.
+  const isAdminPath =
+    path === "/admin" ||
+    path.startsWith("/admin/") ||
+    path === "/console" ||
+    path.startsWith("/console/");
 
   // Anonymous requests carry no Supabase auth cookie, so there is no session to
   // refresh or gate — skip the getUser() network round-trip (this is the bulk

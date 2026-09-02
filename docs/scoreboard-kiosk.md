@@ -20,6 +20,14 @@ open -a "Google Chrome" --args --kiosk --noerrdialogs --disable-session-crashed-
 
 Exit kiosk mode with `Alt+F4` (Windows) / `Cmd+Q` (macOS).
 
+## Switching what the board shows
+
+In the admin console (`/console/display`) you can flip the board between
+the current match and the Sports Day main screen ("การแข่งขันกีฬาสี"). This
+only changes the presentation — the match keeps its score and clock, so you
+can switch back at any time. The flag lives in `site_config.scoreboard_display`
+and the kiosk picks it up over Realtime.
+
 ## Machine settings
 
 - Set the display to 1920×1080 at 100% scale.

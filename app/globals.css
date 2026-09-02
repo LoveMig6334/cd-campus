@@ -13,6 +13,12 @@
   --color-ink: #15151a;
   --color-line: #1a1a1a;
 
+  /* Console (new admin UI) — 60 white/gray : 30 marine+sky : 10 gold */
+  --color-marine: #003a87;
+  --color-sky: #298ee4;
+  --color-sky-soft: #e8f3fc;
+  --color-gold: #e5d223;
+
   /* Surface */
   --color-cream: #f6f3e7;
   --color-cream-2: #efebd9;
