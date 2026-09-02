@@ -67,7 +67,7 @@ These are referenced from multiple tasks. Defined once here so the migrations an
 | ----------- | -------- | ------- | ------- | -------------- | ---------- |
 | 1           | `green`  | Green   | เขียว   | `house-green`  | 1          |
 | 2           | `purple` | Purple  | ม่วง    | `house-purple` | 2          |
-| 3           | `orange` | Orange  | ส้ม     | `house-orange` | 3          |
+| 3           | `orange` | Orange  | แสด     | `house-orange` | 3          |
 | 4           | `pink`   | Pink    | ชมพู    | `house-pink`   | 4          |
 
 **Room name → kind mapping** (used by the rooms seed):

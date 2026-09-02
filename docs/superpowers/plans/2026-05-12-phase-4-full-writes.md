@@ -1131,7 +1131,7 @@ import { recordSportResult } from "../../actions";
 const HOUSES = [
   { id: 1, label: "Green · เขียว" },
   { id: 2, label: "Purple · ม่วง" },
-  { id: 3, label: "Orange · ส้ม" },
+  { id: 3, label: "Orange · แสด" },
   { id: 4, label: "Pink · ชมพู" },
 ];
 
@@ -1229,7 +1229,7 @@ import { deleteSportResult, updateSportResult } from "../../../actions";
 const HOUSES = [
   { id: 1, label: "Green · เขียว" },
   { id: 2, label: "Purple · ม่วง" },
-  { id: 3, label: "Orange · ส้ม" },
+  { id: 3, label: "Orange · แสด" },
   { id: 4, label: "Pink · ชมพู" },
 ];
 

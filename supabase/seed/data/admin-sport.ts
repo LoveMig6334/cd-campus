@@ -21,7 +21,7 @@ export const ADMIN_SCOREBOARD: ScoreboardEntry[] = [
   {
     house: "orange",
     nameEn: "Orange",
-    nameTh: "ส้ม",
+    nameTh: "แสด",
     rankSubtitle: "House #3",
     score: 198,
     stat: "4 wins · 3 second · 4 third",
