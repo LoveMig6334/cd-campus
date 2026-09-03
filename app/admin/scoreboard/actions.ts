@@ -18,6 +18,7 @@ import {
   isFouledOut,
   isSportId,
   isTimed,
+  resetFouls,
   isValidFormat,
   leaderForEarlyEnd,
   SPORTS,
@@ -47,7 +48,8 @@ type MatchEventType =
   | "undo"
   | "finish"
   | "clock_stop"
-  | "clock_start";
+  | "clock_start"
+  | "foul_reset";
 
 type PlayerCredit = { id: string; points: number; fouls: number };
 
@@ -333,6 +335,33 @@ export async function recordFoul(
         status: "live",
         winnerHouseId: null,
         player: { id: player.id, points: 0, fouls: delta },
+      },
+    };
+  });
+}
+
+/** Zero one team's foul count; per-player fouls are left untouched. */
+export async function resetTeamFouls(
+  matchId: string,
+  eventId: string,
+  team: TeamKey,
+): Promise<MatchActionResult> {
+  return applyEvent(matchId, eventId, (m): Computed => {
+    if (!isTimed(SPORTS[m.sport])) {
+      return { error: "This sport has no team fouls" };
+    }
+    if (m.status !== "live" && m.status !== "paused") {
+      return { error: "Match is not in play" };
+    }
+    const state = stateOf(m);
+    if (state.fouls[team] === 0) return { noop: true };
+    return {
+      apply: {
+        type: "foul_reset",
+        payload: { team, before: state.fouls[team] },
+        state: resetFouls(state, team),
+        status: m.status,
+        winnerHouseId: null,
       },
     };
   });

@@ -308,6 +308,11 @@ export function applyFoul(
   };
 }
 
+/** Zero one team's foul count (per-player fouls are untouched). */
+export function resetFouls(state: ScoreState, team: TeamKey): ScoreState {
+  return { ...state, fouls: { ...state.fouls, [team]: 0 } };
+}
+
 export type EndPeriodResult =
   | {
       ok: true;

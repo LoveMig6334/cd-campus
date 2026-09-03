@@ -940,6 +940,7 @@ export type Database = {
         | "foul"
         | "clock_stop"
         | "clock_start"
+        | "foul_reset"
       match_status: "scheduled" | "live" | "paused" | "finished" | "cancelled"
       project_status: "Published" | "Draft"
       pshare_status: "draft" | "published" | "review"
@@ -1092,6 +1093,7 @@ export const Constants = {
         "foul",
         "clock_stop",
         "clock_start",
+        "foul_reset",
       ],
       match_status: ["scheduled", "live", "paused", "finished", "cancelled"],
       project_status: ["Published", "Draft"],

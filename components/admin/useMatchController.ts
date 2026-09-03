@@ -18,6 +18,7 @@ import {
   matchWinner,
   periodLabel,
   periodRemainingSeconds,
+  resetFouls,
   setsWon,
   shotClockRemaining,
   freezeClock,
@@ -33,6 +34,7 @@ import {
   pauseMatch,
   recordFoul,
   removePlayer as removePlayerAction,
+  resetTeamFouls as resetTeamFoulsAction,
   resumeMatch,
   startClock,
   stopClock,
@@ -327,6 +329,14 @@ export function useMatchController(match: MatchView) {
       );
     }
   };
+  /** Zero a team's foul count; player fouls stay as they are. */
+  const resetTeamFouls = (team: TeamKey) => {
+    if (!timed || view.fouls[team] === 0) return;
+    dispatch(
+      (v) => ({ ...v, fouls: resetFouls(stateOfMatch(v), team).fouls }),
+      (eventId) => resetTeamFoulsAction(view.id, eventId, team),
+    );
+  };
   const undo = () => dispatch(null, (eventId) => undoLast(view.id, eventId));
   const finish = () =>
     dispatch(
@@ -375,6 +385,7 @@ export function useMatchController(match: MatchView) {
     toggleOnCourt,
     tapScore,
     tapFoul,
+    resetTeamFouls,
     tapEndPeriod,
     tapEndSet: tapEndPeriod,
     start,

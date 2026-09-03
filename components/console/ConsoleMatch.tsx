@@ -297,10 +297,20 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
                         )}
                       </span>
                     </div>
-                    <span className="max-w-[140px] text-right text-[11px] text-gray-500">
-                      Tap <strong>Foul</strong> on a player — the team count
-                      follows
-                    </span>
+                    <div className="flex flex-col items-end gap-1.5">
+                      <Button
+                        variant="ghost"
+                        className="px-3"
+                        disabled={!c.inPlay || view.fouls[team] === 0}
+                        onClick={() => c.resetTeamFouls(team)}
+                        title="Reset team fouls — player fouls are kept"
+                      >
+                        Reset · รีเซ็ต
+                      </Button>
+                      <span className="max-w-[160px] text-right text-[10px] text-gray-500">
+                        Team count only — player fouls stay
+                      </span>
+                    </div>
                   </div>
                 )}
 
