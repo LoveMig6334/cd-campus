@@ -571,6 +571,11 @@ export function onCourt(players: MatchPlayer[], team: TeamKey): MatchPlayer[] {
   return players.filter((p) => p.team === team && p.onCourt).sort(byNumber);
 }
 
+/** A team's whole roster: on-court first, then the bench, by jersey number. */
+export function roster(players: MatchPlayer[], team: TeamKey): MatchPlayer[] {
+  return [...onCourt(players, team), ...bench(players, team)];
+}
+
 /** A team's bench, lowest jersey number first. */
 export function bench(players: MatchPlayer[], team: TeamKey): MatchPlayer[] {
   return players.filter((p) => p.team === team && !p.onCourt).sort(byNumber);

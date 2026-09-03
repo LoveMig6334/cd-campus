@@ -6,8 +6,8 @@ import {
   formatClock,
   formatOfMatch,
   isTimed,
-  onCourt,
   ON_COURT_MAX,
+  roster,
   periodLengthSeconds,
   PLAYER_FOUL_LIMIT,
   shotClockRemaining,
@@ -58,11 +58,20 @@ function PlayerPanel({
   players: MatchPlayer[];
   side: "left" | "right";
 }) {
-  const rows = Array.from({ length: ON_COURT_MAX }, (_, i) => players[i]);
+  // Whole roster, on-court lit and the bench darkened; rows shrink past five
+  // so the panel never overflows.
+  const count = Math.max(ON_COURT_MAX, players.length);
+  const rows = Array.from({ length: count }, (_, i) => players[i]);
+  const h = `calc(var(--u)*${Math.min(7.2, 36 / count).toFixed(2)})`;
+  const gapY =
+    count > ON_COURT_MAX
+      ? "gap-y-[calc(var(--u)*0.8)]"
+      : "gap-y-[calc(var(--u)*1.6)]";
   return (
     <PanelBox
       className={cn(
-        "grid h-full grid-cols-[auto_auto_auto] content-start justify-center justify-items-center gap-x-[1vw] gap-y-[calc(var(--u)*1.6)] px-[1vw] py-[calc(var(--u)*2)]",
+        "grid h-full grid-cols-[auto_auto_auto] content-start justify-center justify-items-center gap-x-[1vw] px-[1vw] py-[calc(var(--u)*2)]",
+        gapY,
         side === "left"
           ? "animate-[sb-slam-left_0.55s_ease-out_both]"
           : "animate-[sb-slam-right_0.55s_ease-out_both]",
@@ -73,29 +82,34 @@ function PlayerPanel({
       <span className={cn(LABEL_AMBER, "ml-[1.6vw]")}>Pts</span>
       {rows.map((p, i) => {
         const out = p !== undefined && p.fouls >= PLAYER_FOUL_LIMIT;
-        const cls = cn("contents", out && "opacity-45");
+        const dark = p !== undefined && !p.onCourt;
+        const cls = cn(
+          "transition-opacity duration-500",
+          dark && "opacity-20",
+          out && !dark && "opacity-45",
+        );
         return (
-          <div key={p?.id ?? `empty-${i}`} className={cls}>
+          <div key={p?.id ?? `empty-${i}`} className="contents">
             <Led
               value={p ? ledPad(p.number, 2) : "  "}
               color="amber"
-              h="calc(var(--u)*7.2)"
+              h={h}
               dim={!p}
-              className={cn(out && "opacity-45")}
+              className={cls}
             />
             <Led
               value={p ? String(p.fouls) : " "}
               color="red"
-              h="calc(var(--u)*7.2)"
+              h={h}
               dim={!p}
-              className={cn(out && "opacity-45")}
+              className={cls}
             />
             <Led
               value={p ? ledPad(p.points, 2) : "  "}
               color="red"
-              h="calc(var(--u)*7.2)"
+              h={h}
               dim={!p}
-              className={cn("ml-[1.6vw]", out && "opacity-45")}
+              className={cn("ml-[1.6vw]", cls)}
             />
           </div>
         );
@@ -200,7 +214,7 @@ export function BasketballBoard({
       // Board unit: 1vh, capped so a 16:9 design still fits narrower screens.
       style={{ "--u": "min(1vh, 0.5625vw)" } as CSSProperties}
     >
-      <PlayerPanel players={onCourt(match.players, "a")} side="left" />
+      <PlayerPanel players={roster(match.players, "a")} side="left" />
 
       <PanelBox className="flex animate-[sb-pop_0.5s_ease-out_both] flex-col justify-between px-[1.4vw] py-[calc(var(--u)*1.6)]">
         {/* Clock row */}
@@ -361,7 +375,7 @@ export function BasketballBoard({
         </div>
       </PanelBox>
 
-      <PlayerPanel players={onCourt(match.players, "b")} side="right" />
+      <PlayerPanel players={roster(match.players, "b")} side="right" />
     </div>
   );
 }

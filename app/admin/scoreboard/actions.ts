@@ -553,6 +553,21 @@ export async function setShotClock(
     : { ok: false, error: "Match disappeared" };
 }
 
+/** Freeze the shot clock where it stands while the game clock keeps running. */
+export async function holdShotClock(
+  matchId: string,
+): Promise<MatchActionResult> {
+  await requireAdmin();
+  const db = await createClient();
+  const { error } = await db.rpc("hold_shot_clock", { p_match_id: matchId });
+  if (error) return { ok: false, error: error.message };
+  revalidateSurfaces();
+  const fresh = await getMatchById(matchId);
+  return fresh
+    ? { ok: true, match: fresh }
+    : { ok: false, error: "Match disappeared" };
+}
+
 /* ------------------------------------------------------------------ */
 /* Roster & timeouts — plain admin writes (not events)                 */
 /* ------------------------------------------------------------------ */

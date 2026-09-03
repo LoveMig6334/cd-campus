@@ -16,7 +16,7 @@ import { useMatchController } from "@/components/admin/useMatchController";
 import { cancelMatch } from "@/app/admin/scoreboard/actions";
 import { Badge, Button, Panel } from "@/components/console/ui";
 import { useBoardRemote } from "@/components/console/useBoardRemote";
-import { BOARD_SOUNDS } from "@/lib/sport/boardSounds";
+import { BOARD_SOUNDS, type BoardSoundId } from "@/lib/sport/boardSounds";
 import { ConsoleRoster } from "@/components/console/ConsoleRoster";
 
 const SCORE_BTN = "rounded-2xl text-[32px] font-semibold active:scale-[0.98]";
@@ -41,6 +41,20 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
   // Sounds play on the scoreboard kiosk (hall speakers), which derives the
   // buzzer / horn moments itself; the buttons below only nudge it remotely.
   const { playOnBoard } = useBoardRemote();
+  const [soundState, setSoundState] = useState<{
+    id: string;
+    status: "sending" | "sent" | "failed";
+  } | null>(null);
+  const playSound = async (id: BoardSoundId) => {
+    setSoundState({ id, status: "sending" });
+    try {
+      await playOnBoard(id);
+      setSoundState({ id, status: "sent" });
+    } catch {
+      setSoundState({ id, status: "failed" });
+    }
+    setTimeout(() => setSoundState((s) => (s?.id === id ? null : s)), 1500);
+  };
   const endPeriod = () => c.tapEndPeriod();
 
   const foulBonusAt = config.kind === "timed" ? config.foulBonusAt : Infinity;
@@ -564,13 +578,31 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
               >
                 {c.shotClock ?? "–"}
               </div>
-              <Button
-                variant="ghost"
-                disabled={c.shotClock === null}
-                onClick={c.clearShotClock}
-              >
-                Clear · ล้าง
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant={c.shotClockHeld ? "gold" : "ghost"}
+                  disabled={
+                    c.shotClock === null ||
+                    !c.clockRunning ||
+                    (c.shotClockHeld && c.shotClock < 1)
+                  }
+                  onClick={c.shotClockHeld ? c.runShotClock : c.holdShotClock}
+                  title={
+                    c.clockRunning
+                      ? undefined
+                      : "The shot clock follows the game clock while it is stopped"
+                  }
+                >
+                  {c.shotClockHeld ? "Run · เดิน" : "Hold · หยุด"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  disabled={c.shotClock === null}
+                  onClick={c.clearShotClock}
+                >
+                  Clear · ล้าง
+                </Button>
+              </div>
             </div>
           </div>
         </Panel>
@@ -591,19 +623,45 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
 
       <Panel title="Sound · เสียง">
         <div className="flex flex-wrap gap-2">
-          {BOARD_SOUNDS.map((s) => (
-            <Button
-              key={s.id}
-              variant="ghost"
-              className="py-3"
-              onClick={() => void playOnBoard(s.id)}
-            >
-              🔊 {s.labelEn} · {s.labelTh}
-            </Button>
-          ))}
-          <span className="self-center text-[12px] text-gray-500">
-            Plays on the scoreboard · buzzer sounds at 0:00 and on End quarter,
-            horn when the shot clock expires
+          {BOARD_SOUNDS.map((s) => {
+            const st = soundState?.id === s.id ? soundState.status : null;
+            return (
+              <Button
+                key={s.id}
+                variant={
+                  st === "sent" ? "gold" : st === "sending" ? "sky" : "ghost"
+                }
+                className={cn(
+                  "py-3 transition-transform",
+                  st === "sending" && "scale-95 opacity-80",
+                  st === "failed" && "border-red-300 bg-red-50 text-red-700",
+                )}
+                disabled={st === "sending"}
+                onClick={() => void playSound(s.id)}
+              >
+                {st === "sent" ? "✅" : st === "failed" ? "⚠️" : "🔊"}{" "}
+                {s.labelEn} · {s.labelTh}
+              </Button>
+            );
+          })}
+          <span
+            className={cn(
+              "self-center text-[12px]",
+              soundState?.status === "failed"
+                ? "font-semibold text-red-600"
+                : soundState
+                  ? "text-marine font-semibold"
+                  : "text-gray-500",
+            )}
+            aria-live="polite"
+          >
+            {soundState?.status === "sending"
+              ? "Sending to the scoreboard… · กำลังส่ง"
+              : soundState?.status === "sent"
+                ? "Sent — playing on the scoreboard · ส่งแล้ว"
+                : soundState?.status === "failed"
+                  ? "Could not reach the scoreboard · ส่งไม่สำเร็จ"
+                  : "Plays on the scoreboard · buzzer sounds at 0:00 and on End quarter, horn when the shot clock expires"}
           </span>
         </div>
       </Panel>

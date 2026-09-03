@@ -15,6 +15,8 @@ import {
   isFouledOut,
   isTimed,
   leaderForEarlyEnd,
+  ON_COURT_MAX,
+  ROSTER_MAX,
   matchWinner,
   periodLabel,
   periodRemainingSeconds,
@@ -31,6 +33,7 @@ import {
   addPlayer as addPlayerAction,
   endMatch,
   endSet,
+  holdShotClock as holdShotClockAction,
   pauseMatch,
   recordFoul,
   removePlayer as removePlayerAction,
@@ -233,10 +236,34 @@ export function useMatchController(match: MatchView) {
     );
   };
 
-  // Roster edits are rare and need the server's id/uniqueness answer — no
-  // optimistic prediction, just the shared queue + error surface.
-  const addPlayer = (team: TeamKey, number: number) =>
-    dispatch(null, () => addPlayerAction(view.id, team, number));
+  // Adding shows the jersey at once under a temporary id; the server answer
+  // (real id, uniqueness) replaces it, and a rejection rolls it back.
+  const addPlayer = (team: TeamKey, number: number) => {
+    const mine = view.players.filter((p) => p.team === team);
+    if (mine.length >= ROSTER_MAX || mine.some((p) => p.number === number)) {
+      return;
+    }
+    dispatch(
+      (v) => ({
+        ...v,
+        players: [
+          ...v.players,
+          {
+            id: `pending-${crypto.randomUUID()}`,
+            team,
+            number,
+            name: null,
+            fouls: 0,
+            points: 0,
+            onCourt:
+              v.players.filter((p) => p.team === team && p.onCourt).length <
+              ON_COURT_MAX,
+          },
+        ],
+      }),
+      () => addPlayerAction(view.id, team, number),
+    );
+  };
   const removePlayer = (playerId: string) => {
     if (selectedPlayer === playerId) setSelectedPlayer(null);
     dispatch(null, () => removePlayerAction(view.id, playerId));
@@ -284,6 +311,29 @@ export function useMatchController(match: MatchView) {
       }),
       () => setShotClock(view.id, team, seconds),
     );
+  };
+  // Held: seconds banked, not counting — while the game clock itself runs.
+  const shotClockHeld =
+    timed &&
+    view.shotClockRemaining !== null &&
+    view.shotClockEndsAt === null &&
+    view.timerStartedAt !== null;
+  const holdShotClock = () => {
+    if (!timed || view.shotClockEndsAt === null) return;
+    dispatch(
+      (v) => ({
+        ...v,
+        shotClockEndsAt: null,
+        shotClockRemaining: shotClockRemaining(v, Date.now()),
+      }),
+      () => holdShotClockAction(view.id),
+    );
+  };
+  const runShotClock = () => {
+    const team = view.shotClockTeam;
+    const secs = view.shotClockRemaining;
+    if (!shotClockHeld || team === null || secs === null || secs < 1) return;
+    tapShotClock(team, secs);
   };
   const clearShotClock = () => {
     if (!timed || !inPlay) return;
@@ -372,6 +422,9 @@ export function useMatchController(match: MatchView) {
     shotClockTeam,
     tapShotClock,
     clearShotClock,
+    shotClockHeld,
+    holdShotClock,
+    runShotClock,
     selectedPlayer,
     selectPlayer: setSelectedPlayer,
     /** Team whose player is selected — timed sports can only score for it. */
