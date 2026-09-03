@@ -58,20 +58,16 @@ function PlayerPanel({
   players: MatchPlayer[];
   side: "left" | "right";
 }) {
-  // Whole roster, on-court lit and the bench darkened; rows shrink past five
-  // so the panel never overflows.
+  // Whole roster, on-court lit and the bench darkened; the panel has room
+  // below the five starters, so rows keep their full size.
   const count = Math.max(ON_COURT_MAX, players.length);
   const rows = Array.from({ length: count }, (_, i) => players[i]);
-  const h = `calc(var(--u)*${Math.min(7.2, 36 / count).toFixed(2)})`;
-  const gapY =
-    count > ON_COURT_MAX
-      ? "gap-y-[calc(var(--u)*0.8)]"
-      : "gap-y-[calc(var(--u)*1.6)]";
+  const h = "calc(var(--u)*7.2)";
   return (
     <PanelBox
       className={cn(
         "grid h-full grid-cols-[auto_auto_auto] content-start justify-center justify-items-center gap-x-[1vw] px-[1vw] py-[calc(var(--u)*2)]",
-        gapY,
+        "gap-y-[calc(var(--u)*1.6)]",
         side === "left"
           ? "animate-[sb-slam-left_0.55s_ease-out_both]"
           : "animate-[sb-slam-right_0.55s_ease-out_both]",
