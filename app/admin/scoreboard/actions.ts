@@ -605,10 +605,8 @@ export async function addPlayer(
     match_id: matchId,
     team,
     number,
-    // First five join the court automatically.
-    on_court:
-      match.players.filter((p) => p.team === team && p.onCourt).length <
-      ON_COURT_MAX,
+    // New players start on the bench; drag them on court from the roster.
+    on_court: false,
   });
   if (error) return { ok: false, error: error.message };
   return freshMatch(matchId);
@@ -653,6 +651,42 @@ export async function setOnCourt(
     .eq("id", playerId)
     .eq("match_id", matchId);
   if (error) return { ok: false, error: error.message };
+  return freshMatch(matchId);
+}
+
+/** Bench one on-court player and court a benchmate in one round trip. */
+export async function swapOnCourt(
+  matchId: string,
+  outId: string,
+  inId: string,
+): Promise<MatchActionResult> {
+  await requireAdmin();
+  const match = await getMatchById(matchId);
+  if (!match) return { ok: false, error: "Match not found" };
+  const out = match.players.find((p) => p.id === outId);
+  const inn = match.players.find((p) => p.id === inId);
+  if (!out || !inn) return { ok: false, error: "Player not found" };
+  if (out.team !== inn.team)
+    return { ok: false, error: "Players are on different teams" };
+  if (!out.onCourt)
+    return { ok: false, error: `#${out.number} is not on court` };
+  if (inn.onCourt)
+    return { ok: false, error: `#${inn.number} is already on court` };
+  if (isFouledOut(inn))
+    return { ok: false, error: `#${inn.number} has fouled out` };
+  const db = await createClient();
+  const benched = await db
+    .from("match_players")
+    .update({ on_court: false })
+    .eq("id", outId)
+    .eq("match_id", matchId);
+  if (benched.error) return { ok: false, error: benched.error.message };
+  const courted = await db
+    .from("match_players")
+    .update({ on_court: true })
+    .eq("id", inId)
+    .eq("match_id", matchId);
+  if (courted.error) return { ok: false, error: courted.error.message };
   return freshMatch(matchId);
 }
 

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { MatchView } from "@/lib/types";
 import type { PointDelta, TeamKey } from "@/lib/sport/rules";
+import type { RosterMove } from "@/lib/sport/roster";
 import {
   applyFoul,
   applyPoint,
@@ -15,7 +16,6 @@ import {
   isFouledOut,
   isTimed,
   leaderForEarlyEnd,
-  ON_COURT_MAX,
   ROSTER_MAX,
   matchWinner,
   periodLabel,
@@ -43,6 +43,7 @@ import {
   stopClock,
   scorePoint,
   setOnCourt,
+  swapOnCourt,
   setShotClock,
   setTimeouts,
   startMatch,
@@ -255,9 +256,7 @@ export function useMatchController(match: MatchView) {
             name: null,
             fouls: 0,
             points: 0,
-            onCourt:
-              v.players.filter((p) => p.team === team && p.onCourt).length <
-              ON_COURT_MAX,
+            onCourt: false,
           },
         ],
       }),
@@ -268,11 +267,33 @@ export function useMatchController(match: MatchView) {
     if (selectedPlayer === playerId) setSelectedPlayer(null);
     dispatch(null, () => removePlayerAction(view.id, playerId));
   };
-  const toggleOnCourt = (playerId: string) => {
-    const p = view.players.find((x) => x.id === playerId);
-    if (!p) return;
-    if (p.onCourt && selectedPlayer === playerId) setSelectedPlayer(null);
-    dispatch(null, () => setOnCourt(view.id, playerId, !p.onCourt));
+  /** Court / bench / swap from the roster drag-and-drop. */
+  const applyRosterMove = (move: RosterMove) => {
+    const benchedId = move.type === "swap" ? move.outId : move.playerId;
+    if (move.type !== "court" && selectedPlayer === benchedId) {
+      setSelectedPlayer(null);
+    }
+    const flip = (v: MatchView, id: string, onCourt: boolean): MatchView => ({
+      ...v,
+      players: v.players.map((p) => (p.id === id ? { ...p, onCourt } : p)),
+    });
+    switch (move.type) {
+      case "court":
+        return dispatch(
+          (v) => flip(v, move.playerId, true),
+          () => setOnCourt(view.id, move.playerId, true),
+        );
+      case "bench":
+        return dispatch(
+          (v) => flip(v, move.playerId, false),
+          () => setOnCourt(view.id, move.playerId, false),
+        );
+      case "swap":
+        return dispatch(
+          (v) => flip(flip(v, move.outId, false), move.inId, true),
+          () => swapOnCourt(view.id, move.outId, move.inId),
+        );
+    }
   };
 
   const tapEndPeriod = () => {
@@ -435,7 +456,7 @@ export function useMatchController(match: MatchView) {
     adjustTimeouts,
     addPlayer,
     removePlayer,
-    toggleOnCourt,
+    applyRosterMove,
     tapScore,
     tapFoul,
     resetTeamFouls,

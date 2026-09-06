@@ -615,7 +615,7 @@ export function ConsoleMatch({ match }: { match: MatchView }) {
           houseB={view.houseB}
           onAdd={c.addPlayer}
           onRemove={c.removePlayer}
-          onToggle={c.toggleOnCourt}
+          onMove={c.applyRosterMove}
           onFoulMinus={(id) => c.tapFoul(id, -1)}
           fixable={c.scoringOpen}
         />
