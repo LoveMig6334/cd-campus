@@ -23,11 +23,11 @@ import { Led, ledPad, ledPadEnd } from "@/components/scoreboard/LedDigits";
 
 const LAST_FOUL_HOLD_MS = 15_000;
 
-const LABEL =
+export const LABEL =
   "font-mono uppercase tracking-[0.22em] text-[calc(var(--u)*2)] leading-none text-[#e8e4d6]";
-const LABEL_AMBER = cn(LABEL, "text-[#ffb020]");
+export const LABEL_AMBER = cn(LABEL, "text-[#ffb020]");
 
-function PanelBox({
+export function PanelBox({
   children,
   className,
 }: {
