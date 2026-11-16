@@ -19,6 +19,7 @@ import {
   matchElapsed,
   NAME_MAX,
   resetCourt,
+  setLayout,
   ruleGameWinner,
   scorePoint,
   serviceCourt,
@@ -26,6 +27,7 @@ import {
   startMatch,
   suggestedMatchWinner,
   undoCourt,
+  type BoardLayout,
   type CourtId,
   type CourtMatch,
   type CourtSlot,
@@ -439,6 +441,71 @@ function CourtControl({
   );
 }
 
+const LAYOUTS: { key: BoardLayout; en: string; th: string; icon: string }[] = [
+  {
+    key: "vertical",
+    en: "Vertical",
+    th: "บน-ล่าง",
+    icon: "M4 4h16v7H4zM4 13h16v7H4z",
+  },
+  {
+    key: "horizontal",
+    en: "Horizontal",
+    th: "ซ้าย-ขวา",
+    icon: "M3 5h8v14H3zM13 5h8v14h-8z",
+  },
+];
+
+/** Both-courts board arrangement; the open board window follows instantly. */
+function LayoutSwitch({
+  layout,
+  update,
+}: {
+  layout: BoardLayout;
+  update: Update;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Board layout"
+      className="flex items-center gap-1 rounded-xl border border-gray-200 bg-white p-1"
+    >
+      <span className="px-2 text-[12px] font-medium text-gray-500">
+        Board layout · รูปแบบจอ
+      </span>
+      {LAYOUTS.map((l) => {
+        const active = layout === l.key;
+        return (
+          <button
+            key={l.key}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => update((s) => setLayout(s, l.key))}
+            className={cn(
+              "inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors",
+              active ? "bg-marine text-white" : "text-marine hover:bg-sky-soft",
+            )}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="size-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d={l.icon} />
+            </svg>
+            {l.en} · {l.th}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /**
  * Operator panel for both badminton courts. State lives in this browser and
  * syncs to /scoreboard/badminton windows opened on the same machine.
@@ -460,7 +527,8 @@ export function BadmintonControl() {
             rules suggest; you confirm every game and the winner.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {ready && <LayoutSwitch layout={state.layout} update={update} />}
           {[
             ["/scoreboard/badminton", "Board · both courts"],
             ["/scoreboard/badminton?court=1", "Court 1"],

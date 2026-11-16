@@ -345,11 +345,21 @@ export function declareWinner(m: CourtMatch, side: Side, now: number): Result {
 export const UNDO_LIMIT = 50;
 
 export type CourtSlot = { match: CourtMatch; history: CourtMatch[] };
-export type CourtsState = { v: 1; courts: Record<CourtId, CourtSlot> };
+
+/** Both-courts board: vertical = courts stacked, horizontal = side by side. */
+export const BOARD_LAYOUTS = ["vertical", "horizontal"] as const;
+export type BoardLayout = (typeof BOARD_LAYOUTS)[number];
+
+export type CourtsState = {
+  v: 1;
+  layout: BoardLayout;
+  courts: Record<CourtId, CourtSlot>;
+};
 
 export function initialCourts(): CourtsState {
   return {
     v: 1,
+    layout: "vertical",
     courts: {
       1: { match: newCourt(1), history: [] },
       2: { match: newCourt(2), history: [] },
@@ -386,6 +396,13 @@ export function undoCourt(state: CourtsState, court: CourtId): CourtsState {
       [court]: { match: prev, history: slot.history.slice(0, -1) },
     },
   };
+}
+
+export function setLayout(
+  state: CourtsState,
+  layout: BoardLayout,
+): CourtsState {
+  return state.layout === layout ? state : { ...state, layout };
 }
 
 /** Clear a court for the next match, keeping nothing. */
@@ -467,6 +484,10 @@ export function parseCourts(raw: string | null): CourtsState {
     return fresh;
   }
   if (!isObj(data) || data.v !== 1 || !isObj(data.courts)) return fresh;
+  // States saved before the layout setting existed default to vertical.
+  if (BOARD_LAYOUTS.includes(data.layout as BoardLayout)) {
+    fresh.layout = data.layout as BoardLayout;
+  }
   const courts = data.courts;
   for (const id of COURT_IDS) {
     const slot = courts[id];

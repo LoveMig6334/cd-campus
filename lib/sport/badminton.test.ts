@@ -18,10 +18,12 @@ import {
   ruleGameWinner,
   scorePoint,
   serviceCourt,
+  setLayout,
   startMatch,
   suggestedMatchWinner,
   undoCourt,
   type CourtMatch,
+  type CourtsState,
   type Result,
   type Side,
 } from "./badminton";
@@ -255,10 +257,28 @@ describe("courts state", () => {
     expect(s.courts[2]).toEqual({ match: newCourt(2), history: [] });
   });
 
+  it("switches the board layout without touching the courts", () => {
+    const s = initialCourts();
+    expect(s.layout).toBe("vertical");
+    const h = setLayout(s, "horizontal");
+    expect(h.layout).toBe("horizontal");
+    expect(h.courts).toBe(s.courts);
+    expect(setLayout(h, "horizontal")).toBe(h);
+  });
+
+  it("reads states saved before the layout setting as vertical", () => {
+    const old: Partial<CourtsState> = setLayout(initialCourts(), "horizontal");
+    delete old.layout;
+    expect(parseCourts(JSON.stringify(old)).layout).toBe("vertical");
+    const bad = { ...initialCourts(), layout: "diagonal" };
+    expect(parseCourts(JSON.stringify(bad)).layout).toBe("vertical");
+  });
+
   it("round-trips through JSON and rejects junk", () => {
     let s = initialCourts();
     s = applyToCourt(s, 1, startMatch(s.courts[1].match, "a", T0));
     s = applyToCourt(s, 1, scorePoint(s.courts[1].match, "b", T0));
+    s = setLayout(s, "horizontal");
     expect(parseCourts(JSON.stringify(s))).toEqual(s);
     expect(parseCourts("not json")).toEqual(initialCourts());
     expect(parseCourts('{"v":2}')).toEqual(initialCourts());
